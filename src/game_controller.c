@@ -9,10 +9,6 @@
 #include "command_parser.h"
 
 void processInput(GameState* gameState) {
-    char input[50] = "C1\tC2\tC3\tC4\tC5\tC6\tC7";
-
-
-    printf("%s\n", input);
 /*
     Command command = parseCommand();
     switch(command.type) {
@@ -59,7 +55,7 @@ void gameLoop() {
     GameState* gameState = initGame();
 
     while (!gameManager_isGameOver(gameState)) {
-        //updateView(gameState);
+        updateView(gameState);
         processInput(gameState);
     }
 }

@@ -12,8 +12,8 @@
 #define PILES_SIZE 4    // Number of card foundation piles
 
 typedef struct {
-    LinkedList cardColumns[COLUMNS_SIZE];
-    LinkedList cardFoundationPiles[PILES_SIZE];
+    LinkedList *cardColumns[COLUMNS_SIZE];
+    LinkedList *cardFoundationPiles[PILES_SIZE];
     Card deck[DECK_SIZE];        // memory location of the referenced cards in the cardColumns and piles
     bool gameOver;
     char lastCommand[20];

@@ -9,24 +9,19 @@
 GameState* initGame() {
     GameState* gameState = malloc(sizeof(GameState));
 
-    // Allocate mem for linked lists in columns and piles
-    gameState->cardColumns = malloc(COLUMNS_SIZE * sizeof(LinkedList*));
-    gameState->cardFoundationPiles = malloc(PILES_SIZE * sizeof(Card*));
-
     // Initialize linked lists
     for (int i = 0; i < COLUMNS_SIZE; ++i) {
-        gameState->cardColumns[i] = createList(sizeof(Card));
+        gameState->cardColumns[i] = createList(sizeof(Node));
     }
     for (int i = 0; i < PILES_SIZE; ++i) {
-        gameState->cardFoundationPiles[i] = createList(sizeof(Card));
+        gameState->cardFoundationPiles[i] = createList(sizeof(Node));
     }
-
 
     gameState->gameOver = false;
     return gameState;
 }
 
-void gameManager_loadDeck(GameState* gameState, char filePath[100]) {
+void gameManager_loadDeck(GameState* gameState, char filePath[]) {
 
 }
 void gameManager_revealDeck(GameState* gameState) {
@@ -38,7 +33,7 @@ void gameManager_splitDeck(GameState* gameState, unsigned int splitIndex) {
 void gameManager_randomShuffleDeck(GameState* gameState) {
 
 }
-void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]) {
+void gameManager_saveDeckToFile(GameState* gameState, char filepath[]) {
 
 }
 void gameManager_quitProgram(GameState* gameState) {
