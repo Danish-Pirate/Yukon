@@ -18,6 +18,7 @@ add_executable(Yukon_Cardgame
         include/command_parser.h
         include/card.h
         include/card_deck.h
+        src/card_deck.c
         src/game_utils.c
         include/game_utils.h
 )

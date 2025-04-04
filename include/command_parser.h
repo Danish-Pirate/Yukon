@@ -70,7 +70,6 @@ typedef struct {
 } MVCommand;
 
 typedef union {
-    CommandType type;
     MVCommand mv;
     LDCommand ld;
     SICommand si;

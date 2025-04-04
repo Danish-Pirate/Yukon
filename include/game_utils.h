@@ -3,7 +3,7 @@
 //
 
 #include "card.h"
-
+#include <stddef.h>
 #ifndef YUKON_CARDGAME_UTIL_H
 #define YUKON_CARDGAME_UTIL_H
 

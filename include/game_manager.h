@@ -14,7 +14,7 @@
 typedef struct {
     LinkedList *cardColumns[COLUMNS_SIZE];
     LinkedList *cardFoundationPiles[PILES_SIZE];
-    Card deck[DECK_SIZE];        // memory location of the referenced cards in the cardColumns and piles
+    LinkedList *deck;
     bool gameOver;
     char lastCommand[20];
 } GameState;

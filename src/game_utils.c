@@ -1,7 +1,7 @@
 //
 // Created by danish on 3/27/25.
 //
-
+#include <stddef.h>
 #include <string.h>
 #include "game_utils.h"
 
@@ -29,17 +29,17 @@ char *convertCardToString(Card *card) {
 
 // ### Linked List ###
 LinkedList* createList(size_t elementSize) {
-    LinkedList* list = malloc(sizeof(LinkedList));
+    LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
     list->head = NULL;
     list->elementSize = elementSize;
     return list;
 }
 
 void addNode(LinkedList* list, void* data) {
-    Node* newNode = malloc(sizeof(Node));
+    Node* newNode = (Node *)malloc(sizeof(Node));
 
     // allocating memory for data and copying it to the list
-    newNode->data = malloc(list->elementSize);
+    newNode->data = (void *)malloc(list->elementSize);
     memcpy(newNode->data, data, list->elementSize);
 
     // The added node becomes the new head

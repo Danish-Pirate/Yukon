@@ -9,6 +9,8 @@
 GameState* initGame() {
     GameState* gameState = malloc(sizeof(GameState));
 
+    gameState->deck = createDeck();
+
     // Initialize linked lists
     for (int i = 0; i < COLUMNS_SIZE; ++i) {
         gameState->cardColumns[i] = createList(sizeof(Node));
@@ -18,6 +20,7 @@ GameState* initGame() {
     }
 
     gameState->gameOver = false;
+
     return gameState;
 }
 
