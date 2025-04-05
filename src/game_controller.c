@@ -9,8 +9,7 @@
 #include "command_parser.h"
 
 void processInput(GameState* gameState) {
-/*
-    Command command = parseCommand();
+    Command command = getCommandInput();
     switch(command.type) {
         case CMD_LD: {
             char* filePath = command.ld.filePath;
@@ -48,13 +47,10 @@ void processInput(GameState* gameState) {
         default:
             break;
     }
-*/
 }
 
 void gameLoop() {
     GameState* gameState = initGame();
-    initView();
-
 
     while (!gameManager_isGameOver(gameState)) {
         updateView(gameState);
