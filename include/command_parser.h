@@ -70,6 +70,7 @@ typedef struct {
 } MVCommand;
 
 typedef union {
+    CommandType type;
     MVCommand mv;
     LDCommand ld;
     SICommand si;
@@ -81,6 +82,6 @@ typedef union {
     SWCommand sw;
 } Command;
 
-Command parseCommand();
+Command getCommandInput();
 
 #endif //YUKON_CARDGAME_COMMAND_PARSER_H
