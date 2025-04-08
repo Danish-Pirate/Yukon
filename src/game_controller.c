@@ -48,11 +48,13 @@ void processInput(GameState* gameState) {
         default:
             break;
     }
-    */
+*/
 }
 
 void gameLoop() {
     GameState* gameState = initGame();
+    initView();
+
 
     while (!gameManager_isGameOver(gameState)) {
         updateView(gameState);
