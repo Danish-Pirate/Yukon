@@ -22,7 +22,8 @@ typedef struct {
 
 LinkedList* createList(size_t elementSize);
 void addNode(LinkedList* list, void* data);
-void* getNode(LinkedList* list, int index);
+Node* getNode(LinkedList* list, int index);
+Node* getLastNode(LinkedList* list);
 void freeList(LinkedList* list);
 // #################
 
