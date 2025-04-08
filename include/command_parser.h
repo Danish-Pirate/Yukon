@@ -21,46 +21,35 @@ typedef enum {
 
 // STARTUP mode commands
 typedef struct {
-    CommandType type;
-
     char filePath[100];
 } LDCommand;
 
 typedef struct {
-    CommandType type;
     unsigned int splitIndex;
 } SICommand;
 
 typedef struct {
-    CommandType type;
 } SRCommand;
 
 typedef struct {
-    CommandType type;
     char filepath[100];
 } SDCommand;
 
 typedef struct {
-    CommandType type;
 } QQCommand;
 
 typedef struct {
-    CommandType type;
 } SWCommand;
 
 typedef struct {
-    CommandType type;
 } PCommand;
 
 // PLAY mode commands
 
 typedef struct {
-    CommandType type;
 } QCommand;
 
 typedef struct {
-    CommandType type;
-
     char fromColumnIndex; // Index for the column to move the card from
     // The index also includes the foundation piles so (0-10)
     Suit suit;            // The suit of the card to move
@@ -69,16 +58,19 @@ typedef struct {
     char toColumnIndex;   // Index for the column to move the card to. Also includes foundation piles
 } MVCommand;
 
-typedef union {
-    MVCommand mv;
-    LDCommand ld;
-    SICommand si;
-    SRCommand sr;
-    SDCommand sd;
-    QQCommand qq;
-    PCommand  p;
-    QCommand q;
-    SWCommand sw;
+typedef struct {
+    CommandType type;
+    union {
+        MVCommand mv;
+        LDCommand ld;
+        SICommand si;
+        SRCommand sr;
+        SDCommand sd;
+        QQCommand qq;
+        PCommand  p;
+        QCommand q;
+        SWCommand sw;
+    };
 } Command;
 
 Command parseCommand();
