@@ -17,6 +17,7 @@ typedef struct {
     LinkedList *deck;
     bool gameOver;
     char lastCommand[20];
+    char lastResponse[20];
 } GameState;
 
 GameState* initGame();
