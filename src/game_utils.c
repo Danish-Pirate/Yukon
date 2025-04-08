@@ -47,16 +47,27 @@ void addNode(LinkedList* list, void* data) {
     list->head = newNode;
 }
 
-void *getNode(LinkedList* list, int index) {
+Node* getLastNode(LinkedList* list){
+    Node* current = list->head;
+    if (current == NULL){
+        return current;
+    }
+    while (current->nextNode != NULL){
+        current = current->nextNode;
+    }
+    return current;
+
+}
+
+
+Node* getNode(LinkedList* list, int index) {
     Node* current = list->head;
     int i = 0;
-
     while (current != NULL && i < index) {
         current = current->nextNode;
         i++;
     }
-
-    return (current != NULL) ? current->data : NULL;
+    return current;
 }
 
 void freeList(LinkedList* list) {
