@@ -21,7 +21,6 @@ typedef struct Card {
     Suit suit;
     Rank rank;
     bool isFaceUp;
-    struct Card* nextCard;
 } Card;
 
 Card createCard(Suit suit, Rank rank, bool isFaceUp);
@@ -30,8 +29,6 @@ void flipCard(Card* card);
 void connectCard(Card* card);
 
 Rank charToRank(char c);
-Suit suitToRank(char c);
-char suitToChar(Suit s);
-char rankToChar(Rank r);
+Suit charToSuit(char c);
 
 #endif //YUKON_CARDGAME_CARD_H

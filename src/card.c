@@ -12,37 +12,6 @@ Card createCard(Suit suit, Rank rank, bool isFaceUp) {
 }
 
 
-
-char rankToChar(Rank r) {
-    switch (r) {
-        case ACE   : return 'A';
-        case TWO   : return '2';
-        case THREE : return '3';
-        case FOUR  : return '4';
-        case FIVE  : return '5';
-        case SIX   : return '6';
-        case SEVEN : return '7';
-        case EIGHT : return '8';
-        case NINE  : return '9';
-        case TEN   : return 'T';
-        case JACK  : return 'J';
-        case QUEEN : return 'Q';
-        case KING  : return 'K';
-        default    : return '?';
-    }
-}
-
-char suitToChar(Suit s){
-    switch(s){
-        case CLUBS    : return 'C';
-        case DIAMONDS : return 'D';
-        case HEARTS   : return 'H';
-        case SPADES   : return 'S';
-        default       : return '?';
-    }
-
-}
-
 Rank charToRank(char c) {
     switch (c) {
         case 'A': return ACE;
