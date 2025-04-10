@@ -77,6 +77,7 @@ void gameManager_splitDeck(GameState* gameState, unsigned int splitIndex) {
 }
 void gameManager_randomShuffleDeck(GameState* gameState) {
 
+
 }
 void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     FILE* file;
@@ -93,10 +94,9 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     while (current != NULL) {
         Card* card = (Card*)current->data;
 
-        char rankChar = rankToChar(card->rank);
-        char suitChar = suitToChar(card->suit);
+        char * line = convertCardToString(card);
 
-        fprintf(file, "%c%c\n", rankChar, suitChar);
+        fprintf(file, "%s\n", line);
 
         current = current->nextNode;
     }
