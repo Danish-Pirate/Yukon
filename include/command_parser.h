@@ -16,7 +16,8 @@ typedef enum {
     CMD_QQ, //n Quit program
     CMD_P,  // Enter play mode
     CMD_Q,  // Exit play mode back to STARTUP mode
-    CMD_MV  // Move card(s)
+    CMD_MV,  // Move card(s)
+    CMD_UNKNOWN // Unknown command
 } CommandType;
 
 // STARTUP mode commands
@@ -25,7 +26,7 @@ typedef struct {
 } LDCommand;
 
 typedef struct {
-    unsigned int splitIndex;
+    int splitIndex;
 } SICommand;
 
 typedef struct {
@@ -50,6 +51,9 @@ typedef struct {
 } QCommand;
 
 typedef struct {
+} UnknownCommand;
+
+typedef struct {
     char fromColumnIndex; // Index for the column to move the card from
     // The index also includes the foundation piles so (0-10)
     Suit suit;            // The suit of the card to move
@@ -70,9 +74,10 @@ typedef struct {
         PCommand  p;
         QCommand q;
         SWCommand sw;
+        UnknownCommand uc;
     };
 } Command;
 
-Command parseCommand();
+Command getCommandInput();
 
 #endif //YUKON_CARDGAME_COMMAND_PARSER_H
