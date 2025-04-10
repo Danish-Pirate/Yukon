@@ -55,6 +55,7 @@ void processInput(GameState* gameState) {
 
 void gameLoop() {
     GameState* gameState = initGame();
+    initView();
 
     while (!gameManager_isGameOver(gameState)) {
         updateView(gameState);
