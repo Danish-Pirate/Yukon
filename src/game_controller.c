@@ -2,7 +2,6 @@
 // Created by danish on 3/26/25.
 //
 #include <stdio.h>
-#include <string.h>
 #include "game_controller.h"
 #include "game_view.h"
 #include "game_manager.h"
@@ -41,9 +40,14 @@ void processInput(GameState* gameState) {
         case CMD_Q:
             gameManager_exitPlayMode(gameState);
             break;
-        case CMD_MV:
-            gameManager_moveCard(gameState);
+        case CMD_MV: {
+            Rank rank = command.mv.rank;
+            Suit suit = command.mv.suit;
+            int fromColumnIndex = command.mv.fromColumnIndex;
+            int toColumnIndex = command.mv.toColumnIndex;
+            gameManager_moveCard(gameState, rank, suit, fromColumnIndex, toColumnIndex);
             break;
+        }
         default:
             break;
     }
