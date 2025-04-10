@@ -9,7 +9,7 @@
 #include <string.h>
 
 GameState* initGame() {
-    GameState* gameState = malloc(sizeof(GameState));
+    GameState* gameState = calloc(1,sizeof(GameState));
 
     gameState->gamePhase = StartupPhase;
     gameState->deck = createDeck();
