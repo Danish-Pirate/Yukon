@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <string.h>
 #include "game_utils.h"
+#include <stdlib.h>
+
 
 int convertRankToInt(char rank) {
     switch (rank) {
@@ -54,40 +56,56 @@ char *convertCardToString(Card *card) {
     return result;
 }
 
-#include <stdlib.h>
 
 // ### Linked List ###
 LinkedList* createList(size_t elementSize) {
     LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
+    list->tail = NULL;
     list->head = NULL;
     list->elementSize = elementSize;
     return list;
 }
 
-void addNode(LinkedList* list, void* data) {
+
+void addNodeToFront(LinkedList* list, void* data) {
     Node* newNode = (Node *)malloc(sizeof(Node));
 
     // allocating memory for data and copying it to the list
     newNode->data = (void *)malloc(list->elementSize);
     memcpy(newNode->data, data, list->elementSize);
 
-    // The added node becomes the new head
+
     newNode->nextNode = list->head;
+    newNode->prevNode = NULL;
+
+    // If list is empty, this node is also the tail
+    if (list->head == NULL) {
+        list->tail = newNode;
+    } else {
+        list->head->prevNode = newNode;
+    }
     list->head = newNode;
 }
 
-Node* getLastNode(LinkedList* list){
-    Node* current = list->head;
-    if (current == NULL){
-        return current;
-    }
-    while (current->nextNode != NULL){
-        current = current->nextNode;
-    }
-    return current;
+void addNodeToBack(LinkedList* list, void* data) {
+    Node* newNode = (Node *)malloc(sizeof(Node));
 
+    // allocating memory for data and copying it to the list
+    newNode->data = (void *)malloc(list->elementSize);
+    memcpy(newNode->data, data, list->elementSize);
+
+
+    newNode->prevNode = list->tail;
+    newNode->nextNode = NULL;
+
+    // If list is empty, this node is also the tail
+    if (list->tail == NULL) {
+        list->head = newNode;
+    } else {
+        list->tail->nextNode = newNode;
+    }
+    list->tail = newNode;
 }
-
 
 Node* getNode(LinkedList* list, int index) {
     Node* current = list->head;
@@ -111,4 +129,3 @@ void freeList(LinkedList* list) {
 
     free(list);
 }
-// ####################
