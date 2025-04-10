@@ -76,7 +76,7 @@ int drawDeckView(GameState *gameState){
     int column = 0;
     int row = HEADER_HEIGHT;
     Node* current = gameState->deck->head;
-    while (current->nextNode != NULL){
+    while (current != NULL){
         cursorSet(column*(CARD_WIDTH+CARD_PADDING_RIGHT),row);
         printf("%s",convertCardToString(current->data));
         if (++column >= COLUMNS_SIZE){
