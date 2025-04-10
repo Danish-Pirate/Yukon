@@ -22,18 +22,18 @@ typedef enum {
 
 // STARTUP mode commands
 typedef struct {
-    char filePath[100];
+    char filePath[100]; // Filepath will be set to '\0' if no path was provided
 } LDCommand;
 
 typedef struct {
-    int splitIndex;
+    int splitIndex; // If an invalid number of cards was inputted, splitIndex will be set to -1.
 } SICommand;
 
 typedef struct {
 } SRCommand;
 
 typedef struct {
-    char filepath[100];
+    char filepath[100]; // Filepath will be set to '\0' if no path was provided
 } SDCommand;
 
 typedef struct {
@@ -56,6 +56,7 @@ typedef struct {
 typedef struct {
     char fromColumnIndex; // Index for the column to move the card from
     // The index also includes the foundation piles so (0-10)
+    // Suit and rank will be set to -1 if the suit and rank of the card in the fromColumn was not provided in the command
     Suit suit;            // The suit of the card to move
     Rank rank;            // The rank of the card to move
 
