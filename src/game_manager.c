@@ -6,6 +6,7 @@
 #include "card_deck.h"
 #include "card.h"
 #include <stdio.h>
+#include <string.h>
 
 GameState* initGame() {
     GameState* gameState = malloc(sizeof(GameState));
@@ -117,7 +118,7 @@ void gameManager_enterPlayMode(GameState* gameState) {
 void gameManager_exitPlayMode(GameState* gameState) {
 
 }
-void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex); {
+void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
 
 }
 bool gameManager_isGameOver(GameState* gameState) {
