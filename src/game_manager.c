@@ -29,7 +29,11 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
 
 }
 void gameManager_revealDeck(GameState* gameState) {
-
+    Node* current = gameState->deck->head;
+    while (current!=NULL){
+        ((Card*) current->data)->isFaceUp = true;
+        current = current->nextNode;
+    }
 }
 void gameManager_splitDeck(GameState* gameState, unsigned int splitIndex) {
 
