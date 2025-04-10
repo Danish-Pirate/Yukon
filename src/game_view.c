@@ -93,7 +93,7 @@ void drawFoundations(GameState *gameState){
     int foundationsColumn = COLUMNS_SIZE * (CARD_WIDTH+CARD_PADDING_RIGHT)+FOUNDATION_PADDING_LEFT;
     for (int pile=0;pile<PILES_SIZE;pile++){
         // Get top card of pile
-        Node* lastNode = getLastNode(gameState->cardFoundationPiles[pile]);
+        Node* lastNode = gameState->cardFoundationPiles[pile]->tail;
         // Set to [] if pile is empty
         char* topCardAsString = "[]";
         if (lastNode != NULL){
