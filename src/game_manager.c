@@ -9,6 +9,7 @@
 GameState* initGame() {
     GameState* gameState = malloc(sizeof(GameState));
 
+    gameState->gamePhase = StartupPhase;
     gameState->deck = createDeck();
 
     // Initialize linked lists
