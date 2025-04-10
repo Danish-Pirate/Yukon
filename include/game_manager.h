@@ -11,11 +11,17 @@
 #define COLUMNS_SIZE 7  // Number of card columns
 #define PILES_SIZE 4    // Number of card foundation piles
 
+typedef enum {
+    StartupPhase,
+    PlayPhase,
+} GamePhase;
+
 typedef struct {
     LinkedList *cardColumns[COLUMNS_SIZE];
     LinkedList *cardFoundationPiles[PILES_SIZE];
     LinkedList *deck;
     bool gameOver;
+    GamePhase gamePhase;
     char lastCommand[20];
     char lastResponse[20];
 } GameState;
