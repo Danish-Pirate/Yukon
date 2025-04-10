@@ -19,7 +19,6 @@ typedef struct Card {
     Suit suit;
     Rank rank;
     bool isFaceUp;
-    struct Card* nextCard;
 } Card;
 
 Card createCard(Suit suit, Rank rank, bool isFaceUp);

@@ -29,7 +29,7 @@ void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]);
 void gameManager_quitProgram(GameState* gameState);
 void gameManager_enterPlayMode(GameState* gameState);
 void gameManager_exitPlayMode(GameState* gameState);
-void gameManager_moveCard(GameState* gameState);
+void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
 bool gameManager_isGameOver(GameState* gameState);
 
 
