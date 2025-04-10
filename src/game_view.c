@@ -16,12 +16,13 @@
 #define FOUNDATION_PADDING_LEFT 2
 #define CONTROLS_PADDING_TOP 2
 
-void setColors(){printf("\033[1;30;43m");}
+
+void setColors(){printf("\033[1;30;103m");}
 
 void clearScreen(){printf("\033[2J");}
 
 void cursorSet(int column, int row){
-    printf("\033[%d;%dH",row,column);
+    printf("\033[%d;%dH",row+1,column+1);
 };
 
 void initView(){
@@ -32,29 +33,63 @@ void initView(){
 
 void updateView(GameState *gameState) {
     clearScreen();
+    int mainSectionHeight;
+    drawColumnHeaders();
 
-    // Draw Main board
-    int stackHeight = 3;
-    for (int col=0;col<COLUMNS_SIZE;col++){
-        // Print stack header
-        int displayColumn = col*(CARD_WIDTH+CARD_PADDING_RIGHT);
-        cursorSet(displayColumn,1);
-        printf("C%d",col+1);
-
-        // Print cards in stack
-        Node* head = gameState->cardColumns[col]->head;
-        int i = 0;
-        while (head != NULL){
-            // Set cursor and print
-            cursorSet(displayColumn,HEADER_HEIGHT+(i++)+1);
-            printf("%s",convertCardToString(head->data));
-            head = head->nextNode;
-        }
-        // Increase stack height if current stack is higher
-        stackHeight = (i > stackHeight) ? i : stackHeight;
+    if (gameState->gamePhase == StartupPhase){
+        mainSectionHeight = drawDeckView(gameState);
+    } else {
+        mainSectionHeight = drawColumns(gameState);
     }
 
-    // Draw foundations
+    drawFoundations(gameState);
+    drawControls(gameState,mainSectionHeight);
+
+    fflush(stdout);
+}
+
+void drawColumnHeaders(){
+    for (int col=0;col<COLUMNS_SIZE;col++){
+        cursorSet(col*(CARD_WIDTH+CARD_PADDING_RIGHT),0);
+        printf("C%d",col+1);
+    }
+}
+
+int drawColumns(GameState *gameState){
+    int mainSectionHeight = 3;
+    for (int col=0;col<COLUMNS_SIZE;col++){
+        // Print cards in stack
+        Node* current = gameState->cardColumns[col]->head;
+        int i = 0;
+        while (current != NULL){
+            // Set cursor and print
+            cursorSet(col*(CARD_WIDTH+CARD_PADDING_RIGHT),HEADER_HEIGHT+(i++));
+            printf("%s",convertCardToString(current->data));
+            current = current->nextNode;
+        }
+        // Increase stack height if current stack is higher
+        mainSectionHeight = (i > mainSectionHeight) ? i : mainSectionHeight;
+    }
+}
+
+int drawDeckView(GameState *gameState){
+    int column = 0;
+    int row = HEADER_HEIGHT;
+    Node* current = gameState->deck->head;
+    while (current->nextNode != NULL){
+        cursorSet(column*(CARD_WIDTH+CARD_PADDING_RIGHT),row);
+        printf("%s",convertCardToString(current->data));
+        if (++column >= COLUMNS_SIZE){
+            row++;
+            column=0;
+        }
+        current = current->nextNode;
+    }
+    return row-HEADER_HEIGHT;
+}
+
+
+void drawFoundations(GameState *gameState){
     int foundationsColumn = COLUMNS_SIZE * (CARD_WIDTH+CARD_PADDING_RIGHT)+FOUNDATION_PADDING_LEFT;
     for (int pile=0;pile<PILES_SIZE;pile++){
         // Get top card of pile
@@ -65,15 +100,13 @@ void updateView(GameState *gameState) {
             topCardAsString = convertCardToString(lastNode->data);
         }
         // Set cursor and print
-        cursorSet(foundationsColumn,pile*(1+FOUNDATION_PADDING_BOTTOM)+HEADER_HEIGHT+1);
+        cursorSet(foundationsColumn,pile*(1+FOUNDATION_PADDING_BOTTOM)+HEADER_HEIGHT);
         printf("%s F%d",topCardAsString,pile+1);
     }
-
-    // Draw control
-    cursorSet(0,HEADER_HEIGHT+stackHeight+CONTROLS_PADDING_TOP);
+}
+void drawControls(GameState *gameState,int topOffset){
+    cursorSet(0,HEADER_HEIGHT+topOffset+CONTROLS_PADDING_TOP);
     printf("LAST Command:%s\n",gameState->lastCommand);
     printf("Message:%s\n",gameState->lastResponse);
     printf("INPUT >");
-
-    fflush(stdout);
 }
