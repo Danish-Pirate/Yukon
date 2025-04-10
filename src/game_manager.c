@@ -65,7 +65,7 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
         // Create the card and add it to the deck
         Card card = createCard(suit, rank, false);
 
-        addNode(gameState->deck, &card);
+        addNodeToFront(gameState->deck, &card);
     }
 
 
