@@ -73,6 +73,6 @@ typedef struct {
     };
 } Command;
 
-Command parseCommand();
+Command getCommandInput();
 
 #endif //YUKON_CARDGAME_COMMAND_PARSER_H
