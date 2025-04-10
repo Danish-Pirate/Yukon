@@ -4,6 +4,7 @@
 #define YUKON_CARDGAME_CARD_H
 
 typedef enum {
+    INVALID_SUIT = -1,
     CLUBS,
     DIAMONDS,
     HEARTS,
@@ -11,6 +12,7 @@ typedef enum {
 } Suit;
 
 typedef enum {
+    INVALID_RANK = -1,
     ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN,
     JACK, QUEEN, KING
 } Rank;
@@ -26,5 +28,10 @@ Card createCard(Suit suit, Rank rank, bool isFaceUp);
 void deleteCard(Card* card);
 void flipCard(Card* card);
 void connectCard(Card* card);
+
+Rank charToRank(char c);
+Suit suitToRank(char c);
+char suitToChar(Suit s);
+char rankToChar(Rank r);
 
 #endif //YUKON_CARDGAME_CARD_H
