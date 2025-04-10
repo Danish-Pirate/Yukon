@@ -9,10 +9,10 @@ LinkedList* createDeck() {
     LinkedList* deck = createList(sizeof(Card));
 
     // Generate deck in reverse order, since it is built like a stack
-    for (int suit = SPADES; suit >= CLUBS; suit--) {
-        for (int rank = KING; rank >= ACE; rank--) {
+    for (int suit = CLUBS; suit <= SPADES; suit++) {
+        for (int rank = ACE; rank <= KING; rank++) {
             Card card = createCard(suit, rank, false);
-            addNode(deck, &card);
+            addNodeToBack(deck, &card);
         }
     }
 
