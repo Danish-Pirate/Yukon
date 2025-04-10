@@ -8,6 +8,8 @@
 #define YUKON_CARDGAME_UTIL_H
 
 char *convertCardToString(Card *card);
+int convertRankToInt(char rank);
+int convertSuitToInt(char suit);
 
 // ### Linked List ###
 typedef struct Node {
