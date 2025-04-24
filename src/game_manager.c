@@ -430,5 +430,11 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
 
 }
 bool gameManager_isGameOver(GameState* gameState) {
-    return false;
+    for (int i = 0; i < PILES_SIZE; i++) {
+        Node* tmp = gameState->cardFoundationPiles[i]->head;
+        if (tmp == NULL || ((Card*)tmp->data)->rank != KING) {
+            return false;
+        }
+    }
+    return true;
 }
