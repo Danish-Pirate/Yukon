@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.16)
 project(Yukon_Cardgame C)
 
 set(CMAKE_C_STANDARD 11)
@@ -14,17 +14,25 @@ set(GAME_SOURCES
         ${SRC}/game_utils.c
 )
 
+# Set runtime and library output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+# This assumes the SDL source is available in vendored/SDL
+add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+
 # Create main executable
 add_executable(Yukon_Cardgame ${SRC}/main.c ${GAME_SOURCES})
 target_include_directories(Yukon_Cardgame PRIVATE include)
+target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2)
 
 # Do you want tests?
 option(BUILD_TESTS "Build with CUnit tests" OFF)
 
 if(BUILD_TESTS)
     # Set paths to your CUnit static library and headers
-    set(CUNIT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third_party/include)
-    set(CUNIT_LIBRARY ${CMAKE_SOURCE_DIR}/third_party/lib/libcunit.a)
+    set(CUNIT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendored/cunit/include)
+    set(CUNIT_LIBRARY ${CMAKE_SOURCE_DIR}/vendored/cunit/lib/libcunit.a)
 
     # Make test executable
     add_executable(run_tests tests/test_main.c ${GAME_SOURCES}

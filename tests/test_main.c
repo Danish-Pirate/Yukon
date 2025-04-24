@@ -1,12 +1,10 @@
-#include <CUnit/Basic.h>
-#include <CUnit/CUnit.h>
+#include <Basic.h>
+#include <CUnit.h>
 #include "../include/card_deck.h"
 #include "command_parser.h"
 
 void test_read_input() {
     FILE *original_stdin = stdin;
-
-
 
     // Test Case 1: LD command with file path
     FILE *temp_file1 = tmpfile();
