@@ -159,7 +159,7 @@ void test_read_input() {
     stdin = temp_file14;
 
     Command cmd14 = getCommandInput();
-    CU_ASSERT_NOT_EQUAL(cmd14.type, CMD_MV);
+    CU_ASSERT_EQUAL(cmd14.type, CMD_MV);
     fclose(temp_file14);
 
     // Test Case 15: Move command - column to foundation
