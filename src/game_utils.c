@@ -70,10 +70,7 @@ LinkedList* createList(size_t elementSize) {
 void addNodeToFront(LinkedList* list, void* data) {
     Node* newNode = (Node *)malloc(sizeof(Node));
 
-    // allocating memory for data and copying it to the list
-    newNode->data = (void *)malloc(list->elementSize);
-    memcpy(newNode->data, data, list->elementSize);
-
+    newNode->data = data;
 
     newNode->nextNode = list->head;
     newNode->prevNode = NULL;
@@ -90,10 +87,7 @@ void addNodeToFront(LinkedList* list, void* data) {
 void addNodeToBack(LinkedList* list, void* data) {
     Node* newNode = (Node *)malloc(sizeof(Node));
 
-    // allocating memory for data and copying it to the list
-    newNode->data = (void *)malloc(list->elementSize);
-    memcpy(newNode->data, data, list->elementSize);
-
+    newNode->data = data;
 
     newNode->prevNode = list->tail;
     newNode->nextNode = NULL;
@@ -105,6 +99,32 @@ void addNodeToBack(LinkedList* list, void* data) {
         list->tail->nextNode = newNode;
     }
     list->tail = newNode;
+}
+
+// Move start node and subsequent nodes from srcList to tail of dstList
+void spliceList(LinkedList* srcList,LinkedList* dstList, Node* start){
+
+    // Cut start node from srcList
+    if (srcList->head == start) {
+        srcList->head = NULL;
+    }
+    else {
+        start->prevNode->nextNode = NULL;
+    }
+    Node* dstListNewTail = srcList->tail;
+    srcList->tail = start->prevNode;
+    start->prevNode = NULL;
+
+    // Join startNode to end of dstList
+    if (dstList->head == NULL) {
+        dstList->head = start;
+    }
+    else {
+        Node* dstListTail = dstList->tail;
+        dstListTail->nextNode = start;
+        start->prevNode = dstListTail;
+    }
+    dstList->tail = dstListNewTail;
 }
 
 Node* getNode(LinkedList* list, unsigned int index) {
