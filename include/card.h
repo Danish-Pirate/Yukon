@@ -23,7 +23,7 @@ typedef struct Card {
     bool isFaceUp;
 } Card;
 
-Card createCard(Suit suit, Rank rank, bool isFaceUp);
+Card* createCard(Suit suit, Rank rank, bool isFaceUp);
 void deleteCard(Card* card);
 void flipCard(Card* card);
 void connectCard(Card* card);

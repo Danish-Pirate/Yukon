@@ -2,6 +2,7 @@
 // Created by danish on 3/26/25.
 //
 #include <stdio.h>
+#include <string.h>
 #include "game_controller.h"
 #include "game_view.h"
 #include "game_manager.h"
@@ -48,6 +49,7 @@ void processInput(GameState* gameState) {
             break;
         }
         default:
+            strcpy(gameState->lastResponse, "Invalid command");
             break;
     }
 }
@@ -55,7 +57,6 @@ void processInput(GameState* gameState) {
 void gameLoop() {
     GameState* gameState = initGame();
     initView();
-
     while (!gameManager_isGameOver(gameState)) {
         updateView(gameState);
         processInput(gameState);
