@@ -117,6 +117,30 @@ Node* getNode(LinkedList* list, int index) {
     return current;
 }
 
+void deleteNode(LinkedList* list, int index) {
+    if (list == NULL || list->head == NULL || index < 0) return;
+
+    Node* toDelete = getNode(list, index);
+    if (toDelete == NULL) return;
+
+    // Update the previous node's next pointer
+    if (toDelete->prevNode != NULL) {
+        toDelete->prevNode->nextNode = toDelete->nextNode;
+    } else {
+        // Deleting the head
+        list->head = toDelete->nextNode;
+    }
+
+    // Update the next node's previous pointer
+    if (toDelete->nextNode != NULL) {
+        toDelete->nextNode->prevNode = toDelete->prevNode;
+    } else {
+        list->tail = toDelete->prevNode;
+    }
+
+    free(toDelete);
+}
+
 void freeList(LinkedList* list) {
     Node* current = list->head;
 

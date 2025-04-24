@@ -30,6 +30,7 @@ void addNodeToBack(LinkedList* list, void* data);
 Node* getNode(LinkedList* list, int index);
 Node* getLastNode(LinkedList* list);
 void freeList(LinkedList* list);
+void deleteNode(LinkedList* list, Node* node);
 // #################
 
 #endif //YUKON_CARDGAME_UTIL_H
