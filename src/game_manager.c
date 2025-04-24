@@ -11,22 +11,23 @@
 
 GameState* initGame() {
     srand(time(NULL)); //for random number generation in the gameManager_randomShuffleDeck function
-    GameState* gameState = calloc(1,sizeof(GameState));
+    GameState* gameState = malloc(sizeof(GameState));
 
+    resetGameState(gameState);
+
+    return gameState;
+}
+
+void resetGameState(GameState* gameState){
+    memset(gameState, 0, sizeof(GameState));
     gameState->gamePhase = StartupPhase;
-    gameState->deck = createDeck();
-
-    // Initialize linked lists
     for (int i = 0; i < COLUMNS_SIZE; ++i) {
         gameState->cardColumns[i] = createList(sizeof(Node));
     }
     for (int i = 0; i < PILES_SIZE; ++i) {
         gameState->cardFoundationPiles[i] = createList(sizeof(Node));
     }
-
     gameState->gameOver = false;
-
-    return gameState;
 }
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
@@ -104,16 +105,15 @@ void gameManager_revealDeck(GameState* gameState) {
         return;
     }
 
-    Node* current = gameState->deck->head;
+
     // Display error if deck is empty
-    if (current == NULL){
+    if (gameState->deck->head == NULL){
         strcpy(gameState->lastResponse, "No deck is loaded");
         return;
     }
-    while (current!=NULL){
-        ((Card*) current->data)->isFaceUp = true;
-        current = current->nextNode;
-    }
+    setAllCardsFaceUp(gameState->deck,true);
+
+
     strcpy(gameState->lastResponse, "OK");
 }
 
@@ -289,6 +289,15 @@ void gameManager_exitPlayMode(GameState* gameState) {
         strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
         return;
     }
+
+    // Store deck pointer
+    LinkedList *deck = gameState->deck;
+    // Set all cards to face down
+    setAllCardsFaceUp(deck,false);
+    resetGameState(gameState);
+    // Set deck pointer to stored deck
+    gameState->deck = deck;
+    strcpy(gameState->lastResponse, "OK");
 
 }
 void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {

@@ -15,8 +15,14 @@ LinkedList* createDeck() {
             addNodeToBack(deck, card);
         }
     }
-
     return deck;
 }
 
+void setAllCardsFaceUp(LinkedList* deck,bool faceUp) {
+    Node* current = deck->head;
+    while (current!=NULL){
+        ((Card*) current->data)->isFaceUp = faceUp;
+        current = current->nextNode;
+    }
+}
 
