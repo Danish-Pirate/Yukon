@@ -30,6 +30,12 @@ GameState* initGame() {
 }
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
+
     if ( strcmp(filePath , "\0") == 0){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
             strcpy(gameState->lastResponse, ("No load file given, new deck created"));
             strcpy(gameState->lastCommand, "LD");
@@ -92,6 +98,12 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
     }
 }
 void gameManager_revealDeck(GameState* gameState) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
+
     Node* current = gameState->deck->head;
     // Display error if deck is empty
     if (current == NULL){
@@ -108,6 +120,12 @@ void gameManager_revealDeck(GameState* gameState) {
 // Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
 // and puts the remaining cards at the bottom
 void gameManager_splitDeck(GameState* gameState, int splitIndex) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
+
     // Assume splitIndex is valid??
 
     // If splitIndex is invalid, generate a random number between 1-51
@@ -154,6 +172,11 @@ void gameManager_splitDeck(GameState* gameState, int splitIndex) {
 
 }
 void gameManager_randomShuffleDeck(GameState* gameState) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
 
     LinkedList* shuffledDeck = createList(sizeof(Card));
     int cardsLeft = 52;
@@ -183,6 +206,12 @@ void gameManager_randomShuffleDeck(GameState* gameState) {
 
 
 void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
+
     FILE* file;
     if (strcmp(filePath , "\0") == 0) file = fopen("cards.txt", "w");
     else file = fopen(filePath, "w");
@@ -215,9 +244,20 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
 
 }
 void gameManager_quitProgram(GameState* gameState) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
 
 }
 void gameManager_enterPlayMode(GameState* gameState) {
+    // Check that player is in the startup phase
+    if (gameState->gamePhase != StartupPhase){
+        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
+        return;
+    }
+
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
     unsigned int stackLengths[] = {0,0,0,0,0,0,0};
@@ -243,9 +283,18 @@ void gameManager_enterPlayMode(GameState* gameState) {
     strcpy(gameState->lastResponse, "OK");
 }
 void gameManager_exitPlayMode(GameState* gameState) {
+    if (gameState->gamePhase != PlayPhase){
+        strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
+        return;
+    }
 
 }
 void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
+    if (gameState->gamePhase != PlayPhase){
+        strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
+        return;
+    }
+
     LinkedList* srcList;
     LinkedList* dstList;
     Node* srcNode;
