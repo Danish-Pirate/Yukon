@@ -107,7 +107,7 @@ void addNodeToBack(LinkedList* list, void* data) {
     list->tail = newNode;
 }
 
-Node* getNode(LinkedList* list, int index) {
+Node* getNode(LinkedList* list, unsigned int index) {
     Node* current = list->head;
     int i = 0;
     while (current != NULL && i < index) {
@@ -123,6 +123,18 @@ void freeList(LinkedList* list) {
     while (current != NULL) {
         Node* next = current->nextNode;
         free(current->data);
+        free(current);
+        current = next;
+    }
+
+    free(list);
+}
+
+void freeListExcludeData(LinkedList* list) {
+    Node* current = list->head;
+
+    while (current != NULL) {
+        Node* next = current->nextNode;
         free(current);
         current = next;
     }

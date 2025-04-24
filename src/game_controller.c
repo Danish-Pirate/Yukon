@@ -19,8 +19,7 @@ void processInput(GameState* gameState) {
             gameManager_revealDeck(gameState);
             break;
         case CMD_SI: {
-            unsigned int splitIndex = command.si.splitIndex;
-            gameManager_splitDeck(gameState, splitIndex);
+            gameManager_splitDeck(gameState, command.si.splitIndex);
             break;
         }
         case CMD_SR:

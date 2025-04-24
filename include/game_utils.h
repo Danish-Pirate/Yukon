@@ -27,9 +27,10 @@ typedef struct {
 LinkedList* createList(size_t elementSize);
 void addNodeToFront(LinkedList* list, void* data);
 void addNodeToBack(LinkedList* list, void* data);
-Node* getNode(LinkedList* list, int index);
+Node* getNode(LinkedList* list, unsigned int index);
 Node* getLastNode(LinkedList* list);
 void freeList(LinkedList* list);
+void freeListExcludeData(LinkedList* list);
 // #################
 
 #endif //YUKON_CARDGAME_UTIL_H
