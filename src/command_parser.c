@@ -161,7 +161,7 @@ void parseMoveCommand(const char* moveCommand, MVCommand* mvCmd) {
         // Extract column/foundation index for 'from'
         if (fromPart[0] == 'C') {
             // Column source
-            mvCmd->fromColumnIndex = fromPart[1] - '0';
+            mvCmd->fromColumnIndex = fromPart[1] - '0' - 1;
 
             // Check if there's a specific card
             char *colonPos = strchr(fromPart, ':');
@@ -176,15 +176,15 @@ void parseMoveCommand(const char* moveCommand, MVCommand* mvCmd) {
             // If no colon, suit and rank remain -1 (set by default above)
         } else if (fromPart[0] == 'F') {
             // Foundation source
-            mvCmd->fromColumnIndex = fromPart[1] - '0' + 7;
+            mvCmd->fromColumnIndex = fromPart[1] - '0' + 7 - 1;
             // suit and rank remain -1 (set by default above)
         }
 
         // Extract column/foundation index for 'to'
         if (toPart[0] == 'C') {
-            mvCmd->toColumnIndex = toPart[1] - '0';
+            mvCmd->toColumnIndex = toPart[1] - '0' - 1;
         } else if (toPart[0] == 'F') {
-            mvCmd->toColumnIndex = toPart[1] - '0' + 7;
+            mvCmd->toColumnIndex = toPart[1] - '0' + 7 - 1;
         }
     }
 
