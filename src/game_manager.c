@@ -105,14 +105,13 @@ void gameManager_revealDeck(GameState* gameState) {
         return;
     }
 
-
     // Display error if deck is empty
-    if (gameState->deck->head == NULL){
+    if (gameState->deck == NULL){
         strcpy(gameState->lastResponse, "No deck is loaded");
         return;
     }
-    setAllCardsFaceUp(gameState->deck,true);
 
+    setAllCardsFaceUp(gameState->deck,true);
 
     strcpy(gameState->lastResponse, "OK");
 }
@@ -260,6 +259,12 @@ void gameManager_enterPlayMode(GameState* gameState) {
         return;
     }
 
+    // Validate - Deck not empty
+    if (gameState->deck == NULL){
+        strcpy(gameState->lastResponse, "Deck is empty, please load a deck first");
+        return;
+    }
+
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
     unsigned int stackLengths[] = {0,0,0,0,0,0,0};
@@ -292,11 +297,15 @@ void gameManager_exitPlayMode(GameState* gameState) {
 
     // Store deck pointer
     LinkedList *deck = gameState->deck;
+    // Store last command
+    char lastCommand[100];
+    strcpy(lastCommand, gameState->lastCommand);
     // Set all cards to face down
     setAllCardsFaceUp(deck,false);
     resetGameState(gameState);
     // Set deck pointer to stored deck
     gameState->deck = deck;
+    strcpy(gameState->lastCommand, lastCommand);
     strcpy(gameState->lastResponse, "OK");
 
 }
