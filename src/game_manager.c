@@ -31,10 +31,9 @@ GameState* initGame() {
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
     if ( strcmp(filePath , "\0") == 0){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
-        gameState->deck = createDeck();
             strcpy(gameState->lastResponse, ("No load file given, new deck created"));
             strcpy(gameState->lastCommand, "LD");
-        return;
+        filePath = "createDeckFile.txt";
     }
     FILE* file = fopen(filePath, "r");
     if (!file) {
@@ -43,12 +42,10 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
         return;
     }
 
-    // Ensure the deck is initialised and empty
-    if (gameState->deck != NULL) {
-        freeList(gameState->deck);
-    }
-    gameState->deck = createList(sizeof(Card));
+    LinkedList* deck = createList(sizeof(Card));
 
+    int deckCheck[52] = {0};  // initialize array to all-zeros
+    int cardsAdded = 0;
 
     char line[4]; // 2 characters + newline + null terminator
     while (fgets(line, sizeof(line), file)) {
@@ -72,14 +69,27 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
 
         // Create the card and add it to the deck
         Card card = createCard(suit, rank, false);
-
-        addNodeToFront(gameState->deck, &card);
+        int indx = rank + suit * 13;
+        if (deckCheck[indx] == 0) {
+            deckCheck[indx] = 1;
+            cardsAdded++;
+        } else {
+            strcpy(gameState->lastResponse, "Duplicate card found in loaded deck");
+            strcpy(gameState->lastCommand, "LD");
+            return;
+        }
+        addNodeToFront(deck, &card);
     }
 
-
-    fclose(file);
-    strcpy(gameState->lastResponse, "OK");
-    strcpy(gameState->lastCommand, "LD");
+    if (cardsAdded == 52) {
+        fclose(file);
+        gameState->deck = deck;
+        strcpy(gameState->lastResponse, "OK");
+        strcpy(gameState->lastCommand, "LD");
+    } else {
+        strcpy(gameState->lastResponse, ("Not enough cards in loaded deck"));
+        strcpy(gameState->lastCommand, "LD");
+    }
 }
 void gameManager_revealDeck(GameState* gameState) {
     Node* current = gameState->deck->head;
