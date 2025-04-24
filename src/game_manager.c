@@ -126,12 +126,14 @@ void gameManager_splitDeck(GameState* gameState, int splitIndex) {
         return;
     }
 
-    // Assume splitIndex is valid??
-
-    // If splitIndex is invalid, generate a random number between 1-51
+    // If splitIndex is -1, generate a random number between 1-51
     if (splitIndex == -1){
-        srand(time(NULL));
         splitIndex = (rand() % (DECK_SIZE-1))+1; // Random number between 1-51
+    }
+    // Validate - Check that splitIndex is in range 1-51
+    else if (splitIndex < 1 || splitIndex >= 52){
+        strcpy(gameState->lastResponse, "Invalid split index");
+        return;
     }
 
     // Create two piles
