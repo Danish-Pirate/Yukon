@@ -23,7 +23,7 @@ typedef struct {
     bool gameOver;
     GamePhase gamePhase;
     char lastCommand[20];
-    char lastResponse[20];
+    char lastResponse[50];
 } GameState;
 
 GameState* initGame();
