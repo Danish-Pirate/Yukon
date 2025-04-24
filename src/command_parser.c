@@ -199,7 +199,15 @@ void parseMoveCommand(const char* moveCommand, MVCommand* mvCmd) {
 
 Command getCommandInput() {
     Command command;
+    command.type = CMD_UNKNOWN; // Unknown command by default
+
     char *consoleInput = readConsoleInput();
+
+    // Check if the entered command is an empty string
+    if (consoleInput[0] == '\0') {
+        return command;
+    }
+
     const char *a_delim = " ";
     char **consoleTokens = str_split(consoleInput, a_delim);
 
@@ -210,8 +218,6 @@ Command getCommandInput() {
     }
 
     char *commandStr = consoleTokens[0];
-
-    command.type = CMD_UNKNOWN; // Unknown command by default
 
     // Check if command string is equal
     if (strcmp(commandStr, "SW") == 0 && token_count == 1) {

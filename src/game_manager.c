@@ -69,10 +69,11 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
             strcpy(gameState->lastCommand, "LD");
             return;
         }
+
         // Create the card and add it to the deck
         Card card = createCard(suit, rank, false);
 
-        addNodeToBack(gameState->deck, &card);
+        addNodeToFront(gameState->deck, &card);
     }
 
 
@@ -82,12 +83,63 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
 }
 void gameManager_revealDeck(GameState* gameState) {
     Node* current = gameState->deck->head;
+    // Display error if deck is empty
+    if (current == NULL){
+        strcpy(gameState->lastResponse, "No deck is loaded");
+        return;
+    }
     while (current!=NULL){
         ((Card*) current->data)->isFaceUp = true;
         current = current->nextNode;
     }
+    strcpy(gameState->lastResponse, "OK");
 }
-void gameManager_splitDeck(GameState* gameState, unsigned int splitIndex) {
+
+// Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
+// and puts the remaining cards at the bottom
+void gameManager_splitDeck(GameState* gameState, int splitIndex) {
+    // Assume splitIndex is valid??
+
+    // If splitIndex is invalid, generate a random number between 1-51
+    if (splitIndex == -1){
+        srand(time(NULL));
+        splitIndex = (rand() % (DECK_SIZE-1))+1; // Random number between 1-51
+    }
+
+    // Create two piles
+    Node* firstPile = gameState->deck->head;
+    Node* secondPile = getNode(gameState->deck,splitIndex);
+
+    Node* pileDivider=secondPile;
+
+
+    LinkedList* splitDeck = createList(sizeof(Card));
+
+    // Interleave both piles into splitDeck, until of is empty
+    while (firstPile != pileDivider && secondPile != NULL) {
+        addNodeToFront(splitDeck,firstPile->data);
+        firstPile = firstPile->nextNode;
+
+        addNodeToFront(splitDeck,secondPile->data);
+        secondPile = secondPile->nextNode;
+    }
+
+    // Add the remaining cards from the FIRST pile to the back of splitdeck
+    while (firstPile != pileDivider) {
+        addNodeToBack(splitDeck,firstPile->data);
+        firstPile = firstPile->nextNode;
+    }
+
+    // Add the remaining cards from the SECOND pile to the back of splitdeck
+    while (secondPile != NULL) {
+        addNodeToBack(splitDeck,secondPile->data);
+        secondPile = secondPile->nextNode;
+    }
+
+    // Free the old deck
+    freeListExcludeData(gameState->deck);
+    // Set the split deck to gamestate
+    gameState->deck = splitDeck;
 
 }
 void gameManager_randomShuffleDeck(GameState* gameState) {
@@ -155,7 +207,28 @@ void gameManager_quitProgram(GameState* gameState) {
 
 }
 void gameManager_enterPlayMode(GameState* gameState) {
+    // initialize arrays, to keep track of each stack until max/full is reached
+    const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
+    unsigned int stackLengths[] = {0,0,0,0,0,0,0};
+    Node* deckHead = gameState->deck->head;
+    // Iterate though all cards in deck
+    while(deckHead != NULL) {
+        for (int i = 0; i < COLUMNS_SIZE; i++) {
+            // Check is column is not full
+            if (stackLengths[i] < stackMaxLengths[i]) {
+                // Add card to column
+                addNodeToBack(gameState->cardColumns[i],deckHead->data);
 
+                // Set isFaceUp
+                Card* card = gameState->cardColumns[i]->tail->data;
+                card->isFaceUp = stackLengths[i] < i ? false : true;;
+
+                stackLengths[i]++;
+                deckHead = deckHead->nextNode;
+            }
+        }
+    }
+    gameState->gamePhase = PlayPhase;
 }
 void gameManager_exitPlayMode(GameState* gameState) {
 

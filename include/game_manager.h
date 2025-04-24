@@ -29,7 +29,7 @@ typedef struct {
 GameState* initGame();
 void gameManager_loadDeck(GameState* gameState, char filePath[100]);
 void gameManager_revealDeck(GameState* gameState);
-void gameManager_splitDeck(GameState* gameState, unsigned int splitIndex);
+void gameManager_splitDeck(GameState* gameState, int splitIndex);
 void gameManager_randomShuffleDeck(GameState* gameState);
 void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]);
 void gameManager_quitProgram(GameState* gameState);
