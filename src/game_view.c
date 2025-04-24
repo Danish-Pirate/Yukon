@@ -73,6 +73,9 @@ int drawColumns(GameState *gameState){
 }
 
 int drawDeckView(GameState *gameState){
+    if (gameState->deck == NULL){
+        return 7;
+    }
     int column = 0;
     int row = HEADER_HEIGHT;
     Node* current = gameState->deck->head;
