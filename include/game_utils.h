@@ -7,7 +7,8 @@
 #ifndef YUKON_CARDGAME_UTIL_H
 #define YUKON_CARDGAME_UTIL_H
 
-char *convertCardToString(Card *card);
+char *cardToString(Card *card);
+char *cardTopSideToString(Card *card);
 int convertRankToInt(char rank);
 int convertSuitToInt(char suit);
 
@@ -30,7 +31,7 @@ void addNodeToBack(LinkedList* list, void* data);
 Node* getNode(LinkedList* list, int index);
 Node* getLastNode(LinkedList* list);
 void freeList(LinkedList* list);
-void deleteNode(LinkedList* list, Node* node);
+void deleteNode(LinkedList* list, int index);
 // #################
 
 #endif //YUKON_CARDGAME_UTIL_H

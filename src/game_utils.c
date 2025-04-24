@@ -36,14 +36,8 @@ int convertSuitToInt(char suit) {
     }
 }
 
-char *convertCardToString(Card *card) {
+char *cardToString(Card *card) {
     static char result[3];
-
-    // Return early if card is face-down
-    if (card->isFaceUp == false) {
-        strcpy(result, "[]");
-        return result;
-    }
 
     // lookup arrays
     char *ranks = "A23456789TJQK";
@@ -54,6 +48,17 @@ char *convertCardToString(Card *card) {
     result[2] = '\0';
 
     return result;
+
+}
+
+char *cardTopSideToString(Card *card) {
+    static char result[3];
+    if (card->isFaceUp == false) {
+        strcpy(result, "[]");
+        return result;
+    }
+    return cardToString(card);
+
 }
 
 
