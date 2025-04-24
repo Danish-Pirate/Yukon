@@ -10,6 +10,7 @@
 #include <time.h>
 
 GameState* initGame() {
+    srand(time(NULL)); //for random number generation in the gameManager_randomShuffleDeck function
     GameState* gameState = calloc(1,sizeof(GameState));
 
     gameState->gamePhase = StartupPhase;
@@ -29,22 +30,22 @@ GameState* initGame() {
 }
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
-    if (filePath == NULL){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
-        gameState->deck = createDeck();
-        return;
+    if ( strcmp(filePath , "\0") == 0){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
+            strcpy(gameState->lastResponse, ("No load file given, new deck created"));
+            strcpy(gameState->lastCommand, "LD");
+        filePath = "createDeckFile.txt";
     }
     FILE* file = fopen(filePath, "r");
     if (!file) {
-        printf("Error opening file");
+        strcpy(gameState->lastResponse, ("Error opening file"));
+        strcpy(gameState->lastCommand, "LD");
         return;
     }
 
-    // Ensure the deck is initialized
-    if (gameState->deck == NULL) {
-        LinkedList* deck = createList(sizeof(Card));
-        gameState->deck = deck;
-    }
+    LinkedList* deck = createList(sizeof(Card));
 
+    int deckCheck[52] = {0};  // initialize array to all-zeros
+    int cardsAdded = 0;
 
     char line[4]; // 2 characters + newline + null terminator
     while (fgets(line, sizeof(line), file)) {
@@ -55,23 +56,40 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
         Suit suit = charToSuit(line[1]);
 
         if (rank == INVALID_RANK) {
-            printf("Invalid rank: '%c'\n", line[0]);
-            continue;
+            strcpy(gameState->lastResponse, ("invalid rank in load file - Load failed"));
+            strcpy(gameState->lastCommand, "LD");
+            return;
         }
 
         if (suit == INVALID_SUIT) {
-            printf("Invalid suit: '%c'\n", line[1]);
-            continue;
+            strcpy(gameState->lastResponse, ("invalid suit in load file - Load failed"));
+            strcpy(gameState->lastCommand, "LD");
+            return;
         }
 
         // Create the card and add it to the deck
         Card* card = createCard(suit, rank, false);
-
-        addNodeToFront(gameState->deck, card);
+        int indx = rank + suit * 13;
+        if (deckCheck[indx] == 0) {
+            deckCheck[indx] = 1;
+            cardsAdded++;
+        } else {
+            strcpy(gameState->lastResponse, "Duplicate card found in loaded deck");
+            strcpy(gameState->lastCommand, "LD");
+            return;
+        }
+        addNodeToFront(deck, card);
     }
 
-
-    fclose(file);
+    if (cardsAdded == 52) {
+        fclose(file);
+        gameState->deck = deck;
+        strcpy(gameState->lastResponse, "OK");
+        strcpy(gameState->lastCommand, "LD");
+    } else {
+        strcpy(gameState->lastResponse, ("Not enough cards in loaded deck"));
+        strcpy(gameState->lastCommand, "LD");
+    }
 }
 void gameManager_revealDeck(GameState* gameState) {
     Node* current = gameState->deck->head;
@@ -137,15 +155,41 @@ void gameManager_splitDeck(GameState* gameState, int splitIndex) {
 }
 void gameManager_randomShuffleDeck(GameState* gameState) {
 
+    LinkedList* shuffledDeck = createList(sizeof(Card));
+    int cardsLeft = 52;
 
+    while (cardsLeft > 0) {
+        int rndIndx = rand() % cardsLeft;
+
+        Node* node = getNode(gameState->deck, rndIndx);
+        if (node == NULL || node->data == NULL) {
+            printf("Invalid node at index %d\n", rndIndx);
+            break;
+        }
+
+        Card tmpCard;
+        memcpy(&tmpCard, node->data, sizeof(Card));
+        deleteNode(gameState->deck, rndIndx);
+        addNodeToBack(shuffledDeck, &tmpCard);
+
+        cardsLeft--;
+    }
+
+    freeList(gameState->deck);
+    gameState->deck = shuffledDeck;
+    strcpy(gameState->lastResponse, "Deck shuffled!");
+    strcpy(gameState->lastCommand, "SR");
 }
+
+
 void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     FILE* file;
-    if (filePath == NULL) file = fopen("cards.txt", "w");
+    if (strcmp(filePath , "\0") == 0) file = fopen("cards.txt", "w");
     else file = fopen(filePath, "w");
 
     if (!file) {
-        printf("Error creating the file\n");
+        strcpy(gameState->lastResponse, ("Error creating file"));
+        strcpy(gameState->lastCommand, "SD");
         return;
     }
 
@@ -154,7 +198,7 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     while (current != NULL) {
         Card* card = (Card*)current->data;
 
-        char * line = convertCardToString(card);
+        char * line = cardToString(card);
 
         fprintf(file, "%s\n", line);
 
@@ -162,6 +206,13 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     }
 
     fclose(file);
+
+
+
+
+    strcpy(gameState->lastResponse, ("Saved file!"));
+    strcpy(gameState->lastCommand, "SD");
+
 }
 void gameManager_quitProgram(GameState* gameState) {
 

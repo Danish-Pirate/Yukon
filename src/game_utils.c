@@ -36,14 +36,8 @@ int convertSuitToInt(char suit) {
     }
 }
 
-char *convertCardToString(Card *card) {
+char *cardToString(Card *card) {
     static char result[3];
-
-    // Return early if card is face-down
-    if (card->isFaceUp == false) {
-        strcpy(result, "[]");
-        return result;
-    }
 
     // lookup arrays
     char *ranks = "A23456789TJQK";
@@ -54,6 +48,17 @@ char *convertCardToString(Card *card) {
     result[2] = '\0';
 
     return result;
+
+}
+
+char *cardTopSideToString(Card *card) {
+    static char result[3];
+    if (card->isFaceUp == false) {
+        strcpy(result, "[]");
+        return result;
+    }
+    return cardToString(card);
+
 }
 
 
@@ -135,6 +140,30 @@ Node* getNode(LinkedList* list, unsigned int index) {
         i++;
     }
     return current;
+}
+
+void deleteNode(LinkedList* list, int index) {
+    if (list == NULL || list->head == NULL || index < 0) return;
+
+    Node* toDelete = getNode(list, index);
+    if (toDelete == NULL) return;
+
+    // Update the previous node's next pointer
+    if (toDelete->prevNode != NULL) {
+        toDelete->prevNode->nextNode = toDelete->nextNode;
+    } else {
+        // Deleting the head
+        list->head = toDelete->nextNode;
+    }
+
+    // Update the next node's previous pointer
+    if (toDelete->nextNode != NULL) {
+        toDelete->nextNode->prevNode = toDelete->prevNode;
+    } else {
+        list->tail = toDelete->prevNode;
+    }
+
+    free(toDelete);
 }
 
 void freeList(LinkedList* list) {
