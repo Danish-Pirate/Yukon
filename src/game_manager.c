@@ -187,7 +187,7 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
     while (current != NULL) {
         Card* card = (Card*)current->data;
 
-        char * line = convertCardToString(card);
+        char * line = cardToString(card);
 
         fprintf(file, "%s\n", line);
 

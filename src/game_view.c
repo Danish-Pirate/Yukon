@@ -64,7 +64,7 @@ int drawColumns(GameState *gameState){
         while (current != NULL){
             // Set cursor and print
             cursorSet(col*(CARD_WIDTH+CARD_PADDING_RIGHT),HEADER_HEIGHT+(i++));
-            printf("%s",convertCardToString(current->data));
+            printf("%s",cardTopSideToString(current->data));
             current = current->nextNode;
         }
         // Increase stack height if current stack is higher
@@ -78,7 +78,7 @@ int drawDeckView(GameState *gameState){
     Node* current = gameState->deck->head;
     while (current != NULL){
         cursorSet(column*(CARD_WIDTH+CARD_PADDING_RIGHT),row);
-        printf("%s",convertCardToString(current->data));
+        printf("%s",cardTopSideToString(current->data));
         if (++column >= COLUMNS_SIZE){
             row++;
             column=0;
@@ -97,7 +97,7 @@ void drawFoundations(GameState *gameState){
         // Set to [] if pile is empty
         char* topCardAsString = "[]";
         if (lastNode != NULL){
-            topCardAsString = convertCardToString(lastNode->data);
+            topCardAsString = cardTopSideToString(lastNode->data);
         }
         // Set cursor and print
         cursorSet(foundationsColumn,pile*(1+FOUNDATION_PADDING_BOTTOM)+HEADER_HEIGHT);
