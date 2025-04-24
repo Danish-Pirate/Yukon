@@ -10,6 +10,9 @@
 
 void processInput(GameState* gameState) {
     Command command = getCommandInput();
+    strncpy(gameState->lastCommand, command.raw_command,99);
+    gameState->lastCommand[99] = '\0';
+
     switch(command.type) {
         case CMD_LD: {
             char* filePath = command.ld.filePath;

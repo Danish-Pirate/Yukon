@@ -22,7 +22,7 @@ typedef struct {
     LinkedList *deck;
     bool gameOver;
     GamePhase gamePhase;
-    char lastCommand[20];
+    char lastCommand[100];
     char lastResponse[50];
 } GameState;
 

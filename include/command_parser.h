@@ -64,6 +64,7 @@ typedef struct {
 } MVCommand;
 
 typedef struct {
+    char* raw_command;
     CommandType type;
     union {
         MVCommand mv;
