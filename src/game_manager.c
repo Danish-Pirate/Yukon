@@ -299,6 +299,12 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
     LinkedList* dstList;
     Node* srcNode;
 
+    // Validate - Valid indexes
+    if (fromColumnIndex < 0 || fromColumnIndex > COLUMNS_SIZE+PILES_SIZE || toColumnIndex < 0 || toColumnIndex > COLUMNS_SIZE+PILES_SIZE){
+        strcpy(gameState->lastResponse, "Move is not valid!");
+        return;
+    }
+
     // Validate - the src and dst columns are distinct
     if (fromColumnIndex == toColumnIndex){
         strcpy(gameState->lastResponse, "Move is not valid!");
