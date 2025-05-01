@@ -201,7 +201,7 @@ void gameManager_randomShuffleDeck(GameState* gameState) {
 
     freeList(gameState->deck);
     gameState->deck = shuffledDeck;
-    strcpy(gameState->lastResponse, "Deck shuffled!");
+    strcpy(gameState->lastResponse, "OK");
     strcpy(gameState->lastCommand, "SR");
 }
 
@@ -245,7 +245,7 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
 
 
 
-    strcpy(gameState->lastResponse, ("Saved file!"));
+    strcpy(gameState->lastResponse, ("OK"));
     strcpy(gameState->lastCommand, "SD");
 
 }
@@ -404,12 +404,12 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
         dstList = gameState->cardFoundationPiles[toColumnIndex-COLUMNS_SIZE];
         // Validate - Not valid to move from foundation to other foundation
         if (fromColumnIndex>=COLUMNS_SIZE){
-            strcpy(gameState->lastResponse, "4Move is not valid!");
+            strcpy(gameState->lastResponse, "Move is not valid!");
             return;
         }
         // Validate - Card must be at the bottom of the column when plated onto a foundation
         if (srcNode != srcList->tail){
-            strcpy(gameState->lastResponse, "4Move is not valid!");
+            strcpy(gameState->lastResponse, "Move is not valid!");
             return;
         }
 
@@ -419,7 +419,7 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
         if (dstList->tail == NULL){
             // Validate - Card must be ace when put onto empty foundation
             if (srcCard->rank != ACE) {
-                strcpy(gameState->lastResponse, "5Move is not valid!");
+                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
@@ -427,7 +427,7 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
             // Validate - Card must single rank higher and same suit when put onto non-empty foundation
             Card* dstColTailCard = dstList->tail->data;
             if (srcCard->rank-1 != dstColTailCard->rank || srcCard->suit != dstColTailCard->suit) {
-                strcpy(gameState->lastResponse, "5Move is not valid!");
+                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
