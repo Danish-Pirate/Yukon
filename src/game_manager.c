@@ -418,3 +418,29 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
 bool gameManager_isGameOver(GameState* gameState) {
     return false;
 }
+void gameManager_Save(GameState* gameState, char filepath[100]) {
+    FILE* file = fopen(filepath, "w");
+    if (!file) {
+        strcpy(gameState->lastResponse, ("Error creating file"));
+        strcpy(gameState->lastCommand, "SD");
+        return;
+    }
+    for (int i = 0; i < COLUMNS_SIZE; i++) {
+        Node* curNode =  gameState->cardColumns[i]->head;
+        while (curNode != NULL) {
+            Card* curCard = curNode->data;
+            fprintf(file, cardToString(curCard));
+            fprintf(file, "%d", curCard->isFaceUp);
+            curNode = curNode->nextNode;
+        } //end of while
+        fprintf(file, "\n");
+    } //end of column for-loop
+
+    for (int i = 0; i < PILES_SIZE; i++) {
+        Node* curNode = gameState->cardFoundationPiles[i]->head;
+        while (curNode != NULL) {
+            Card* curCard = curNode->data;
+
+        }
+    }
+}
