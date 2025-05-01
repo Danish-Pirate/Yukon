@@ -62,13 +62,13 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
         Suit suit = charToSuit(line[1]);
 
         if (rank == INVALID_RANK) {
-            strcpy(gameState->lastResponse, ("invalid rank in load file - Load failed"));
+            strcpy(gameState->lastResponse, ("Invalid rank in load file - Load failed"));
             strcpy(gameState->lastCommand, "LD");
             return;
         }
 
         if (suit == INVALID_SUIT) {
-            strcpy(gameState->lastResponse, ("invalid suit in load file - Load failed"));
+            strcpy(gameState->lastResponse, ("Invalid suit in load file - Load failed"));
             strcpy(gameState->lastCommand, "LD");
             return;
         }
