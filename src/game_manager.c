@@ -36,12 +36,11 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
         return;
     }
 
-    if ( strcmp(filePath , "\0") == 0){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
-            strcpy(gameState->lastResponse, ("No load file given, new deck created"));
-            strcpy(gameState->lastCommand, "LD");
+    if ( strcmp(filePath , "\0") == 0) {
         filePath = "createDeckFile.txt";
     }
     FILE* file = fopen(filePath, "r");
+
     if (!file) {
         strcpy(gameState->lastResponse, ("Error opening file"));
         strcpy(gameState->lastCommand, "LD");
@@ -84,7 +83,7 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
             strcpy(gameState->lastCommand, "LD");
             return;
         }
-        addNodeToFront(deck, card);
+        addNodeToBack(deck, card);
     }
 
     if (cardsAdded == 52) {
@@ -179,8 +178,7 @@ void gameManager_randomShuffleDeck(GameState* gameState) {
     }
 
     LinkedList* shuffledDeck = createList(sizeof(Card));
-    int cardsLeft = 52;
-
+    int cardsLeft = DECK_SIZE;;
     while (cardsLeft > 0) {
         int rndIndx = rand() % cardsLeft;
 
@@ -190,11 +188,16 @@ void gameManager_randomShuffleDeck(GameState* gameState) {
             break;
         }
 
-        Card tmpCard;
-        memcpy(&tmpCard, node->data, sizeof(Card));
-        deleteNode(gameState->deck, rndIndx);
-        addNodeToBack(shuffledDeck, &tmpCard);
+        // Create heap-allocated copy of the card
+        Card* cardCopy = malloc(sizeof(Card));
+        if (!cardCopy) {
+            printf("Memory allocation failed.\n");
+            break;
+        }
+        memcpy(cardCopy, node->data, sizeof(Card));
 
+        deleteNode(gameState->deck, rndIndx);
+        addNodeToBack(shuffledDeck, cardCopy);  // Pass the heap pointer directly
         cardsLeft--;
     }
 
