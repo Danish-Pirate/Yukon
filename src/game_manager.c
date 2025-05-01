@@ -212,6 +212,11 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
         strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
         return;
     }
+    if (gameState->deck == NULL){
+        strcpy(gameState->lastResponse, "No deck available");
+        strcpy(gameState->lastCommand, "SD");
+        return;
+    }
 
     FILE* file;
     if (strcmp(filePath , "\0") == 0) file = fopen("cards.txt", "w");
