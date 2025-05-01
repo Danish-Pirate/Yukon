@@ -189,16 +189,13 @@ void gameManager_randomShuffleDeck(GameState* gameState) {
             break;
         }
 
-        // Create heap-allocated copy of the card
-        Card* cardCopy = malloc(sizeof(Card));
-        if (!cardCopy) {
-            printf("Memory allocation failed.\n");
-            break;
-        }
-        memcpy(cardCopy, node->data, sizeof(Card));
 
+        // Store the pointer of card to move
+        Card* card = getNode(gameState->deck,rndIndx)->data;
+        // Remove from current deck
         deleteNode(gameState->deck, rndIndx);
-        addNodeToBack(shuffledDeck, cardCopy);  // Pass the heap pointer directly
+        // Add it to the back of deck
+        addNodeToBack(shuffledDeck, card);
         cardsLeft--;
     }
 
