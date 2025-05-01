@@ -11,22 +11,23 @@
 
 GameState* initGame() {
     srand(time(NULL)); //for random number generation in the gameManager_randomShuffleDeck function
-    GameState* gameState = calloc(1,sizeof(GameState));
+    GameState* gameState = malloc(sizeof(GameState));
 
+    resetGameState(gameState);
+
+    return gameState;
+}
+
+void resetGameState(GameState* gameState){
+    memset(gameState, 0, sizeof(GameState));
     gameState->gamePhase = StartupPhase;
-    gameState->deck = createDeck();
-
-    // Initialize linked lists
     for (int i = 0; i < COLUMNS_SIZE; ++i) {
         gameState->cardColumns[i] = createList(sizeof(Node));
     }
     for (int i = 0; i < PILES_SIZE; ++i) {
         gameState->cardFoundationPiles[i] = createList(sizeof(Node));
     }
-
     gameState->gameOver = false;
-
-    return gameState;
 }
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
@@ -103,16 +104,14 @@ void gameManager_revealDeck(GameState* gameState) {
         return;
     }
 
-    Node* current = gameState->deck->head;
     // Display error if deck is empty
-    if (current == NULL){
+    if (gameState->deck == NULL){
         strcpy(gameState->lastResponse, "No deck is loaded");
         return;
     }
-    while (current!=NULL){
-        ((Card*) current->data)->isFaceUp = true;
-        current = current->nextNode;
-    }
+
+    setAllCardsFaceUp(gameState->deck,true);
+
     strcpy(gameState->lastResponse, "OK");
 }
 
@@ -125,12 +124,14 @@ void gameManager_splitDeck(GameState* gameState, int splitIndex) {
         return;
     }
 
-    // Assume splitIndex is valid??
-
-    // If splitIndex is invalid, generate a random number between 1-51
+    // If splitIndex is -1, generate a random number between 1-51
     if (splitIndex == -1){
-        srand(time(NULL));
         splitIndex = (rand() % (DECK_SIZE-1))+1; // Random number between 1-51
+    }
+    // Validate - Check that splitIndex is in range 1-51
+    else if (splitIndex < 1 || splitIndex >= 52){
+        strcpy(gameState->lastResponse, "Invalid split index");
+        return;
     }
 
     // Create two piles
@@ -261,6 +262,12 @@ void gameManager_enterPlayMode(GameState* gameState) {
         return;
     }
 
+    // Validate - Deck not empty
+    if (gameState->deck == NULL){
+        strcpy(gameState->lastResponse, "Deck is empty, please load a deck first");
+        return;
+    }
+
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
     unsigned int stackLengths[] = {0,0,0,0,0,0,0};
@@ -291,6 +298,19 @@ void gameManager_exitPlayMode(GameState* gameState) {
         return;
     }
 
+    // Store deck pointer
+    LinkedList *deck = gameState->deck;
+    // Store last command
+    char lastCommand[100];
+    strcpy(lastCommand, gameState->lastCommand);
+    // Set all cards to face down
+    setAllCardsFaceUp(deck,false);
+    resetGameState(gameState);
+    // Set deck pointer to stored deck
+    gameState->deck = deck;
+    strcpy(gameState->lastCommand, lastCommand);
+    strcpy(gameState->lastResponse, "OK");
+
 }
 void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
     if (gameState->gamePhase != PlayPhase){
@@ -301,6 +321,12 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
     LinkedList* srcList;
     LinkedList* dstList;
     Node* srcNode;
+
+    // Validate - Valid indexes
+    if (fromColumnIndex < 0 || fromColumnIndex > COLUMNS_SIZE+PILES_SIZE || toColumnIndex < 0 || toColumnIndex > COLUMNS_SIZE+PILES_SIZE){
+        strcpy(gameState->lastResponse, "Move is not valid!");
+        return;
+    }
 
     // Validate - the src and dst columns are distinct
     if (fromColumnIndex == toColumnIndex){
@@ -416,7 +442,13 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
 
 }
 bool gameManager_isGameOver(GameState* gameState) {
-    return false;
+    for (int i = 0; i < PILES_SIZE; i++) {
+        Node* tmp = gameState->cardFoundationPiles[i]->head;
+        if (tmp == NULL || ((Card*)tmp->data)->rank != KING) {
+            return false;
+        }
+    }
+    return true;
 }
 void gameManager_Save(GameState* gameState, char filepath[100]) {
     FILE* file = fopen(filepath, "w");

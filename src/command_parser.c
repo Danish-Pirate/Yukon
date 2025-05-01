@@ -203,6 +203,10 @@ Command getCommandInput() {
 
     char *consoleInput = readConsoleInput();
 
+    // Store raw command string in the command struct
+    command.raw_command = consoleInput;
+
+
     // Check if the entered command is an empty string
     if (consoleInput[0] == '\0') {
         return command;

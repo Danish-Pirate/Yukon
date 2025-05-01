@@ -8,5 +8,6 @@
 #define YUKON_CARDGAME_CARD_DECK_H
 
 LinkedList* createDeck();
+void setAllCardsFaceUp(LinkedList* deck,bool faceUp);
 
 #endif //YUKON_CARDGAME_CARD_DECK_H

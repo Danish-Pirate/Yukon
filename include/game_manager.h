@@ -22,11 +22,12 @@ typedef struct {
     LinkedList *deck;
     bool gameOver;
     GamePhase gamePhase;
-    char lastCommand[20];
+    char lastCommand[100];
     char lastResponse[50];
 } GameState;
 
 GameState* initGame();
+void resetGameState(GameState* gameState);
 void gameManager_loadDeck(GameState* gameState, char filePath[100]);
 void gameManager_revealDeck(GameState* gameState);
 void gameManager_splitDeck(GameState* gameState, int splitIndex);
