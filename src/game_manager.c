@@ -250,6 +250,7 @@ void gameManager_quitProgram(GameState* gameState) {
         strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
         return;
     }
+    gameState->gameOver = true;
 
 }
 void gameManager_enterPlayMode(GameState* gameState) {
@@ -439,14 +440,10 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
 
 }
 bool gameManager_isGameOver(GameState* gameState) {
-    for (int i = 0; i < PILES_SIZE; i++) {
-        Node* tmp = gameState->cardFoundationPiles[i]->head;
-        if (tmp == NULL || ((Card*)tmp->data)->rank != KING) {
-            return false;
-        }
-    }
-    return true;
+    return gameState->gameOver;
 }
+
+
 void gameManager_Save(GameState* gameState, char filepath[100]) {
     FILE* file = fopen(filepath, "w");
     if (!file) {
@@ -472,4 +469,14 @@ void gameManager_Save(GameState* gameState, char filepath[100]) {
 
         }
     }
+}
+
+bool gameManager_isGameWon(GameState* gameState) {
+    for (int i = 0; i < PILES_SIZE; i++) {
+        Node* tmp = gameState->cardFoundationPiles[i]->head;
+        if (tmp == NULL || ((Card*)tmp->data)->rank != KING) {
+            return false;
+        }
+    }
+    return true;
 }
