@@ -449,7 +449,7 @@ bool gameManager_isGameOver(GameState* gameState) {
 }
 
 
-void gameManager_Save(GameState* gameState, char filepath[100]) {
+/*void gameManager_Save(GameState* gameState, char filepath[100]) {
     FILE* file = fopen(filepath, "w");
     if (!file) {
         strcpy(gameState->lastResponse, ("Error creating file"));
@@ -484,4 +484,4 @@ bool gameManager_isGameWon(GameState* gameState) {
         }
     }
     return true;
-}
+}*/
