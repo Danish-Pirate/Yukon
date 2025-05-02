@@ -26,17 +26,18 @@ typedef struct {
     char lastResponse[20];
 } GameState;
 
-GameState* initGame();
-void gameManager_loadDeck(GameState* gameState, char filePath[100]);
-void gameManager_revealDeck(GameState* gameState);
-void gameManager_splitDeck(GameState* gameState, int splitIndex);
-void gameManager_randomShuffleDeck(GameState* gameState);
-void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]);
-void gameManager_quitProgram(GameState* gameState);
-void gameManager_enterPlayMode(GameState* gameState);
-void gameManager_exitPlayMode(GameState* gameState);
-void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
-bool gameManager_isGameOver(GameState* gameState);
+void gameManager_initGame();
+GameState* gameManager_getGameState();
+void gameManager_loadDeck(char filePath[100]);
+void gameManager_revealDeck();
+void gameManager_splitDeck(int splitIndex);
+void gameManager_randomShuffleDeck();
+void gameManager_saveDeckToFile(char filepath[100]);
+void gameManager_quitProgram();
+void gameManager_enterPlayMode();
+void gameManager_exitPlayMode();
+void gameManager_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
+bool gameManager_isGameOver();
 
 
 #endif //YUKON_CARDGAME_GAME_MANAGER_H

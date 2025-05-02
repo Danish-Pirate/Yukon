@@ -3,6 +3,7 @@
 //
 
 #include "card.h"
+#include "SDL_rect.h"
 #include <stddef.h>
 #ifndef YUKON_CARDGAME_UTIL_H
 #define YUKON_CARDGAME_UTIL_H
@@ -31,6 +32,7 @@ Node* getNode(LinkedList* list, unsigned int index);
 Node* getLastNode(LinkedList* list);
 void freeList(LinkedList* list);
 void freeListExcludeData(LinkedList* list);
+bool isPointWithinRect(int x, int y, SDL_Rect rect);
 // #################
 
 #endif //YUKON_CARDGAME_UTIL_H

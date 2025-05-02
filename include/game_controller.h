@@ -1,10 +1,10 @@
-//
-// Created by danish on 3/26/25.
-//
+#pragma once
 
-#ifndef YUKON_CARDGAME_GAME_CONTROLLER_H
-#define YUKON_CARDGAME_GAME_CONTROLLER_H
+// Screen dimensions for positioning
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+#define FPS 60
 
 void gameLoop();
+void gameInit();
 
-#endif //YUKON_CARDGAME_GAME_CONTROLLER_H

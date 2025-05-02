@@ -6,25 +6,38 @@ set(SRC src)
 
 set(GAME_SOURCES
         ${SRC}/card.c
-        ${SRC}/game_view.c
         ${SRC}/game_manager.c
         ${SRC}/game_controller.c
-        ${SRC}/command_parser.c
         ${SRC}/card_deck.c
         ${SRC}/game_utils.c
+        ${SRC}/scene_manager.c
+        ${SRC}/play_scene.c
+        ${SRC}/startup_scene.c
+        ${SRC}/texture_manager.c
+        ${SRC}/ui_card.c
+        ${SRC}/ui_button.c
 )
 
 # Set runtime and library output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-# This assumes the SDL source is available in vendored/SDL
+# Add SDL2 as a subdirectory
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 
+# Add SDL_ttf as a subdirectory
+add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+
 # Create main executable
-add_executable(Yukon_Cardgame ${SRC}/main.c ${GAME_SOURCES})
+if(WIN32)
+    add_executable(Yukon_Cardgame WIN32 ${SRC}/main.c ${GAME_SOURCES})
+else()
+    add_executable(Yukon_Cardgame ${SRC}/main.c ${GAME_SOURCES})
+endif()
+
 target_include_directories(Yukon_Cardgame PRIVATE include)
-target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2)
+# Link against both SDL2 and SDL2_ttf
+target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 
 # Do you want tests?
 option(BUILD_TESTS "Build with CUnit tests" OFF)

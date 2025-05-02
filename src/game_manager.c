@@ -9,8 +9,14 @@
 #include <string.h>
 #include <time.h>
 
-GameState* initGame() {
-    GameState* gameState = calloc(1,sizeof(GameState));
+static GameState* gameState = NULL;
+
+GameState* gameManager_getGameState() {
+    return gameState;
+}
+
+void gameManager_initGame() {
+    gameState = calloc(1,sizeof(GameState));
 
     gameState->gamePhase = StartupPhase;
     gameState->deck = createDeck();
@@ -24,11 +30,9 @@ GameState* initGame() {
     }
 
     gameState->gameOver = false;
-
-    return gameState;
 }
 
-void gameManager_loadDeck(GameState* gameState, char filePath[]) {
+void gameManager_loadDeck(char filePath[]) {
     if (filePath == NULL){ //regner med at jeg får filepath som NULL, men kan også ændres til en tom streng
         gameState->deck = createDeck();
         return;
@@ -73,7 +77,7 @@ void gameManager_loadDeck(GameState* gameState, char filePath[]) {
 
     fclose(file);
 }
-void gameManager_revealDeck(GameState* gameState) {
+void gameManager_revealDeck() {
     Node* current = gameState->deck->head;
     // Display error if deck is empty
     if (current == NULL){
@@ -89,7 +93,7 @@ void gameManager_revealDeck(GameState* gameState) {
 
 // Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
 // and puts the remaining cards at the bottom
-void gameManager_splitDeck(GameState* gameState, int splitIndex) {
+void gameManager_splitDeck(int splitIndex) {
     // Assume splitIndex is valid??
 
     // If splitIndex is invalid, generate a random number between 1-51
@@ -134,11 +138,11 @@ void gameManager_splitDeck(GameState* gameState, int splitIndex) {
     gameState->deck = splitDeck;
 
 }
-void gameManager_randomShuffleDeck(GameState* gameState) {
+void gameManager_randomShuffleDeck() {
 
 
 }
-void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
+void gameManager_saveDeckToFile(char filePath[]) {
     FILE* file;
     if (filePath == NULL) file = fopen("cards.txt", "w");
     else file = fopen(filePath, "w");
@@ -162,10 +166,10 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
 
     fclose(file);
 }
-void gameManager_quitProgram(GameState* gameState) {
+void gameManager_quitProgram() {
 
 }
-void gameManager_enterPlayMode(GameState* gameState) {
+void gameManager_enterPlayMode() {
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
     unsigned int stackLengths[] = {0,0,0,0,0,0,0};
@@ -189,12 +193,12 @@ void gameManager_enterPlayMode(GameState* gameState) {
     }
     gameState->gamePhase = PlayPhase;
 }
-void gameManager_exitPlayMode(GameState* gameState) {
+void gameManager_exitPlayMode() {
 
 }
-void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
+void gameManager_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
 
 }
-bool gameManager_isGameOver(GameState* gameState) {
+bool gameManager_isGameOver() {
     return false;
 }

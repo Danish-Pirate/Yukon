@@ -1,65 +1,91 @@
-//
-// Created by danish on 3/26/25.
-//
+#include "SDL.h"
 #include <stdio.h>
+#include "scene_manager.h" // For scene management
+#include "game_manager.h"   // For game state and logic
+#include "texture_manager.h" // For texture management
 #include "game_controller.h"
-#include "game_view.h"
-#include "game_manager.h"
-#include "command_parser.h"
+#include "SDL_ttf.h"
 
-void processInput(GameState* gameState) {
-    Command command = getCommandInput();
-    switch(command.type) {
-        case CMD_LD: {
-            char* filePath = command.ld.filePath;
-            gameManager_loadDeck(gameState, filePath);
-            break;
-        }
-        case CMD_SW:
-            gameManager_revealDeck(gameState);
-            break;
-        case CMD_SI: {
-            gameManager_splitDeck(gameState, command.si.splitIndex);
-            break;
-        }
-        case CMD_SR:
-            gameManager_randomShuffleDeck(gameState);
-            break;
-        case CMD_SD: {
-            char* filePath = command.sd.filepath;
-            gameManager_saveDeckToFile(gameState, filePath);
-            break;
-        }
-        case CMD_QQ:
-            gameManager_quitProgram(gameState);
-            break;
-        case CMD_P:
-            gameManager_enterPlayMode(gameState);
-            break;
-        case CMD_Q:
-            gameManager_exitPlayMode(gameState);
-            break;
-        case CMD_MV: {
-            Rank rank = command.mv.rank;
-            Suit suit = command.mv.suit;
-            int fromColumnIndex = command.mv.fromColumnIndex;
-            int toColumnIndex = command.mv.toColumnIndex;
-            gameManager_moveCard(gameState, rank, suit, fromColumnIndex, toColumnIndex);
-            break;
-        }
-        default:
-            break;
+void gameInit() {
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
+
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return; // Handle error
     }
+
+    // Initialize SDL_ttf
+    if (TTF_Init() == -1) {
+        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        return; // Handle error
+    }
+
+    // Create window
+    window = SDL_CreateWindow("Yukon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                              SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_MAXIMIZED);
+    if (window == NULL) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return; // Handle error
+    }
+
+    // Create renderer
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        return; // Handle error
+    }
+
+    // Initialize the Scene Manager
+    sceneManager_init(window, renderer);
+
+    // Initialize texture manager
+    textureManager_init();
+
+    // Initialize game state
+    gameManager_initGame();
+
+    // Start with the startup scene
+    sceneManager_changeScene(SCENE_STARTUP_MODE, 0);
+}
+
+void gameQuit() {
+    // Clean up textures
+    textureManager_cleanup();
+
+    // Clean up the scene manager resources
+    sceneManager_cleanup();
 }
 
 void gameLoop() {
-    GameState* gameState = initGame();
-    initView();
+    bool quit = false;
+    SDL_Event event;
 
-    while (!gameManager_isGameOver(gameState)) {
-        updateView(gameState);
-        processInput(gameState);
+    const int frameDelay = 1000 / FPS;
+
+    // Main game loop
+    while (!quit) {
+        Uint32 frameStart = SDL_GetTicks();
+
+        // Handle events
+        while (SDL_PollEvent(&event) != 0) {
+            if (event.type == SDL_QUIT) {
+                quit = true;
+            }
+            sceneManager_handleEvents(&event);
+        }
+
+        // Update and render
+        sceneManager_update();
+        sceneManager_render();
+
+        // Frame rate cap
+        Uint32 frameTime = SDL_GetTicks() - frameStart;
+        if (frameTime < frameDelay) {
+            SDL_Delay(frameDelay - frameTime);
+        }
     }
+
+    gameQuit();
 }
-
-
