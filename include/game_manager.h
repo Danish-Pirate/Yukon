@@ -27,6 +27,7 @@ typedef struct {
 } GameState;
 
 GameState* initGame();
+GameState* gameManager_getGameState();
 void resetGameState(GameState* gameState);
 void gameManager_loadDeck(GameState* gameState, char filePath[100]);
 void gameManager_revealDeck(GameState* gameState);

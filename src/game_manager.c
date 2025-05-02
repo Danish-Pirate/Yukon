@@ -9,13 +9,17 @@
 #include <string.h>
 #include <time.h>
 
-GameState* initGame() {
+static GameState* gameState = NULL;
+
+GameState* gameManager_getGameState() {
+    return gameState;
+}
+
+void initGame() {
     srand(time(NULL)); //for random number generation in the gameManager_randomShuffleDeck function
     GameState* gameState = malloc(sizeof(GameState));
 
     resetGameState(gameState);
-
-    return gameState;
 }
 
 void resetGameState(GameState* gameState){
