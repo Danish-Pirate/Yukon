@@ -1,9 +1,7 @@
-//
-// Created by danish on 3/27/25.
-//
+
 
 #include "card.h"
-#include "SDL_rect.h"
+#include <SDL_rect.h>
 #include <stddef.h>
 #ifndef YUKON_CARDGAME_UTIL_H
 #define YUKON_CARDGAME_UTIL_H

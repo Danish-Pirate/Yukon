@@ -1,6 +1,3 @@
-//
-// Created by danish on 3/26/25.
-//
 #include "card.h"
 #include "game_utils.h"
 
@@ -26,7 +23,7 @@ typedef struct {
     char lastResponse[50];
 } GameState;
 
-GameState* initGame();
+void initGame();
 GameState* gameManager_getGameState();
 void resetGameState(GameState* gameState);
 void gameManager_loadDeck(GameState* gameState, char filePath[100]);

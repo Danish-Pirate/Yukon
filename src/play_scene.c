@@ -1,10 +1,12 @@
-#include "SDL.h"
+#include <SDL.h>
+#include <stdio.h>
 #include "scene_manager.h"
 #include "game_manager.h"
 #include "ui_card.h"
 #include "game_controller.h"
 #include "play_scene.h"
 #include "game_utils.h"
+#include "ui_button.h"
 
 typedef struct {
     bool isDragging;
@@ -17,6 +19,7 @@ typedef struct {
 } DragState;
 
 static DragState dragState = {0};
+static UI_Button backButton;
 
 static bool tryStartDragging(int mouseX, int mouseY) {
     GameState* gameState = gameManager_getGameState();
@@ -89,30 +92,62 @@ static void updateDragPosition(int mouseX, int mouseY) {
 }
 
 static void handleDrop(int mouseX, int mouseY) {
-    // Find which column the mouse is over
+    // Variables to track drop target
+    int targetFoundation = -1;
     int targetColumn = -1;
-    for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
-        SDL_Rect colRect = {
-                .x = COLUMN_X_START + (colIdx * COLUMN_X_SPACING),
-                .y = COLUMN_Y_START,
+    GameState* gameState = gameManager_getGameState();
+
+    // Check foundation piles first
+    for (int i = 0; i < PILES_SIZE; i++) {
+        SDL_Rect foundRect = {
+                .x = FOUNDATION_X_START,
+                .y = FOUNDATION_Y + (i * (FOUNDATION_Y_SPACING + CARD_DISPLAY_HEIGHT)),
                 .w = CARD_DISPLAY_WIDTH,
-                .h = CARD_DISPLAY_HEIGHT * 5  // Extend the drop area
+                .h = CARD_DISPLAY_HEIGHT
         };
 
-        if (isPointWithinRect(mouseX, mouseY, colRect)) {
-            targetColumn = colIdx;
+        if (isPointWithinRect(mouseX, mouseY, foundRect)) {
+            targetFoundation = i;
             break;
         }
     }
 
-    // If dropped on a valid column and not the same column
-    if (targetColumn != -1 && targetColumn != dragState.sourceColumnIndex) {
-        // Get the first card in the chain
-        Card* firstCard = (Card*)dragState.selectedNode->data;
+    // Process foundation drop
+    if (targetFoundation != -1) {
+        // Only allow drops if dragging from a column
+        if (dragState.sourceColumnIndex < COLUMNS_SIZE) {
+            Card* card = (Card*)dragState.selectedNode->data;
 
-        // Move the card and all cards below it
-        gameManager_moveCard(firstCard->rank, firstCard->suit,
-                                  dragState.sourceColumnIndex, targetColumn);
+            // Make sure we're dragging exactly one card (foundation only takes single cards)
+            if (dragState.cardCount == 1) {
+                // Foundation index is column index + COLUMNS_SIZE
+                int foundationIndex = targetFoundation + COLUMNS_SIZE;
+
+                // Move the card to the foundation
+                gameManager_moveCard(gameState, card->rank, card->suit,
+                                     dragState.sourceColumnIndex, foundationIndex);
+            }
+        }
+    }
+    else {
+        // Check columns (keeping the original column detection code)
+        for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
+            int colX = COLUMN_X_START + (colIdx * COLUMN_X_SPACING);
+
+            if (mouseX >= colX && mouseX <= colX + CARD_DISPLAY_WIDTH) {
+                if (mouseY >= COLUMN_Y_START) {
+                    targetColumn = colIdx;
+                    break;
+                }
+            }
+        }
+
+        if (targetColumn != -1 && targetColumn != dragState.sourceColumnIndex) {
+            Card* firstCard = (Card*)dragState.selectedNode->data;
+
+            gameManager_moveCard(gameState, firstCard->rank, firstCard->suit,
+                                 dragState.sourceColumnIndex, targetColumn);
+        }
     }
 
     // Reset drag state
@@ -221,13 +256,35 @@ static void drawColumns() {
     }
 }
 
+static void backToStartupCallback() {
+    gameManager_exitPlayMode(gameManager_getGameState());
+    sceneManager_changeScene(SCENE_STARTUP_MODE, NULL);
+}
+
 void playScene_init(void* data) {
-    gameManager_enterPlayMode();
+    gameManager_enterPlayMode(gameManager_getGameState());
+
+    // Create the back button
+    int buttonHeight = 60;
+    int buttonY = SCREEN_HEIGHT - buttonHeight - 200; // Match startup scene button height
+
+    backButton.callback = backToStartupCallback;
+    backButton.displayRect.x = (SCREEN_WIDTH - 150) / 2;  // Center horizontally
+    backButton.displayRect.y = buttonY;                   // Same height as startup scene buttons
+    backButton.displayRect.w = 150;                       // Width
+    backButton.displayRect.h = buttonHeight;              // Height
+    backButton.label = "Back";
 }
 
 void playScene_handleEvent(SDL_Event* event) {
     // Handle card dragging based on event type
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
+        // Check if the back button was clicked
+        if (isButtonHovered(event->button.x, event->button.y, backButton.displayRect)) {
+            backButton.callback();
+            return;
+        }
+
         tryStartDragging(event->button.x, event->button.y);
     }
     else if (event->type == SDL_MOUSEMOTION && dragState.isDragging) {
@@ -255,6 +312,9 @@ void playScene_render() {
 
     // Draw the 7 columns
     drawColumns();
+
+    // Draw the back button
+    drawButton(backButton);
 
     // Draw border
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White

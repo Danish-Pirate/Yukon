@@ -1,7 +1,8 @@
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 #include "scene_manager.h"
 #include "ui_button.h"
 #include "game_utils.h"
+#include <stdio.h>
 
 static TTF_Font* buttonFont = NULL;
 
@@ -18,7 +19,7 @@ void drawButton(UI_Button button) {
     SDL_Renderer* renderer = getRenderer();
 
     // Draw button background
-    SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderFillRect(renderer, &button.displayRect);
 
     // Draw button border

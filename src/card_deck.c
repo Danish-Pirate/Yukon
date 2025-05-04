@@ -7,12 +7,16 @@
 
 LinkedList* createDeck() {
     LinkedList* deck = createList(sizeof(Card));
+    if (deck == NULL) {
+        return NULL;
+    }
 
-    // Generate deck in reverse order, since it is built like a stack
     for (int suit = CLUBS; suit <= SPADES; suit++) {
         for (int rank = ACE; rank <= KING; rank++) {
             Card* card = createCard(suit, rank, false);
-            addNodeToBack(deck, card);
+            if (card != NULL) {
+                addNodeToBack(deck, card);
+            }
         }
     }
     return deck;

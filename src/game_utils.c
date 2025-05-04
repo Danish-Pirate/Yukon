@@ -1,6 +1,4 @@
-//
-// Created by danish on 3/27/25.
-//
+
 #include <stddef.h>
 #include <string.h>
 #include "game_utils.h"
@@ -106,30 +104,36 @@ void addNodeToBack(LinkedList* list, void* data) {
     list->tail = newNode;
 }
 
-// Move start node and subsequent nodes from srcList to tail of dstList
-void spliceList(LinkedList* srcList,LinkedList* dstList, Node* start){
+void spliceList(LinkedList* srcList, LinkedList* dstList, Node* start) {
+    // Save the tail of the sequence being moved
+    Node* movedTail = srcList->tail;
 
-    // Cut start node from srcList
-    if (srcList->head == start) {
+    // Handle removal from source list
+    if (start == srcList->head) {
+        // Moving from head of source list
         srcList->head = NULL;
-    }
-    else {
+        srcList->tail = NULL; // Important! Set tail to NULL for empty list
+    } else {
+        // Moving from middle/end of source list
         start->prevNode->nextNode = NULL;
+        srcList->tail = start->prevNode;
     }
-    Node* dstListNewTail = srcList->tail;
-    srcList->tail = start->prevNode;
+
+    // Detach chain from previous node
     start->prevNode = NULL;
 
-    // Join startNode to end of dstList
+    // Attach to destination list
     if (dstList->head == NULL) {
+        // Empty destination list
         dstList->head = start;
+    } else {
+        // Non-empty destination list
+        dstList->tail->nextNode = start;
+        start->prevNode = dstList->tail;
     }
-    else {
-        Node* dstListTail = dstList->tail;
-        dstListTail->nextNode = start;
-        start->prevNode = dstListTail;
-    }
-    dstList->tail = dstListNewTail;
+
+    // Update destination tail
+    dstList->tail = movedTail;
 }
 
 Node* getNode(LinkedList* list, unsigned int index) {

@@ -1,10 +1,10 @@
-#include "SDL.h"
+#include <SDL.h>
 #include <stdio.h>
+#include <SDL_ttf.h>
 #include "scene_manager.h" // For scene management
 #include "game_manager.h"   // For game state and logic
 #include "texture_manager.h" // For texture management
 #include "game_controller.h"
-#include "SDL_ttf.h"
 
 void gameInit() {
     SDL_Window* window = NULL;
@@ -24,7 +24,7 @@ void gameInit() {
 
     // Create window
     window = SDL_CreateWindow("Yukon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                              SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_MAXIMIZED);
+                              SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE);
     if (window == NULL) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return; // Handle error
@@ -44,7 +44,7 @@ void gameInit() {
     textureManager_init();
 
     // Initialize game state
-    gameManager_initGame();
+    initGame();
 
     // Start with the startup scene
     sceneManager_changeScene(SCENE_STARTUP_MODE, 0);

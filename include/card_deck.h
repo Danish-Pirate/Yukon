@@ -1,6 +1,3 @@
-//
-// Created by danish on 3/25/25.
-//
 #include "card.h"
 #include "game_utils.h"
 

@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include <SDL.h>
 #include "scene_manager.h"
 #include "texture_manager.h"
 #include "game_controller.h"
@@ -47,11 +47,11 @@ void loadDeckCallback() {
 }
 
 void revealDeckCallback() {
-    gameManager_revealDeck();
+    gameManager_revealDeck(gameManager_getGameState());
 }
 
 void shuffleDeckCallback() {
-    gameManager_randomShuffleDeck();
+    gameManager_randomShuffleDeck(gameManager_getGameState());
 }
 
 void startupScene_init(void* data) {

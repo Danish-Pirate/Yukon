@@ -12,14 +12,22 @@
 static GameState* gameState = NULL;
 
 GameState* gameManager_getGameState() {
+    if (gameState == NULL) {
+        fprintf(stderr, "Game state not initialized\n");
+        return NULL;
+    }
     return gameState;
 }
 
 void initGame() {
-    srand(time(NULL)); //for random number generation in the gameManager_randomShuffleDeck function
-    GameState* gameState = malloc(sizeof(GameState));
-
+    srand(time(NULL));
+    gameState = malloc(sizeof(GameState));  // Assign to the static variable
+    if (gameState == NULL) {
+        fprintf(stderr, "Failed to allocate memory for gameState\n");
+        exit(1);
+    }
     resetGameState(gameState);
+    gameManager_loadDeck(gameState, "");
 }
 
 void resetGameState(GameState* gameState){
