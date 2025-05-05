@@ -11,11 +11,11 @@ GameState *initGame() {
         fprintf(stderr, "Failed to allocate memory for gameState\n");
         exit(1);
     }
-    resetGameState(gameState);
+    resetGame(gameState);
     loadDeckFromFile(&gameState->deck, "createDeckFile.txt");
     return gameState;
 }
-void resetGameState(GameState* gameState){
+void resetGame(GameState* gameState){
     memset(gameState, 0, sizeof(GameState));
     gameState->gamePhase = StartupPhase;
     for (int i = 0; i < COLUMNS_SIZE; ++i) {
@@ -26,7 +26,7 @@ void resetGameState(GameState* gameState){
     }
     gameState->gameWon = false;
 }
-void gameManager_quitProgram(GameState* gameState) {
+void quitGame(GameState* gameState) {
     // Check that player is in the startup phase
     if (gameState->gamePhase != StartupPhase){
         strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
@@ -35,7 +35,7 @@ void gameManager_quitProgram(GameState* gameState) {
     gameState->gameWon = true;
 
 }
-void gameManager_enterPlayMode(GameState* gameState) {
+void enterPlayMode(GameState* gameState) {
     // Check that player is in the startup phase
     if (gameState->gamePhase != StartupPhase){
         strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
@@ -72,7 +72,7 @@ void gameManager_enterPlayMode(GameState* gameState) {
     gameState->gamePhase = PlayPhase;
     strcpy(gameState->lastResponse, "OK");
 }
-void gameManager_exitPlayMode(GameState* gameState) {
+void exitPlayMode(GameState* gameState) {
     if (gameState->gamePhase != PlayPhase){
         strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
         return;
@@ -84,14 +84,14 @@ void gameManager_exitPlayMode(GameState* gameState) {
     char lastCommand[100];
     strcpy(lastCommand, gameState->lastCommand);
     // Set all cards to face down
-    resetGameState(gameState);
+    resetGame(gameState);
     // Set deck pointer to stored deck
     gameState->deck = deck;
     strcpy(gameState->lastCommand, lastCommand);
     strcpy(gameState->lastResponse, "OK");
 
 }
-void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
+void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
     if (gameState->gamePhase != PlayPhase){
         strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
         return;
@@ -252,7 +252,7 @@ bool gameManager_isGameOver(GameState* gameState) {
     }
 }
 */
-void gameManager_isGameWon(GameState* gameState) {
+void isGameWon(GameState* gameState) {
     gameState->gameWon = true;
 
     for (int i = 0; i < PILES_SIZE; i++) {

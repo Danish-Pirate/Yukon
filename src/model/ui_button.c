@@ -1,7 +1,7 @@
 #include <SDL_ttf.h>
 #include "scene_manager.h"
 #include "ui_button.h"
-#include "game_utils.h"
+#include "../utils/game_utils.h"
 #include <stdio.h>
 
 static TTF_Font* buttonFont = NULL;

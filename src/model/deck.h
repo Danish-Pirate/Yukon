@@ -1,7 +1,7 @@
 #pragma once
 
 #include "card.h"
-#include "game_utils.h"
+#include "../utils/game_utils.h"
 #include "../utils/linked_list.h"
 
 typedef enum DeckLoadResult {

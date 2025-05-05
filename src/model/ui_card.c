@@ -4,7 +4,7 @@
 #include "ui_card.h"
 #include "scene_manager.h"
 #include "texture_manager.h"
-#include "game_utils.h"
+#include "../utils/game_utils.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)
 #define FACEDOWN_CARD_TEXCOORDS_Y (CARD_HEIGHT * 4)

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "deck.h"
-#include "game_utils.h"
+#include "../utils/game_utils.h"
 #include "game.h"
 
 DeckLoadResult loadDeckFromFile(LinkedList **deck, char filePath[]) {

@@ -9,7 +9,7 @@
 #include "model/game.h"
 #include "model/ui_button.h"
 #include "nfd.h"
-#include "game_utils.h"
+#include "utils/game_utils.h"
 #include "SDL_ttf.h"
 
 static UI_Button UI_Buttons[12];

@@ -1,15 +1,14 @@
-#include <stdlib.h>
 #include "scene_manager.h"
 #include "startup_scene.h"
 #include "model/ui_button.h"
 #include "play_scene.h"
-#include "nfd.h"
+#include <nfd.h>
 
 // Static variables for scene management
 static SDL_Renderer* renderer = NULL;
 static SDL_Window* window = NULL;
 static Scene* currentScene = NULL;
-static Scene sceneRegistry[2]; // Array to hold scene definitions
+static Scene sceneRegistry[2];
 
 SDL_Renderer* getRenderer() {
     return renderer;
@@ -18,6 +17,19 @@ SDL_Renderer* getRenderer() {
 SDL_Window * getWindow() {
     return window;
 }
+
+void sceneManager_handleSceneChangeEvent(Event* event) {
+    if (event->type != EVENT_SCENE_CHANGE) return;
+
+    SceneChangeData* data = (SceneChangeData*)event->data;
+    sceneManager_changeScene(data->type, data->data);
+    free(data);
+}
+
+void sceneManager_subscribeToEvents() {
+    eventSystem_subscribe(EVENT_SCENE_CHANGE, sceneManager_handleSceneChangeEvent);
+}
+
 
 void sceneManager_init(SDL_Window* _window, SDL_Renderer* _renderer) {
     window = _window;
@@ -43,6 +55,9 @@ void sceneManager_init(SDL_Window* _window, SDL_Renderer* _renderer) {
     };
 
     initButtonFont();
+
+    eventSystem_init();
+    sceneManager_subscribeToEvents();
 }
 
 void sceneManager_cleanup() {

@@ -1,7 +1,7 @@
 
 
-#include "../src/model/card.h"
-#include <SDL_rect.h>
+#include "../model/card.h"
+#include "SDL_rect.h"
 #include <stddef.h>
 #ifndef YUKON_CARDGAME_UTIL_H
 #define YUKON_CARDGAME_UTIL_H

@@ -5,7 +5,7 @@
 #include "model/ui_card.h"
 #include "controller/game_controller.h"
 #include "play_scene.h"
-#include "game_utils.h"
+#include "utils/game_utils.h"
 #include "model/ui_button.h"
 #include "SDL_ttf.h"
 
@@ -389,8 +389,13 @@ static void drawColumns() {
 }
 
 static void backToStartupCallback() {
-    gameManager_exitPlayMode(gameManager_getGameState());
-    sceneManager_changeScene(SCENE_STARTUP_MODE, NULL);
+
+    eventSystem_publish(EVENT_PLAY_MODE_EXIT, NULL);
+
+    SceneChangeData* data = malloc(sizeof(SceneChangeData));
+    data->type = SCENE_STARTUP_MODE;
+    data->data = NULL;
+    eventSystem_publish(EVENT_SCENE_CHANGE, data);
 }
 
 void playScene_init(void* data) {

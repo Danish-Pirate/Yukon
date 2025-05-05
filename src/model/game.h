@@ -1,9 +1,8 @@
-#include "card.h"
-#include "game_utils.h"
-#include "../utils/linked_list.h"
+#pragma once
 
-#ifndef YUKON_CARDGAME_GAME_MANAGER_H
-#define YUKON_CARDGAME_GAME_MANAGER_H
+#include "card.h"
+#include "../utils/game_utils.h"
+#include "../utils/linked_list.h"
 
 #define DECK_SIZE 52 // Size of card deck
 #define COLUMNS_SIZE 7  // Number of card columns
@@ -25,14 +24,9 @@ typedef struct {
 } GameState;
 
 GameState *initGame();
-void resetGameState(GameState* gameState);
-void gameManager_randomShuffleDeck(GameState* gameState);
-void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]);
-void gameManager_quitProgram(GameState* gameState);
-void gameManager_enterPlayMode(GameState* gameState);
-void gameManager_exitPlayMode(GameState* gameState);
-void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
-void gameManager_isGameWon(GameState* gameState);
-
-
-#endif //YUKON_CARDGAME_GAME_MANAGER_H
+void resetGame(GameState* gameState);
+void quitGame(GameState* gameState);
+void enterPlayMode(GameState* gameState);
+void exitPlayMode(GameState* gameState);
+void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
+void isGameWon(GameState* gameState);

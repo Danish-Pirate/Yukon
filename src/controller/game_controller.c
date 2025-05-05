@@ -1,15 +1,41 @@
-#include "SDL.h"
+// src/controller/game_controller.c
+#include <SDL.h>
 #include <stdio.h>
-#include "scene_manager.h" // For scene management
-#include "../model/game.h"   // For game state and logic
-#include "texture_manager.h" // For texture management
 #include "game_controller.h"
+#include "scene_manager.h"
+#include "texture_manager.h"
 #include "nfd.h"
+#include "../utils/event_system.h"
 
-void gameInit() {
+// Private game state
+static GameState* gameState = NULL;
+
+// Event handlers
+static void handleSceneChangeEvent(Event* event);
+static void handlePlayModeEnterEvent(Event* event);
+static void handlePlayModeExitEvent(Event* event);
+static void handleCardMovedEvent(Event* event);
+static void handleGameWonEvent(Event* event);
+static void handleDeckShuffledEvent(Event* event);
+
+static void subscribeToEvents() {
+    eventSystem_subscribe(EVENT_SCENE_CHANGE, handleSceneChangeEvent);
+    eventSystem_subscribe(EVENT_PLAY_MODE_ENTER, handlePlayModeEnterEvent);
+    eventSystem_subscribe(EVENT_PLAY_MODE_EXIT, handlePlayModeExitEvent);
+    eventSystem_subscribe(EVENT_CARD_MOVED, handleCardMovedEvent);
+    eventSystem_subscribe(EVENT_GAME_WON, handleGameWonEvent);
+    eventSystem_subscribe(EVENT_DECK_SHUFFLED, handleDeckShuffledEvent);
+}
+
+// Initialize the game
+void gameController_init() {
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
 
+    // Initialize event system
+    eventSystem_init();
+
+    // Create window
     window = SDL_CreateWindow("Yukon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE);
     if (window == NULL) {
@@ -24,28 +50,27 @@ void gameInit() {
         return;
     }
 
-    // Initialize the Scene Manager
+    // Initialize scene manager
     sceneManager_init(window, renderer);
 
     // Initialize texture manager
     textureManager_init();
 
     // Initialize game state
-    initGame();
+    gameState = initGame();
 
-    // Start with the startup scene
-    sceneManager_changeScene(SCENE_STARTUP_MODE, 0);
+    // Subscribe to events
+    subscribeToEvents();
+
+    SceneChangeData* data = malloc(sizeof(SceneChangeData));
+    data->type = SCENE_STARTUP_MODE;
+    data->data = NULL;
+
+    eventSystem_publish(EVENT_SCENE_CHANGE, data);
 }
 
-void gameQuit() {
-    // Clean up textures
-    textureManager_cleanup();
-
-    // Clean up the scene manager resources
-    sceneManager_cleanup();
-}
-
-void gameLoop() {
+// Game loop
+void gameController_loop() {
     bool quit = false;
     SDL_Event event;
 
@@ -74,5 +99,88 @@ void gameLoop() {
         }
     }
 
-    gameQuit();
+    gameController_cleanup();
+}
+
+// Cleanup resources
+void gameController_cleanup() {
+    // Clean up event system
+    eventSystem_cleanup();
+
+    // Clean up textures
+    textureManager_cleanup();
+
+    // Clean up the scene manager resources
+    sceneManager_cleanup();
+
+    // Clean up game state
+    if (gameState != NULL) {
+        // Free game state memory
+        free(gameState);
+        gameState = NULL;
+    }
+}
+
+// Event handler implementations
+static void handleSceneChangeEvent(Event* event) {
+    if (event->type != EVENT_SCENE_CHANGE) return;
+
+    // This is handled by the scene manager, which should subscribe to this event
+    // No need to do anything here, just demonstrating the pattern
+}
+
+static void handlePlayModeEnterEvent(Event* event) {
+    if (event->type != EVENT_PLAY_MODE_ENTER) return;
+
+    enterPlayMode(gameState);
+}
+
+static void handlePlayModeExitEvent(Event* event) {
+    if (event->type != EVENT_PLAY_MODE_EXIT) return;
+
+    exitPlayMode(gameState);
+}
+
+static void handleCardMovedEvent(Event* event) {
+    if (event->type != EVENT_CARD_MOVED) return;
+
+    // Extract move data from event and call gameManager_moveCard
+    typedef struct {
+        Rank rank;
+        Suit suit;
+        int fromColumnIndex;
+        int toColumnIndex;
+    } CardMoveData;
+
+    CardMoveData* moveData = (CardMoveData*)event->data;
+
+    moveCard(gameState,
+                         moveData->rank,
+                         moveData->suit,
+                         moveData->fromColumnIndex,
+                         moveData->toColumnIndex);
+
+    free(moveData);
+
+    // Check if game is won after move
+    isGameWon(gameState);
+}
+
+static void handleGameWonEvent(Event* event) {
+    if (event->type != EVENT_GAME_WON) return;
+
+    // Handle game won - could trigger effects, sounds, etc.
+    printf("Game Won!\n");
+}
+
+static void handleDeckShuffledEvent(Event* event) {
+    if (event->type != EVENT_DECK_SHUFFLED) return;
+
+    // Handle deck shuffled - could trigger animations, etc.
+    printf("Deck Shuffled!\n");
+}
+
+// Game state accessor - this will eventually be replaced by events
+GameState* gameController_getGameState() {
+    return gameState;
 }
