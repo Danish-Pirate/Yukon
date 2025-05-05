@@ -230,36 +230,24 @@ void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
         return;
     }
 
-    FILE* file;
-    if (strcmp(filePath , "\0") == 0) file = fopen("cards.txt", "w");
-    else file = fopen(filePath, "w");
-
+    FILE* file = fopen(filePath, "w");
     if (!file) {
-        strcpy(gameState->lastResponse, ("Error creating file"));
+        strcpy(gameState->lastResponse, "Error creating file");
         strcpy(gameState->lastCommand, "SD");
         return;
     }
 
     Node* current = gameState->deck->head;
-
     while (current != NULL) {
         Card* card = (Card*)current->data;
-
-        char * line = cardToString(card);
-
+        char* line = cardToString(card);
         fprintf(file, "%s\n", line);
-
         current = current->nextNode;
     }
 
     fclose(file);
-
-
-
-
-    strcpy(gameState->lastResponse, ("OK"));
+    strcpy(gameState->lastResponse, "OK");
     strcpy(gameState->lastCommand, "SD");
-
 }
 void gameManager_quitProgram(GameState* gameState) {
     // Check that player is in the startup phase

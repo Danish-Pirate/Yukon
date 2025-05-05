@@ -5,10 +5,13 @@
 #include "game_manager.h"   // For game state and logic
 #include "texture_manager.h" // For texture management
 #include "game_controller.h"
+#include "nfd.h"
 
 void gameInit() {
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
+
+    NFD_Init();
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {

@@ -5,6 +5,7 @@
 #include "ui_card.h"
 #include "game_manager.h"
 #include "ui_button.h"
+#include "nfd.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -39,11 +40,19 @@ void playModeCallback() {
 }
 
 void saveDeckCallback() {
-
+    char* filePath = getSaveFilePathFromDialog();
+    if (filePath[0] == '\0') {
+        NFD_FreePathU8(filePath);
+        return;
+    }
+    gameManager_saveDeckToFile(gameManager_getGameState(), filePath);
+    NFD_FreePathU8(filePath);
 }
 
 void loadDeckCallback() {
-
+    char* filePath = getLoadFilePathFromDialog();
+    if (filePath[0] == '\0') { return; }
+    gameManager_loadDeck(gameManager_getGameState(), filePath);
 }
 
 void revealDeckCallback() {

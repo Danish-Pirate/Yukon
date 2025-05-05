@@ -3,6 +3,7 @@
 #include "startup_scene.h"
 #include "ui_button.h"
 #include "play_scene.h"
+#include "nfd.h"
 
 // Static variables for scene management
 static SDL_Renderer* renderer = NULL;
@@ -52,6 +53,7 @@ void sceneManager_cleanup() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    NFD_Quit();
 }
 
 void sceneManager_changeScene(SceneType sceneType, void* data) {

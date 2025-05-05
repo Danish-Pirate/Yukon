@@ -34,6 +34,8 @@ void freeList(LinkedList* list);
 void freeListExcludeData(LinkedList* list);
 void deleteNode(LinkedList* list, int index);
 bool isPointWithinRect(int x, int y, SDL_Rect rect);
+char* getLoadFilePathFromDialog();
+char* getSaveFilePathFromDialog();
 // #################
 
 #endif //YUKON_CARDGAME_UTIL_H

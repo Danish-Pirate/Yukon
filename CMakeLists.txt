@@ -24,6 +24,7 @@ set(SHARED_INCLUDES
         include
         vendored/SDL/include
         vendored/SDL_ttf/include
+        vendored/nativefiledialog-extended/include
 )
 
 # Output directories
@@ -33,6 +34,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 # Add SDL2 and SDL_ttf
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/nativefiledialog-extended EXCLUDE_FROM_ALL)
 
 # Create main game executable
 if(WIN32)
@@ -42,7 +44,7 @@ else()
 endif()
 
 target_include_directories(Yukon_Cardgame PRIVATE ${SHARED_INCLUDES})
-target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf nfd)
 
 # Test setup
 option(BUILD_TESTS "Build with CUnit tests" OFF)
@@ -53,7 +55,7 @@ if(BUILD_TESTS)
 
     add_executable(run_tests tests/test_main.c ${GAME_SOURCES})
     target_include_directories(run_tests PRIVATE ${SHARED_INCLUDES} ${CUNIT_INCLUDE_DIR})
-    target_link_libraries(run_tests PRIVATE ${CUNIT_LIBRARY} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+    target_link_libraries(run_tests PRIVATE ${CUNIT_LIBRARY} SDL2::SDL2 SDL2_ttf::SDL2_ttf nfd)
 
     enable_testing()
     add_test(NAME unit_tests COMMAND run_tests)
