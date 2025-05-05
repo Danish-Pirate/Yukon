@@ -25,7 +25,6 @@ void initGame() {
     }
     resetGameState(gameState);
     gameManager_loadDeck(gameState, "");
-    debugTestWinCondition();
 }
 
 void resetGameState(GameState* gameState){
