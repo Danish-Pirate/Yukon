@@ -1,8 +1,7 @@
-#include <SDL.h>
+#include "SDL.h"
 #include <stdio.h>
-#include <SDL_ttf.h>
 #include "scene_manager.h" // For scene management
-#include "game_manager.h"   // For game state and logic
+#include "../model/game.h"   // For game state and logic
 #include "texture_manager.h" // For texture management
 #include "game_controller.h"
 #include "nfd.h"
@@ -11,33 +10,18 @@ void gameInit() {
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
 
-    NFD_Init();
-
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return; // Handle error
-    }
-
-    // Initialize SDL_ttf
-    if (TTF_Init() == -1) {
-        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-        return; // Handle error
-    }
-
-    // Create window
     window = SDL_CreateWindow("Yukon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE);
     if (window == NULL) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        return; // Handle error
+        return;
     }
 
     // Create renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        return; // Handle error
+        return;
     }
 
     // Initialize the Scene Manager

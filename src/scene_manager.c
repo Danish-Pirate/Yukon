@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "scene_manager.h"
 #include "startup_scene.h"
-#include "ui_button.h"
+#include "model/ui_button.h"
 #include "play_scene.h"
 #include "nfd.h"
 

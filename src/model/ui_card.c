@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL.h"
 #include <stdio.h>
 #include "card.h"
 #include "ui_card.h"

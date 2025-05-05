@@ -1,6 +1,6 @@
 #include <Basic.h>
 #include <CUnit.h>
-#include "card_deck.h"
+#include "../src/model/deck.h"
 
 void test_load_card_deck() {
     CU_ASSERT_EQUAL(0, 1);

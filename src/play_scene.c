@@ -1,12 +1,12 @@
 #include <SDL.h>
 #include <stdio.h>
 #include "scene_manager.h"
-#include "game_manager.h"
-#include "ui_card.h"
-#include "game_controller.h"
+#include "model/game.h"
+#include "model/ui_card.h"
+#include "controller/game_controller.h"
 #include "play_scene.h"
 #include "game_utils.h"
-#include "ui_button.h"
+#include "model/ui_button.h"
 #include "SDL_ttf.h"
 
 typedef struct {

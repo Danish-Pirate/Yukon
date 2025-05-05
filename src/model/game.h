@@ -1,5 +1,6 @@
 #include "card.h"
 #include "game_utils.h"
+#include "../utils/linked_list.h"
 
 #ifndef YUKON_CARDGAME_GAME_MANAGER_H
 #define YUKON_CARDGAME_GAME_MANAGER_H
@@ -23,12 +24,8 @@ typedef struct {
     char lastResponse[50];
 } GameState;
 
-void initGame();
-GameState* gameManager_getGameState();
+GameState *initGame();
 void resetGameState(GameState* gameState);
-void gameManager_loadDeck(GameState* gameState, char filePath[100]);
-void gameManager_revealDeck(GameState* gameState);
-void gameManager_splitDeck(GameState* gameState, int splitIndex);
 void gameManager_randomShuffleDeck(GameState* gameState);
 void gameManager_saveDeckToFile(GameState* gameState, char filepath[100]);
 void gameManager_quitProgram(GameState* gameState);

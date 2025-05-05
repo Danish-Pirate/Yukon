@@ -1,32 +1,20 @@
 #include <stdlib.h>
-#include "game_manager.h"
-#include "card_deck.h"
+#include "game.h"
 #include "card.h"
+#include "deck.h"
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
-static GameState* gameState = NULL;
-
-GameState* gameManager_getGameState() {
-    if (gameState == NULL) {
-        fprintf(stderr, "Game state not initialized\n");
-        return NULL;
-    }
-    return gameState;
-}
-
-void initGame() {
-    srand(time(NULL));
-    gameState = malloc(sizeof(GameState));  // Assign to the static variable
+GameState *initGame() {
+    GameState *gameState = malloc(sizeof(GameState));
     if (gameState == NULL) {
         fprintf(stderr, "Failed to allocate memory for gameState\n");
         exit(1);
     }
     resetGameState(gameState);
-    gameManager_loadDeck(gameState, "");
+    loadDeckFromFile(&gameState->deck, "createDeckFile.txt");
+    return gameState;
 }
-
 void resetGameState(GameState* gameState){
     memset(gameState, 0, sizeof(GameState));
     gameState->gamePhase = StartupPhase;
@@ -37,214 +25,6 @@ void resetGameState(GameState* gameState){
         gameState->cardFoundationPiles[i] = createList(sizeof(Node));
     }
     gameState->gameWon = false;
-}
-
-void gameManager_loadDeck(GameState* gameState, char filePath[]) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-
-    if ( strcmp(filePath , "\0") == 0) {
-        filePath = "createDeckFile.txt";
-    }
-    FILE* file = fopen(filePath, "r");
-
-    if (!file) {
-        strcpy(gameState->lastResponse, ("Error opening file"));
-        strcpy(gameState->lastCommand, "LD");
-        return;
-    }
-
-    LinkedList* deck = createList(sizeof(Card));
-
-    int deckCheck[52] = {0};  // initialize array to all-zeros
-    int cardsAdded = 0;
-
-    char line[4]; // 2 characters + newline + null terminator
-    while (fgets(line, sizeof(line), file)) {
-        // Ignore lines that are too short
-        if (strlen(line) < 2) continue;
-
-        Rank rank = charToRank(line[0]);
-        Suit suit = charToSuit(line[1]);
-
-        if (rank == INVALID_RANK) {
-            strcpy(gameState->lastResponse, ("Invalid rank in load file - Load failed"));
-            strcpy(gameState->lastCommand, "LD");
-            return;
-        }
-
-        if (suit == INVALID_SUIT) {
-            strcpy(gameState->lastResponse, ("Invalid suit in load file - Load failed"));
-            strcpy(gameState->lastCommand, "LD");
-            return;
-        }
-
-        // Create the card and add it to the deck
-        Card* card = createCard(suit, rank, false);
-        int indx = rank + suit * 13;
-        if (deckCheck[indx] == 0) {
-            deckCheck[indx] = 1;
-            cardsAdded++;
-        } else {
-            strcpy(gameState->lastResponse, "Duplicate card found in loaded deck");
-            strcpy(gameState->lastCommand, "LD");
-            return;
-        }
-        addNodeToBack(deck, card);
-    }
-
-    if (cardsAdded == 52) {
-        fclose(file);
-        gameState->deck = deck;
-        strcpy(gameState->lastResponse, "OK");
-        strcpy(gameState->lastCommand, "LD");
-    } else {
-        strcpy(gameState->lastResponse, ("Not enough cards in loaded deck"));
-        strcpy(gameState->lastCommand, "LD");
-    }
-}
-void gameManager_revealDeck(GameState* gameState) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-
-    // Display error if deck is empty
-    if (gameState->deck == NULL){
-        strcpy(gameState->lastResponse, "No deck is loaded");
-        return;
-    }
-
-    setAllCardsFaceUp(gameState->deck,true);
-
-    strcpy(gameState->lastResponse, "OK");
-}
-
-// Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
-// and puts the remaining cards at the bottom
-void gameManager_splitDeck(GameState* gameState, int splitIndex) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-
-    // If splitIndex is -1, generate a random number between 1-51
-    if (splitIndex == -1){
-        splitIndex = (rand() % (DECK_SIZE-1))+1; // Random number between 1-51
-    }
-    // Validate - Check that splitIndex is in range 1-51
-    else if (splitIndex < 1 || splitIndex >= 52){
-        strcpy(gameState->lastResponse, "Invalid split index");
-        return;
-    }
-
-    // Create two piles
-    Node* firstPile = gameState->deck->head;
-    Node* secondPile = getNode(gameState->deck,splitIndex);
-
-    Node* pileDivider=secondPile;
-
-
-    LinkedList* splitDeck = createList(sizeof(Card));
-
-    // Interleave both piles into splitDeck, until of is empty
-    while (firstPile != pileDivider && secondPile != NULL) {
-        addNodeToFront(splitDeck,firstPile->data);
-        firstPile = firstPile->nextNode;
-
-        addNodeToFront(splitDeck,secondPile->data);
-        secondPile = secondPile->nextNode;
-    }
-
-    // Add the remaining cards from the FIRST pile to the back of splitdeck
-    while (firstPile != pileDivider) {
-        addNodeToBack(splitDeck,firstPile->data);
-        firstPile = firstPile->nextNode;
-    }
-
-    // Add the remaining cards from the SECOND pile to the back of splitdeck
-    while (secondPile != NULL) {
-        addNodeToBack(splitDeck,secondPile->data);
-        secondPile = secondPile->nextNode;
-    }
-
-    // Free the old deck
-    freeListExcludeData(gameState->deck);
-    // Set the split deck to gamestate
-    gameState->deck = splitDeck;
-    strcpy(gameState->lastResponse, "OK");
-
-}
-void gameManager_randomShuffleDeck(GameState* gameState) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-
-    LinkedList* shuffledDeck = createList(sizeof(Card));
-    int cardsLeft = DECK_SIZE;;
-    while (cardsLeft > 0) {
-        int rndIndx = rand() % cardsLeft;
-
-        Node* node = getNode(gameState->deck, rndIndx);
-        if (node == NULL || node->data == NULL) {
-            printf("Invalid node at index %d\n", rndIndx);
-            break;
-        }
-
-
-        // Store the pointer of card to move
-        Card* card = getNode(gameState->deck,rndIndx)->data;
-        // Remove from current deck
-        deleteNode(gameState->deck, rndIndx);
-        // Add it to the back of deck
-        addNodeToBack(shuffledDeck, card);
-        cardsLeft--;
-    }
-
-    freeList(gameState->deck);
-    gameState->deck = shuffledDeck;
-    strcpy(gameState->lastResponse, "OK");
-    strcpy(gameState->lastCommand, "SR");
-}
-
-
-void gameManager_saveDeckToFile(GameState* gameState, char filePath[]) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-    if (gameState->deck == NULL){
-        strcpy(gameState->lastResponse, "No deck available");
-        strcpy(gameState->lastCommand, "SD");
-        return;
-    }
-
-    FILE* file = fopen(filePath, "w");
-    if (!file) {
-        strcpy(gameState->lastResponse, "Error creating file");
-        strcpy(gameState->lastCommand, "SD");
-        return;
-    }
-
-    Node* current = gameState->deck->head;
-    while (current != NULL) {
-        Card* card = (Card*)current->data;
-        char* line = cardToString(card);
-        fprintf(file, "%s\n", line);
-        current = current->nextNode;
-    }
-
-    fclose(file);
-    strcpy(gameState->lastResponse, "OK");
-    strcpy(gameState->lastCommand, "SD");
 }
 void gameManager_quitProgram(GameState* gameState) {
     // Check that player is in the startup phase
@@ -304,7 +84,6 @@ void gameManager_exitPlayMode(GameState* gameState) {
     char lastCommand[100];
     strcpy(lastCommand, gameState->lastCommand);
     // Set all cards to face down
-    setAllCardsFaceUp(deck,false);
     resetGameState(gameState);
     // Set deck pointer to stored deck
     gameState->deck = deck;
@@ -446,8 +225,6 @@ bool gameManager_isGameOver(GameState* gameState) {
     return gameState->gameOver;
 }
  */
-
-
 /*void gameManager_Save(GameState* gameState, char filepath[100]) {
     FILE* file = fopen(filepath, "w");
     if (!file) {
@@ -475,7 +252,6 @@ bool gameManager_isGameOver(GameState* gameState) {
     }
 }
 */
-
 void gameManager_isGameWon(GameState* gameState) {
     gameState->gameWon = true;
 
