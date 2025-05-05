@@ -1,6 +1,3 @@
-//
-// Created by danish on 3/26/25.
-//
 #include <stdlib.h>
 #include "game_manager.h"
 #include "card_deck.h"
@@ -28,6 +25,7 @@ void initGame() {
     }
     resetGameState(gameState);
     gameManager_loadDeck(gameState, "");
+    debugTestWinCondition();
 }
 
 void resetGameState(GameState* gameState){
@@ -39,7 +37,7 @@ void resetGameState(GameState* gameState){
     for (int i = 0; i < PILES_SIZE; ++i) {
         gameState->cardFoundationPiles[i] = createList(sizeof(Node));
     }
-    gameState->gameOver = false;
+    gameState->gameWon = false;
 }
 
 void gameManager_loadDeck(GameState* gameState, char filePath[]) {
@@ -255,7 +253,7 @@ void gameManager_quitProgram(GameState* gameState) {
         strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
         return;
     }
-    gameState->gameOver = true;
+    gameState->gameWon = true;
 
 }
 void gameManager_enterPlayMode(GameState* gameState) {
@@ -444,9 +442,11 @@ void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromCo
 
 
 }
+/*
 bool gameManager_isGameOver(GameState* gameState) {
     return gameState->gameOver;
 }
+ */
 
 
 /*void gameManager_Save(GameState* gameState, char filepath[100]) {
@@ -475,13 +475,18 @@ bool gameManager_isGameOver(GameState* gameState) {
         }
     }
 }
+*/
 
-bool gameManager_isGameWon(GameState* gameState) {
+void gameManager_isGameWon(GameState* gameState) {
+    gameState->gameWon = true;
+
     for (int i = 0; i < PILES_SIZE; i++) {
-        Node* tmp = gameState->cardFoundationPiles[i]->head;
-        if (tmp == NULL || ((Card*)tmp->data)->rank != KING) {
-            return false;
+        LinkedList* pile = gameState->cardFoundationPiles[i];
+
+        // Check win condition for this pile
+        if (pile->tail == NULL || ((Card*)pile->tail->data)->rank != KING) {
+            gameState->gameWon = false;
+            break;
         }
     }
-    return true;
-}*/
+}

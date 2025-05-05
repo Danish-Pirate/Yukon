@@ -7,6 +7,7 @@
 #include "play_scene.h"
 #include "game_utils.h"
 #include "ui_button.h"
+#include "SDL_ttf.h"
 
 typedef struct {
     bool isDragging;
@@ -127,6 +128,8 @@ static void handleDrop(int mouseX, int mouseY) {
                 gameManager_moveCard(gameState, card->rank, card->suit,
                                      dragState.sourceColumnIndex, foundationIndex);
             }
+            // Check if the game has been won after a foundation pile move
+            gameManager_isGameWon(gameManager_getGameState());
         }
     }
     else {
@@ -154,6 +157,135 @@ static void handleDrop(int mouseX, int mouseY) {
     dragState.isDragging = false;
     dragState.selectedNode = NULL;
     dragState.cardCount = 0;
+}
+
+static void drawVictoryDialog() {
+    SDL_Renderer *renderer = getRenderer();
+    // Create a semi-transparent overlay for the victory dialog
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180); // Semi-transparent black
+    SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Draw the dialog box
+    int dialogWidth = 400;
+    int dialogHeight = 200;
+    SDL_Rect dialogRect = {
+            (SCREEN_WIDTH - dialogWidth) / 2,
+            (SCREEN_HEIGHT - dialogHeight) / 2,
+            dialogWidth,
+            dialogHeight
+    };
+
+    // Dialog background
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); // Light gray
+    SDL_RenderFillRect(renderer, &dialogRect);
+
+    // Dialog border
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); // Dark gray
+    SDL_RenderDrawRect(renderer, &dialogRect);
+
+    // Display the victory messages
+    TTF_Font* largeFont = TTF_OpenFont("assets/fonts/arial.ttf", 36);
+    TTF_Font* smallFont = TTF_OpenFont("assets/fonts/arial.ttf", 24);
+
+    if (largeFont && smallFont) {
+        SDL_Color titleColor = {0, 100, 0, 255}; // Dark green
+        SDL_Color textColor = {0, 0, 0, 255};    // Black
+
+        // Render "VICTORY!" text
+        SDL_Surface* titleSurface = TTF_RenderText_Solid(largeFont, "VICTORY!", titleColor);
+        if (titleSurface) {
+            SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
+            if (titleTexture) {
+                SDL_Rect titleRect = {
+                        (SCREEN_WIDTH - titleSurface->w) / 2,
+                        dialogRect.y + 30,
+                        titleSurface->w,
+                        titleSurface->h
+                };
+                SDL_RenderCopy(renderer, titleTexture, NULL, &titleRect);
+                SDL_DestroyTexture(titleTexture);
+            }
+            SDL_FreeSurface(titleSurface);
+        }
+
+        // Render "Congratulations!" text
+        SDL_Surface* congratsSurface = TTF_RenderText_Solid(smallFont, "Congratulations!", textColor);
+        if (congratsSurface) {
+            SDL_Texture* congratsTexture = SDL_CreateTextureFromSurface(renderer, congratsSurface);
+            if (congratsTexture) {
+                SDL_Rect congratsRect = {
+                        (SCREEN_WIDTH - congratsSurface->w) / 2,
+                        dialogRect.y + 80,
+                        congratsSurface->w,
+                        congratsSurface->h
+                };
+                SDL_RenderCopy(renderer, congratsTexture, NULL, &congratsRect);
+                SDL_DestroyTexture(congratsTexture);
+            }
+            SDL_FreeSurface(congratsSurface);
+        }
+
+        // Render "You've won the game!" text
+        SDL_Surface* wonSurface = TTF_RenderText_Solid(smallFont, "You've won the game!", textColor);
+        if (wonSurface) {
+            SDL_Texture* wonTexture = SDL_CreateTextureFromSurface(renderer, wonSurface);
+            if (wonTexture) {
+                SDL_Rect wonRect = {
+                        (SCREEN_WIDTH - wonSurface->w) / 2,
+                        dialogRect.y + 120,
+                        wonSurface->w,
+                        wonSurface->h
+                };
+                SDL_RenderCopy(renderer, wonTexture, NULL, &wonRect);
+                SDL_DestroyTexture(wonTexture);
+            }
+            SDL_FreeSurface(wonSurface);
+        }
+
+        // Draw a button (optional)
+        int buttonWidth = 100;
+        int buttonHeight = 40;
+        SDL_Rect buttonRect = {
+                (SCREEN_WIDTH - buttonWidth) / 2,
+                dialogRect.y + dialogHeight - 50,
+                buttonWidth,
+                buttonHeight
+        };
+
+        // Button background
+        SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255); // Dark green
+        SDL_RenderFillRect(renderer, &buttonRect);
+
+        // Button border
+        SDL_SetRenderDrawColor(renderer, 0, 50, 0, 255); // Darker green
+        SDL_RenderDrawRect(renderer, &buttonRect);
+
+        // Button text ("OK")
+        SDL_Surface* buttonSurface = TTF_RenderText_Solid(smallFont, "OK", (SDL_Color){255, 255, 255, 255}); // White
+        if (buttonSurface) {
+            SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
+            if (buttonTexture) {
+                SDL_Rect textRect = {
+                        buttonRect.x + (buttonRect.w - buttonSurface->w) / 2,
+                        buttonRect.y + (buttonRect.h - buttonSurface->h) / 2,
+                        buttonSurface->w,
+                        buttonSurface->h
+                };
+                SDL_RenderCopy(renderer, buttonTexture, NULL, &textRect);
+                SDL_DestroyTexture(buttonTexture);
+            }
+            SDL_FreeSurface(buttonSurface);
+        }
+
+        // Clean up fonts
+        TTF_CloseFont(largeFont);
+        TTF_CloseFont(smallFont);
+    }
+
+    // Reset blend mode
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
 static void drawFoundationPiles() {
@@ -277,6 +409,41 @@ void playScene_init(void* data) {
 }
 
 void playScene_handleEvent(SDL_Event* event) {
+    GameState* gameState = gameManager_getGameState();
+
+    // First check if the game is won and handle OK button clicks
+    if (gameState->gameWon && event->type == SDL_MOUSEBUTTONDOWN &&
+        event->button.button == SDL_BUTTON_LEFT) {
+
+        // Define the OK button rectangle (must match the one in drawVictoryDialog)
+        int buttonWidth = 100;
+        int buttonHeight = 40;
+        int dialogWidth = 400;
+        int dialogHeight = 200;
+
+        SDL_Rect buttonRect = {
+                (SCREEN_WIDTH - buttonWidth) / 2,
+                (SCREEN_HEIGHT - dialogHeight) / 2 + dialogHeight - 50,
+                buttonWidth,
+                buttonHeight
+        };
+
+        // Check if click is within the button
+        if (isPointWithinRect(event->button.x, event->button.y, buttonRect)) {
+            // Handle the button click - either dismiss the dialog or reset the game
+            gameState->gameWon = false;  // This will hide the victory dialog
+
+            // Optional: Add additional actions like resetting the game or returning to menu
+            // For example: backToStartupCallback();
+
+            return;  // Important! Return to prevent processing other input
+        }
+
+        // If click is outside the button but game is won, consume the event
+        return;
+    }
+
+    // Rest of the existing event handling code
     // Handle card dragging based on event type
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
         // Check if the back button was clicked
@@ -315,6 +482,10 @@ void playScene_render() {
 
     // Draw the back button
     drawButton(backButton);
+
+    if(gameManager_getGameState()->gameWon) {
+        drawVictoryDialog();
+    }
 
     // Draw border
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White

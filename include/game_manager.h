@@ -17,7 +17,7 @@ typedef struct {
     LinkedList *cardColumns[COLUMNS_SIZE];
     LinkedList *cardFoundationPiles[PILES_SIZE];
     LinkedList *deck;
-    bool gameOver;
+    bool gameWon;
     GamePhase gamePhase;
     char lastCommand[100];
     char lastResponse[50];
@@ -35,7 +35,7 @@ void gameManager_quitProgram(GameState* gameState);
 void gameManager_enterPlayMode(GameState* gameState);
 void gameManager_exitPlayMode(GameState* gameState);
 void gameManager_moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
-bool gameManager_isGameOver(GameState* gameState);
+void gameManager_isGameWon(GameState* gameState);
 
 
 #endif //YUKON_CARDGAME_GAME_MANAGER_H
