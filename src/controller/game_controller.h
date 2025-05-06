@@ -7,8 +7,6 @@
 #define SCREEN_HEIGHT 1080
 #define FPS 60
 
-void gameController_init();
-void gameController_loop();
-void gameController_cleanup();
-
-GameState* gameController_getGameState();
+void initGameController(SDL_Window *window, SDL_Renderer *renderer);
+void loopGameController();
+void cleanUpGameController();

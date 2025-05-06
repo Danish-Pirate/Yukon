@@ -1,7 +1,3 @@
-#pragma once
-
-#include <stdbool.h>
-
 typedef enum {
     EVENT_SCENE_CHANGE,
     EVENT_CARD_MOVED,
@@ -9,16 +5,21 @@ typedef enum {
     EVENT_GAME_WON,
     EVENT_PLAY_MODE_ENTER,
     EVENT_PLAY_MODE_EXIT,
+    EVENT_CARD_SELECTED,
+    EVENT_CARD_DROPPED,
+    EVENT_UI_BUTTON_CLICKED,
+    EVENT_GAME_INITIALIZED,
 } EventType;
 
+// Add these new event data structures
 typedef struct {
-    void* data;
-    EventType type;
-} Event;
+    int buttonId;
+    const char* buttonLabel;
+} ButtonClickData;
 
-typedef void (*EventCallback)(Event* event);
-void eventSystem_init();
-void eventSystem_cleanup();
-bool eventSystem_subscribe(EventType type, EventCallback callback);
-bool eventSystem_unsubscribe(EventType type, EventCallback callback);
-void eventSystem_publish(EventType type, void* data);
+typedef struct {
+    Rank rank;
+    Suit suit;
+    int columnIndex;
+    int cardIndex;
+} CardSelectionData;

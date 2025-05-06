@@ -2,6 +2,7 @@
 #include "startup_scene.h"
 #include "model/ui_button.h"
 #include "play_scene.h"
+#include "utils/service_locator.h"
 #include <nfd.h>
 
 // Static variables for scene management
@@ -11,11 +12,11 @@ static Scene* currentScene = NULL;
 static Scene sceneRegistry[2];
 
 SDL_Renderer* getRenderer() {
-    return renderer;
+    return serviceLocator_getRenderer();
 }
 
-SDL_Window * getWindow() {
-    return window;
+SDL_Window* getWindow() {
+    return serviceLocator_getWindow();
 }
 
 void sceneManager_handleSceneChangeEvent(Event* event) {
@@ -32,8 +33,8 @@ void sceneManager_subscribeToEvents() {
 
 
 void sceneManager_init(SDL_Window* _window, SDL_Renderer* _renderer) {
-    window = _window;
-    renderer = _renderer;
+    window = serviceLocator_getWindow();
+    renderer = serviceLocator_getRenderer();
 
     // Initialize the scene registry
     sceneRegistry[SCENE_STARTUP_MODE] = (Scene){
@@ -64,7 +65,6 @@ void sceneManager_cleanup() {
     currentScene->cleanup();
     currentScene = NULL;
 
-    // Clean up SDL resources
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -72,20 +72,11 @@ void sceneManager_cleanup() {
 }
 
 void sceneManager_changeScene(SceneType sceneType, void* data) {
-    // Clean up current scene if it exists
     if (currentScene != NULL && currentScene->cleanup != NULL) {
         currentScene->cleanup();
     }
 
-    // Validate scene type
-    if (sceneType < 0 || sceneType >= 2) {
-        return; // Invalid scene type
-    }
-
-    // Set the current scene pointer to the appropriate scene in the registry
     currentScene = &sceneRegistry[sceneType];
-
-    // Initialize the new scene with the provided data
     currentScene->init(data);
 }
 
@@ -94,17 +85,13 @@ void sceneManager_handleEvents(SDL_Event* event) {
 }
 
 void sceneManager_update() {
-    // Update the current scene
     currentScene->update();
 }
 
 void sceneManager_render() {
-    // Clear screen for rendering
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-
     currentScene->render();
 
-    // Present the rendered frame
     SDL_RenderPresent(renderer);
 }
