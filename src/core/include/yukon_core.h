@@ -3,21 +3,20 @@
 #include <stdbool.h>
 #include "data_structures.h" // Include our data structures definitions
 
-// No need for forward declarations since we have the full definitions
-typedef struct GameState GameState;
-typedef struct GameView {
-    bool isGameWon;
-    enum GamePhase currentPhase;
-} GameView;
-
 typedef enum GamePhase {
     StartupPhase,
     PlayPhase
 } GamePhase;
 
+typedef struct GameView {
+    bool isGameWon;
+    enum GamePhase currentPhase;
+} GameView;
+
 typedef enum Rank Rank;
 typedef enum Suit Suit;
 typedef struct Card Card;
+typedef struct GameState GameState;
 
 /**
  * Event types the GUI can subscribe to for game state changes

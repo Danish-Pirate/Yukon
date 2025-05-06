@@ -1,12 +1,18 @@
-#include "SDL2/SDL.h"
-#include "scene_manager.h"
-#include "service/game_service.h"
-#include "../utils/service_locator.h"
-#include "../view/ui_card.h"
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include "data_structures.h"
+#include "yukon_core.h"
+#include "utils/gui_service_locator.h"
+#include "model/game.h"
 #include "play_scene.h"
-#include "SDL_ttf/SDL_ttf.h"
-#include "../view/ui_manager.h"
+#include "service/game_service.h"
+#include "view/ui_button.h"
 #include "view/gui_utils.h"
+#include "scene_manager.h"
+#include "view/ui_manager.h"
+
 
 typedef struct {
     bool isDragging;

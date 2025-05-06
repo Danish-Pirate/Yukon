@@ -9,6 +9,8 @@
 #include "../service/core_service.h"
 #include "view/window.h"
 #include "utils/gui_service_locator.h"
+#include "SDL_ttf.h"
+#include "view/ui_manager.h"
 
 #define ERROR_DIALOG_TIMEOUT 3000 // 3 seconds
 

@@ -1,10 +1,7 @@
-#include "SDL_ttf/SDL_ttf.h"
-#include "ui_button.h"
-#include "../utils/game_utils.h"
-#include "../utils/service_locator.h"
+#include <SDL_ttf.h>
 #include "ui_manager.h"
+#include "utils/gui_service_locator.h"
 #include "gui_utils.h"
-#include <stdio.h>
 
 static TTF_Font* buttonFont = NULL;
 

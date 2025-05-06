@@ -1,21 +1,16 @@
-#include "SDL2/SDL.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "scene_manager.h"
-#include "../view/texture_manager.h"
-#include "../controller/game_controller.h"
-#include "../view/ui_card.h"
-#include "core/include/yukon_core.h"
-#include "../view/ui_button.h"
-#include "nativefiledialog-extended/src/include/nfd.h"
-#include "../utils/game_utils.h"
-#include "SDL_ttf/SDL_ttf.h"
+
+#include <SDL.h>
+#include "view/ui_button.h"
+#include "data_structures.h"
 #include "service/game_service.h"
-#include "../view/ui_manager.h"
-#include "../utils/service_locator.h"
-#include "../model/deck.h"
+#include "view/ui_card.h"
+#include "scene_manager.h"
 #include "view/gui_utils.h"
+#include "nfd.h"
+#include "utils/gui_service_locator.h"
+#include "SDL_ttf.h"
+#include "view/ui_manager.h"
+#include "model/deck.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;

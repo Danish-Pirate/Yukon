@@ -1,5 +1,5 @@
-#include "service_locator.h"
 #include <stdlib.h>
+#include "gui_service_locator.h"
 
 static GameState* gameStateInstance = NULL;
 static SDL_Renderer* rendererInstance = NULL;

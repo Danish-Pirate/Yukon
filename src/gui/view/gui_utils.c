@@ -1,4 +1,5 @@
 #include "gui_utils.h"
+#include "nfd.h"
 
 bool isPointWithinRect(int x, int y, SDL_Rect rect) {
     return (x >= rect.x &&

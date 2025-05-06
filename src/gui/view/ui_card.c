@@ -1,10 +1,7 @@
-#include "SDL2/SDL.h"
-#include <stdio.h>
-#include "core/include/yukon_core.h"
+#include <SDL.h>
 #include "ui_card.h"
-#include "../utils/service_locator.h"
 #include "texture_manager.h"
-#include "../utils/game_utils.h"
+#include "utils/gui_service_locator.h"
 #include "gui_utils.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)

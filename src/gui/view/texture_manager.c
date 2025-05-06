@@ -1,9 +1,6 @@
-#include <stdio.h>
-#include <string.h>
+#include <SDL.h>
 #include <unistd.h>
-#include "SDL_render.h"
-#include "scene/scene_manager.h"
-#include "../utils/service_locator.h"
+#include "utils/gui_service_locator.h"
 
 #define cardTexAtlas_FILEPATH "assets/textures/card_atlas.bmp"
 
