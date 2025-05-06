@@ -11,6 +11,7 @@
 #include "nfd.h"
 #include "utils/game_utils.h"
 #include "SDL_ttf.h"
+#include "service/game_service.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -29,7 +30,7 @@ static void drawDeck() {
     int card_PosY = 20;
     int card_PosX = 200;
     int cardRowCount = 0;
-    LinkedList* deck = gameManager_getGameState()->deck;
+    LinkedList* deck = gameService_getGameState()->deck;
 
     for (int i = 0; i < DECK_SIZE; ++i) {
         if (cardRowCount == 13) {
@@ -60,26 +61,25 @@ void saveDeckCallback() {
         NFD_FreePathU8(filePath);
         return;
     }
-    gameManager_saveDeckToFile(gameManager_getGameState(), filePath);
+    gameService_saveDeck(filePath);
     NFD_FreePathU8(filePath);
 }
 
 void loadDeckCallback() {
     char* filePath = getLoadFilePathFromDialog();
     if (filePath[0] == '\0') { return; }
-    gameManager_loadDeck(gameManager_getGameState(), filePath);
+    gameService_loadDeck(filePath);
 }
 
 void revealDeckCallback() {
-    gameManager_revealDeck(gameManager_getGameState());
+    gameService_toggleShowDeck();
 }
 
 void shuffleDeckCallback() {
-    gameManager_randomShuffleDeck(gameManager_getGameState());
+    gameService_shuffleDeck();
 }
 
 void splitDeckCallback() {
-    // Show dialog to get split index
     showSplitDialog = true;
     splitIndexDialog.cursor = 0;
     splitIndexDialog.text[0] = '\0';
@@ -109,7 +109,7 @@ void processSplitDialogEvent(SDL_Event* event) {
             // Validate: 1 <= cardNumber < deckSize (only up to card 51)
             if (cardNumber >= 1 && cardNumber < deckSize) {
                 // Split deck using the card number as the index
-                gameManager_splitDeck(gameManager_getGameState(), cardNumber);
+                gameService_splitDeck(cardNumber);
                 showSplitDialog = false;
             } else {
                 // Invalid input - just clear the field without feedback

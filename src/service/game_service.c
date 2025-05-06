@@ -1,4 +1,5 @@
 #include "game_service.h"
+#include "../utils/error_handler.h"
 #include <stdlib.h>
 
 static GameState* gameState = NULL;
@@ -55,6 +56,17 @@ void gameService_handleDeckOperation(EventType operation, void* data) {
         case EVENT_DECK_SHUFFLED:
             randomShuffleDeck(gameState->deck);
             break;
+        case EVENT_DECK_TOGGLED:
+            toggleShowDeck(gameState->deck);
+            break;
+        case EVENT_DECK_SPLIT:
+            if (data) {
+                int splitIndex = *(int*)data;
+                splitDeck(gameState->deck, splitIndex);
+            } else {
+                splitDeck(gameState->deck, -1);
+            }
+            break;
         default:
             break;
     }
@@ -65,6 +77,11 @@ void gameService_handleDeckOperation(EventType operation, void* data) {
 
 void gameService_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
     CardMoveData* moveData = malloc(sizeof(CardMoveData));
+    if (!moveData) {
+        errorHandler_reportError(ERROR_MEMORY_ALLOCATION, "Failed to allocate memory for card move data");
+        return;
+    }
+
     moveData->rank = rank;
     moveData->suit = suit;
     moveData->fromColumnIndex = fromColumnIndex;
@@ -74,22 +91,36 @@ void gameService_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColum
 }
 
 void gameService_loadDeck(const char* filePath) {
-    DeckLoadResult result = loadDeckFromFile(&gameState->deck, filePath);
+    if (!filePath) {
+        errorHandler_reportError(ERROR_INVALID_PARAMETER, "Null file path provided to loadDeck");
+        return;
+    }
 
+    DeckLoadResult result = loadDeckFromFile(&gameState->deck, filePath);
     EventType eventType = (result == LOAD_SUCCESS) ?
                           EVENT_DECK_LOADED_SUCCESS :
                           EVENT_DECK_LOADED_FAILURE;
+
+    if (result != LOAD_SUCCESS) {
+        char errorMsg[100];
+        sprintf(errorMsg, "Failed to load deck from file: %s, error code: %d", filePath, result);
+        errorHandler_reportError(ERROR_FILE_IO, errorMsg);
+    }
 
     eventSystem_publish(eventType, NULL);
 }
 
 void gameService_saveDeck(const char* filePath) {
+    if (!filePath) {
+        errorHandler_reportError(ERROR_INVALID_PARAMETER, "Null file path provided to saveDeck");
+        return;
+    }
+
     saveDeckToFile(gameState->deck, filePath);
     eventSystem_publish(EVENT_DECK_SAVED, NULL);
 }
 
 void gameService_toggleShowDeck() {
-    toggleShowDeck(gameState->deck);
     eventSystem_publish(EVENT_DECK_TOGGLED, NULL);
 }
 
@@ -98,8 +129,14 @@ void gameService_shuffleDeck() {
 }
 
 void gameService_splitDeck(int splitIndex) {
-    splitDeck(gameState->deck, splitIndex);
-    eventSystem_publish(EVENT_DECK_SPLIT, NULL);
+    int* data = malloc(sizeof(int));
+    if (!data) {
+        errorHandler_reportError(ERROR_MEMORY_ALLOCATION, "Failed to allocate memory for split index");
+        return;
+    }
+
+    *data = splitIndex;
+    eventSystem_publish(EVENT_DECK_SPLIT, data);
 }
 
 void gameService_checkGameWon() {
@@ -114,4 +151,8 @@ const GameView* gameService_getView() {
     currentView.isGameWon = gameState->gameWon;
     currentView.currentPhase = gameState->gamePhase;
     return &currentView;
+}
+
+GameState* gameService_getGameState() {
+    return gameState;
 }

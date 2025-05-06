@@ -1,4 +1,4 @@
-#include "../src/view/ui_button.h"
+#include "view/ui_button.h"
 
 typedef struct {
     void (*init)(void* data);

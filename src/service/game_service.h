@@ -9,11 +9,9 @@ typedef struct {
 } GameView;
 
 void gameService_init(GameState* initialState);
-
 void gameService_cleanup();
+void gameService_handleDeckOperation(EventType operation, void* data);
 
-void gameService_enterPlayMode();
-void gameService_exitPlayMode();
 void gameService_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);
 void gameService_loadDeck(const char* filePath);
 void gameService_saveDeck(const char* filePath);
@@ -23,3 +21,4 @@ void gameService_splitDeck(int splitIndex);
 void gameService_checkGameWon();
 
 const GameView* gameService_getView();
+GameState* gameService_getGameState();
