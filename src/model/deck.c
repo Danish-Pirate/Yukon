@@ -3,7 +3,7 @@
 #include "deck.h"
 #include "../utils/error_handler.h"
 
-DeckLoadResult loadDeckFromFile(LinkedList **deck, char filePath[]) {
+DeckLoadResult loadDeckFromFile(LinkedList **deck, const char *filePath) {
     FILE* file = fopen(filePath, "r");
     if (!file) {
         errorHandler_reportError(ERROR_FILE_IO, "Could not open deck file");
@@ -74,7 +74,7 @@ DeckLoadResult loadDeckFromFile(LinkedList **deck, char filePath[]) {
     return result;
 }
 
-void saveDeckToFile(LinkedList *deck, char filePath[]) {
+void saveDeckToFile(LinkedList *deck, const char *filePath) {
     FILE* file = fopen(filePath, "w");
     if (!file) {
         errorHandler_reportError(ERROR_FILE_IO, "Could not open file for saving deck");

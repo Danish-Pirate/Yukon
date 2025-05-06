@@ -55,14 +55,6 @@ void enterPlayMode(GameState* gameState) {
         }
     }
 
-    // Debug: Print column sizes
-    printf("Enter Play Mode - Column counts: ");
-    for (int i = 0; i < COLUMNS_SIZE; i++) {
-        size_t colSize = size(gameState->cardColumns[i]);
-        printf("%zu ", colSize);
-    }
-    printf("\n");
-
     gameState->gamePhase = PlayPhase;
 }
 void exitPlayMode(GameState* gameState) {

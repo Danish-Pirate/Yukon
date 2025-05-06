@@ -15,8 +15,8 @@ typedef enum DeckLoadResult {
     LOAD_ERROR_INCOMPLETE_DECK
 } DeckLoadResult;
 
-void saveDeckToFile(LinkedList *deck, char filePath[]);
-DeckLoadResult loadDeckFromFile(LinkedList **deck, char filePath[]);
+void saveDeckToFile(LinkedList *deck, const char *filePath);
+DeckLoadResult loadDeckFromFile(LinkedList **deck, const char *filePath);
 void toggleShowDeck(LinkedList *deck);
 void showDeck(LinkedList *deck);
 void randomShuffleDeck(LinkedList *deck);

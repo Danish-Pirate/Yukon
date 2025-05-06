@@ -8,7 +8,7 @@
 #include "../view/ui_card.h"
 #include "../model/game.h"
 #include "../view/ui_button.h"
-#include "nfd.h"
+#include <nfd.h>
 #include "../utils/game_utils.h"
 #include <SDL_ttf.h>
 #include "../service/game_service.h"

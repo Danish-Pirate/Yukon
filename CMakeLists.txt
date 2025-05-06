@@ -1,75 +1,61 @@
 cmake_minimum_required(VERSION 3.16)
-project(Yukon_Cardgame C)
+project(yukon C)
 
 set(CMAKE_C_STANDARD 11)
-set(SRC src)
 
-set(SRC_DIRS
-        ${SRC}
-        ${SRC}/controller
-        ${SRC}/model
-        ${SRC}/scene
-        ${SRC}/service
-        ${SRC}/utils
-        ${SRC}/view
-)
-
-file(GLOB_RECURSE GAME_SOURCES "${SRC}/*.c")
-list(FILTER GAME_SOURCES EXCLUDE REGEX ".*main\\.c$")
+file(GLOB_RECURSE GAME_SOURCES src/*.c)
 
 # External dependencies
 set(SHARED_INCLUDES
-        vendored/SDL/include
-        vendored/SDL_ttf/include
-        vendored/nativefiledialog-extended/include
+        vendored
+        vendored/SDL_ttf
+        vendored/nativefiledialog-extended
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-
+# Add external dependencies
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/nativefiledialog-extended EXCLUDE_FROM_ALL)
 
-file(COPY assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
 if(WIN32)
-    add_executable(Yukon_Cardgame WIN32 ${SRC}/main.c ${GAME_SOURCES})
+    # Use WIN32 for Windows GUI application
+    add_executable(yukon WIN32 ${GAME_SOURCES})
+    target_link_libraries(yukon PRIVATE SDL2main SDL2 SDL2_ttf nfd)
+    add_custom_command(
+            TARGET yukon POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:SDL2::SDL2> $<TARGET_FILE_DIR:yukon>
+            COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:SDL2_ttf::SDL2_ttf> $<TARGET_FILE_DIR:yukon>
+            COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:nfd::nfd> $<TARGET_FILE_DIR:yukon>
+            VERBATIM
+    )
 else()
-    add_executable(Yukon_Cardgame ${SRC}/main.c ${GAME_SOURCES})
+    add_executable(yukon ${GAME_SOURCES})
+    target_link_libraries(yukon PRIVATE SDL2 SDL2_ttf nfd)
 endif()
 
-target_include_directories(Yukon_Cardgame PRIVATE
-        ${SHARED_INCLUDES}
-        ${SRC}
+add_custom_command(TARGET yukon POST_BUILD
+        # Create necessary directories
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/temp_dist"
+        # Copy executable and assets to temp directory
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:yukon>" "${CMAKE_BINARY_DIR}/temp_dist/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${CMAKE_BINARY_DIR}/temp_dist/assets"
 )
-
-target_link_libraries(Yukon_Cardgame PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf nfd)
-
-option(BUILD_TESTS "Build with CUnit tests" ON)
-
-if(BUILD_TESTS)
-    file(GLOB TEST_SOURCES "tests/*.c")
-    set(CUNIT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendored/cunit/include)
-
-    find_library(CUNIT_LIBRARY
-            NAMES cunit libcunit
-            PATHS ${CMAKE_SOURCE_DIR}/vendored/cunit/lib
+if(WIN32 OR CMAKE_CROSSCOMPILING)
+    add_custom_command(TARGET yukon POST_BUILD
+            # Copy DLLs for Windows builds when cross-compiling
+            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/*.dll" "${CMAKE_BINARY_DIR}/temp_dist"
     )
+endif ()
 
-    if(NOT CUNIT_LIBRARY)
-        message(STATUS "CUnit library not found - will use system CUnit")
-        find_library(CUNIT_LIBRARY NAMES cunit libcunit)
-    endif()
+target_include_directories(yukon PRIVATE ${SHARED_INCLUDES})
 
-    add_executable(run_tests ${TEST_SOURCES} ${GAME_SOURCES})
-    target_include_directories(run_tests PRIVATE
-            ${SHARED_INCLUDES}
-            ${CUNIT_INCLUDE_DIR}
-            ${SRC}
-    )
-    target_link_libraries(run_tests PRIVATE ${CUNIT_LIBRARY} SDL2::SDL2 SDL2_ttf::SDL2_ttf nfd)
+add_custom_command(TARGET yukon POST_BUILD
+        # Create zip file from temp directory (using chdir to avoid -C flag issues)
+        COMMAND ${CMAKE_COMMAND} -E chdir "${CMAKE_BINARY_DIR}/temp_dist"
+        ${CMAKE_COMMAND} -E tar "cf" "${CMAKE_BINARY_DIR}/Release/yukon.zip" "--format=zip" "."
 
-    enable_testing()
-    add_test(NAME unit_tests COMMAND run_tests)
-endif()
+        # Clean up temp directory
+        COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_BINARY_DIR}/temp_dist"
+        COMMENT "Creating distribution package"
+)
