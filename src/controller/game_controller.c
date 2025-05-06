@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "game_controller.h"
-#include "../scene_manager.h"
-#include "../texture_manager.h"
+#include "../scene/scene_manager.h"
+#include "../view/texture_manager.h"
 #include <nfd.h>
 #include "../service/game_service.h"
 #include "../utils/service_locator.h"

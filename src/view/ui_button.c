@@ -2,13 +2,14 @@
 #include "ui_button.h"
 #include "../utils/game_utils.h"
 #include "../utils/service_locator.h"
+#include "ui_manager.h"
 #include <stdio.h>
 
 static TTF_Font* buttonFont = NULL;
 
 void initButtonFont() {
     if (buttonFont == NULL) {
-        buttonFont = TTF_OpenFont("assets/fonts/arial.ttf", 24);
+        buttonFont = TTF_OpenFont(FONT_FILEPATH, 24);
         if (buttonFont == NULL) {
             printf("Failed to load font: %s\n", TTF_GetError());
         }

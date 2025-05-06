@@ -2,8 +2,8 @@
 
 #include "SDL.h"
 #include <stdbool.h>
-#include "view/window.h"
-#include "view/ui_card.h"
+#include "../view/window.h"
+#include "../view/ui_card.h"
 
 // Adjust these values to match your display needs
 #define FOUNDATION_X_START (SCREEN_WIDTH - CARD_DISPLAY_WIDTH - 50)

@@ -1,19 +1,20 @@
-#include <SDL.h>
+#include "SDL.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "scene_manager.h"
-#include "texture_manager.h"
-#include "controller/game_controller.h"
-#include "view/ui_card.h"
-#include "model/game.h"
-#include "view/ui_button.h"
-#include <nfd.h>
-#include "utils/game_utils.h"
-#include <SDL_ttf.h>
-#include "service/game_service.h"
-#include "view/ui_manager.h"
-#include "utils/service_locator.h"
+#include "../view/texture_manager.h"
+#include "../controller/game_controller.h"
+#include "../view/ui_card.h"
+#include "../model/game.h"
+#include "../view/ui_button.h"
+#include "nfd.h"
+#include "../utils/game_utils.h"
+#include "SDL_ttf.h"
+#include "../service/game_service.h"
+#include "../view/ui_manager.h"
+#include "../utils/service_locator.h"
+#include "../model/deck.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -195,7 +196,7 @@ void renderSplitDialog() {
     SDL_RenderDrawRect(renderer, &splitIndexDialog.rect);
 
     // Render prompt text
-    TTF_Font* font = TTF_OpenFont("assets/fonts/arial.ttf", 18);
+    TTF_Font* font = TTF_OpenFont(FONT_FILEPATH, 18);
     if (font) {
         SDL_Color textColor = {0, 0, 0, 255};
 
@@ -311,6 +312,13 @@ void startupScene_init(void* data) {
     SDL_Renderer *renderer = serviceLocator_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    // Make all cards face up in the startup scene
+    GameState* gameState = serviceLocator_getGameState();
+    if (gameState && gameState->deck) {
+        showDeck(gameState->deck);
+    }
+
 
     int buttonWidth = 150;
     int buttonHeight = 60;

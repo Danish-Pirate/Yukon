@@ -1,12 +1,12 @@
-#include <SDL.h>
+#include "SDL.h"
 #include "scene_manager.h"
-#include "service/game_service.h"
-#include "utils/service_locator.h"
-#include "view/ui_card.h"
-#include "view/ui_button.h"
+#include "../service/game_service.h"
+#include "../utils/service_locator.h"
+#include "../view/ui_card.h"
+#include "../view/ui_button.h"
 #include "play_scene.h"
 #include "SDL_ttf.h"
-#include "view/ui_manager.h"
+#include "../view/ui_manager.h"
 
 typedef struct {
     bool isDragging;
@@ -181,8 +181,8 @@ static void drawVictoryDialog() {
     SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
     SDL_RenderDrawRect(renderer, &dialogRect);
 
-    TTF_Font* largeFont = TTF_OpenFont("assets/fonts/arial.ttf", 36);
-    TTF_Font* smallFont = TTF_OpenFont("assets/fonts/arial.ttf", 24);
+    TTF_Font* largeFont = TTF_OpenFont(FONT_FILEPATH, 36);
+    TTF_Font* smallFont = TTF_OpenFont(FONT_FILEPATH, 24);
 
     if (largeFont && smallFont) {
         SDL_Color titleColor = {0, 100, 0, 255};

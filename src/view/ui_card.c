@@ -3,7 +3,7 @@
 #include "../model/card.h"
 #include "ui_card.h"
 #include "../utils/service_locator.h"
-#include "../texture_manager.h"
+#include "texture_manager.h"
 #include "../utils/game_utils.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)

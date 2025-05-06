@@ -4,6 +4,8 @@
 #include "ui_button.h"
 #include "../model/card.h"
 
+#define FONT_FILEPATH "assets/fonts/arial.ttf"
+
 void uiManager_init(SDL_Renderer* renderer);
 void uiManager_cleanup();
 void uiManager_drawButton(UI_Button* button);
