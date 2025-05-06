@@ -12,7 +12,7 @@ GameState *initGame() {
         exit(1);
     }
     resetGame(gameState);
-    loadDeckFromFile(&gameState->deck, "createDeckFile.txt");
+    loadDeckFromFile(&gameState->deck, DECK_FILEPATH);
     return gameState;
 }
 void resetGame(GameState* gameState){

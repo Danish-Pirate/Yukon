@@ -4,6 +4,8 @@
 #include "../utils/game_utils.h"
 #include "../utils/linked_list.h"
 
+#define DECK_FILEPATH "assets/decks/default.txt"
+
 typedef enum DeckLoadResult {
     LOAD_SUCCESS,
     LOAD_ERROR_FILE_OPEN,
