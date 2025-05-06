@@ -1,5 +1,6 @@
 #include "game_service.h"
 #include "../utils/error_handler.h"
+#include "../model/deck.h"
 #include <stdlib.h>
 
 static GameState* gameState = NULL;

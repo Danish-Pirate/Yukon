@@ -8,10 +8,12 @@
 #include "view/ui_card.h"
 #include "model/game.h"
 #include "view/ui_button.h"
-#include "nfd.h"
+#include <nfd.h>
 #include "utils/game_utils.h"
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 #include "service/game_service.h"
+#include "view/ui_manager.h"
+#include "utils/service_locator.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -160,7 +162,9 @@ void processSplitDialogEvent(SDL_Event* event) {
 void renderSplitDialog() {
     if (!showSplitDialog) return;
 
-    SDL_Renderer* renderer = getRenderer();
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
 
     // Get the current deck size for prompt
     int deckSize = 52; // Default to standard deck size
@@ -178,7 +182,7 @@ void renderSplitDialog() {
     // Darken the background
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
-    SDL_Rect fullScreen = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Rect fullScreen = {0, 0, width, height};
     SDL_RenderFillRect(renderer, &fullScreen);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 
@@ -304,13 +308,17 @@ void renderSplitDialog() {
 }
 
 void startupScene_init(void* data) {
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
     // Define some button properties
     int buttonWidth = 150;  // Increased width from 125 to 150
     int buttonHeight = 60;
     int buttonSpacing = 20;
     int totalWidth = (buttonWidth * 6) + (buttonSpacing * 5);
-    int startX = (SCREEN_WIDTH - totalWidth) / 2;
-    int buttonY = SCREEN_HEIGHT - buttonHeight - 200; // 200px margin from bottom
+    int startX = (width - totalWidth) / 2;
+    int buttonY = height - buttonHeight - 200; // 200px margin from bottom
 
     // Button 1: Play
     UI_Button playButton = {
@@ -396,8 +404,8 @@ void startupScene_init(void* data) {
     int dialogWidth = 400;  // Increased width from 300 to 400
     int dialogHeight = 170; // Keep the same height
 
-    splitIndexDialog.rect.x = (SCREEN_WIDTH - dialogWidth) / 2;
-    splitIndexDialog.rect.y = (SCREEN_HEIGHT - dialogHeight) / 2;
+    splitIndexDialog.rect.x = (width - dialogWidth) / 2;
+    splitIndexDialog.rect.y = (height - dialogHeight) / 2;
     splitIndexDialog.rect.w = dialogWidth;
     splitIndexDialog.rect.h = dialogHeight;
     splitIndexDialog.cursor = 0;
@@ -421,12 +429,11 @@ void startupScene_update() {
 
 void startupScene_render() {
     SDL_Renderer *renderer = serviceLocator_getRenderer();
-    if (renderer == NULL) {
-        return;
-    }
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
 
     SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255);
-    SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Rect bgRect = {0, 0, width, height};
     SDL_RenderFillRect(renderer, &bgRect);
 
     drawDeck();
@@ -436,7 +443,7 @@ void startupScene_render() {
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect border = {10, 10, SCREEN_WIDTH - 20, SCREEN_HEIGHT - 90};
+    SDL_Rect border = {10, 10, width - 20, height - 90};
     SDL_RenderDrawRect(renderer, &border);
 
     if (showSplitDialog) {

@@ -6,6 +6,7 @@
 #include "../service/game_service.h"
 #include "../utils/service_locator.h"
 #include "../utils/error_handler.h"
+#include "../view/window.h"
 
 static void handleSceneChangeEvent(Event* event) {
     if (event->type != EVENT_SCENE_CHANGE) return;

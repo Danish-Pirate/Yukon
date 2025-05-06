@@ -5,6 +5,9 @@
 #include "view/ui_card.h"
 #include "view/ui_button.h"
 #include "play_scene.h"
+#include "SDL_ttf.h"
+#include "controller/game_controller.h"
+#include "view/ui_manager.h"
 
 typedef struct {
     bool isDragging;
@@ -156,17 +159,19 @@ static void backToStartupCallback() {
 
 static void drawVictoryDialog() {
     SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
-    SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Rect bgRect = {0, 0, width, height};
     SDL_RenderFillRect(renderer, &bgRect);
 
     int dialogWidth = 400;
     int dialogHeight = 200;
     SDL_Rect dialogRect = {
-            (SCREEN_WIDTH - dialogWidth) / 2,
-            (SCREEN_HEIGHT - dialogHeight) / 2,
+            (width - dialogWidth) / 2,
+            (height - dialogHeight) / 2,
             dialogWidth,
             dialogHeight
     };
@@ -189,7 +194,7 @@ static void drawVictoryDialog() {
             SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
             if (titleTexture) {
                 SDL_Rect titleRect = {
-                        (SCREEN_WIDTH - titleSurface->w) / 2,
+                        (width - titleSurface->w) / 2,
                         dialogRect.y + 30,
                         titleSurface->w,
                         titleSurface->h
@@ -203,7 +208,7 @@ static void drawVictoryDialog() {
         int buttonWidth = 100;
         int buttonHeight = 40;
         SDL_Rect buttonRect = {
-                (SCREEN_WIDTH - buttonWidth) / 2,
+                (width - buttonWidth) / 2,
                 dialogRect.y + dialogHeight - 50,
                 buttonWidth,
                 buttonHeight
@@ -330,14 +335,18 @@ static void drawColumns() {
 }
 
 void playScene_init(void* data) {
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
     eventSystem_publish(EVENT_PLAY_MODE_ENTER, NULL);
     eventSystem_subscribe(EVENT_GAME_WON, handleGameWonEvent);
 
     int buttonHeight = 60;
-    int buttonY = SCREEN_HEIGHT - buttonHeight - 200;
+    int buttonY = height - buttonHeight - 200;
 
     backButton.callback = backToStartupCallback;
-    backButton.displayRect.x = (SCREEN_WIDTH - 150) / 2;
+    backButton.displayRect.x = (width - 150) / 2;
     backButton.displayRect.y = buttonY;
     backButton.displayRect.w = 150;
     backButton.displayRect.h = buttonHeight;
@@ -345,6 +354,10 @@ void playScene_init(void* data) {
 }
 
 void playScene_handleEvent(SDL_Event* event) {
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
     const GameView* gameView = gameService_getView();
 
     if (gameView->isGameWon && event->type == SDL_MOUSEBUTTONDOWN &&
@@ -355,8 +368,8 @@ void playScene_handleEvent(SDL_Event* event) {
         int dialogHeight = 200;
 
         SDL_Rect buttonRect = {
-                (SCREEN_WIDTH - buttonWidth) / 2,
-                (SCREEN_HEIGHT - dialogHeight) / 2 + dialogHeight - 50,
+                (width - buttonWidth) / 2,
+                (height - dialogHeight) / 2 + dialogHeight - 50,
                 buttonWidth,
                 buttonHeight
         };
@@ -388,11 +401,14 @@ void playScene_update() {
 }
 
 void playScene_render() {
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    int width, height;
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
     const GameView* gameView = gameService_getView();
 
     SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255);
-    SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Rect bgRect = {0, 0, width, height};
     SDL_RenderFillRect(renderer, &bgRect);
 
     drawFoundationPiles();
@@ -405,7 +421,7 @@ void playScene_render() {
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect border = {10, 10, SCREEN_WIDTH - 20, SCREEN_HEIGHT - 90};
+    SDL_Rect border = {10, 10, width - 20, height - 90};
     SDL_RenderDrawRect(renderer, &border);
 }
 

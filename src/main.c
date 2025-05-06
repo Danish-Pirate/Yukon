@@ -1,5 +1,6 @@
 #include "controller/game_controller.h"
-#include "nfd.h"
+#include "view/window.h"
+#include <nfd.h>
 #include <SDL_ttf.h>
 #include <stdio.h>
 #include <time.h>
