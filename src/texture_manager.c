@@ -2,6 +2,7 @@
 #include <string.h>
 #include "SDL_render.h"
 #include "scene_manager.h"
+#include "utils/service_locator.h"
 
 #define cardTexAtlas_FILEPATH "assets/textures/card_atlas.bmp"
 
@@ -18,7 +19,7 @@ void textureManager_init() {
         return;
     }
 
-    cardTexAtlas = SDL_CreateTextureFromSurface(getRenderer(), surface);
+    cardTexAtlas = SDL_CreateTextureFromSurface(serviceLocator_getRenderer(), surface);
     SDL_FreeSurface(surface);
 
     if (cardTexAtlas == NULL) {

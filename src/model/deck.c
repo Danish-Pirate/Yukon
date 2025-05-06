@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "deck.h"
 #include "../utils/error_handler.h"
 
@@ -88,4 +89,85 @@ void saveDeckToFile(LinkedList *deck, char filePath[]) {
         current = current->nextNode;
     }
     fclose(file);
+}
+
+void toggleShowDeck(LinkedList *deck) {
+    if (deck == NULL) return;
+
+    Node* current = deck->head;
+    while (current != NULL) {
+        Card* card = (Card*)current->data;
+        card->isFaceUp = !card->isFaceUp;
+        current = current->nextNode;
+    }
+}
+// Fisher-Yates shuffle algorithm
+void randomShuffleDeck(LinkedList *deck) {
+    if (deck == NULL) return;
+
+    int count = 0;
+    Node* current = deck->head;
+    while (current != NULL) {
+        count++;
+        current = current->nextNode;
+    }
+
+    if (count <= 1) return; // No need to shuffle a deck with 0 or 1 card
+
+    Node** nodes = (Node**)malloc(count * sizeof(Node*));
+    if (nodes == NULL) return;
+
+    current = deck->head;
+    for (int i = 0; i < count; i++) {
+        nodes[i] = current;
+        current = current->nextNode;
+    }
+
+    for (int i = count - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+
+        void* temp = nodes[i]->data;
+        nodes[i]->data = nodes[j]->data;
+        nodes[j]->data = temp;
+    }
+
+    free(nodes);
+}
+
+void splitDeck(LinkedList *deck, int splitIndex) {
+    if (deck == NULL || deck->head == NULL || deck->head->nextNode == NULL) {
+        return; // Cannot split an empty or single-card deck
+    }
+
+    // Validate split index
+    int deckSize = 0;
+    Node* current = deck->head;
+    while (current != NULL) {
+        deckSize++;
+        current = current->nextNode;
+    }
+
+    // Handle negative index (random split)
+    if (splitIndex < 0 || splitIndex >= deckSize) {
+        splitIndex = rand() % (deckSize - 1) + 1; // Random index between 1 and deckSize-1
+    }
+
+    Node* splitNode = deck->head;
+    for (int i = 1; i < splitIndex; i++) {
+        splitNode = splitNode->nextNode;
+    }
+
+    Node* secondPart = splitNode->nextNode;
+    if (secondPart == NULL) return; // Cannot split at the last card
+
+    Node* oldTail = deck->tail;
+
+    splitNode->nextNode = NULL;
+
+    secondPart->prevNode = NULL;
+    deck->head->prevNode = oldTail;
+    oldTail->nextNode = deck->head;
+
+    deck->head = secondPart;
+    deck->tail = splitNode;
 }

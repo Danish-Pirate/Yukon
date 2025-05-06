@@ -8,6 +8,13 @@
 #include "../utils/error_handler.h"
 #include "../view/window.h"
 
+// Create an adapter function for gameService_handleDeckOperation
+static void handleDeckOperation(Event* event) {
+    if (event) {
+        gameService_handleDeckOperation(event->type, event->data);
+    }
+}
+
 static void handleSceneChangeEvent(Event* event) {
     if (event->type != EVENT_SCENE_CHANGE) return;
 
@@ -43,9 +50,9 @@ void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     textureManager_init();
 
     eventSystem_subscribe(EVENT_SCENE_CHANGE, handleSceneChangeEvent);
-    eventSystem_subscribe(EVENT_DECK_SHUFFLED, gameService_handleDeckOperation);
-    eventSystem_subscribe(EVENT_DECK_TOGGLED, gameService_handleDeckOperation);
-    eventSystem_subscribe(EVENT_DECK_SPLIT, gameService_handleDeckOperation);
+    eventSystem_subscribe(EVENT_DECK_SHUFFLED, handleDeckOperation);
+    eventSystem_subscribe(EVENT_DECK_TOGGLED, handleDeckOperation);
+    eventSystem_subscribe(EVENT_DECK_SPLIT, handleDeckOperation);
 
     SceneChangeData* data = malloc(sizeof(SceneChangeData));
     if (!data) {

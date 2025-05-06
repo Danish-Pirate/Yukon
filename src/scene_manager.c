@@ -3,6 +3,7 @@
 #include "view/ui_button.h"
 #include "play_scene.h"
 #include "utils/service_locator.h"
+#include "view/ui_manager.h"
 
 static Scene sceneRegistry[2];
 static Scene* currentScene = NULL;

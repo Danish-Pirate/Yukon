@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "ui_button.h"
+#include "../model/card.h"
 
 void uiManager_init(SDL_Renderer* renderer);
 void uiManager_cleanup();

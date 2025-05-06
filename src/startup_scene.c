@@ -92,7 +92,7 @@ void processSplitDialogEvent(SDL_Event* event) {
 
     // Get the current deck size for validation
     int deckSize = 52; // Default to standard deck size
-    GameState* gameState = gameManager_getGameState();
+    GameState* gameState = serviceLocator_getGameState();
     if (gameState && gameState->deck) {
         // Count the actual cards in the deck
         Node* current = gameState->deck->head;
@@ -168,7 +168,7 @@ void renderSplitDialog() {
 
     // Get the current deck size for prompt
     int deckSize = 52; // Default to standard deck size
-    GameState* gameState = gameManager_getGameState();
+    GameState* gameState = serviceLocator_getGameState();
     if (gameState && gameState->deck) {
         // Count the actual cards in the deck
         Node* current = gameState->deck->head;
