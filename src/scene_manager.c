@@ -20,13 +20,18 @@ void sceneManager_subscribeToEvents() {
 }
 
 void sceneManager_init() {
+    uiManager_init(serviceLocator_getRenderer());
+
     sceneRegistry[SCENE_STARTUP_MODE] = (Scene){
             .init = startupScene_init,
             .handleEvent = startupScene_handleEvent,
             .update = startupScene_update,
             .render = startupScene_render,
             .cleanup = startupScene_cleanup,
-            .type = SCENE_STARTUP_MODE
+            .type = SCENE_STARTUP_MODE,
+            .buttons = NULL,
+            .buttonCount = 0,
+            .sceneData = NULL
     };
 
     sceneRegistry[SCENE_PLAY_MODE] = (Scene){
@@ -35,7 +40,10 @@ void sceneManager_init() {
             .update = playScene_update,
             .render = playScene_render,
             .cleanup = playScene_cleanup,
-            .type = SCENE_PLAY_MODE
+            .type = SCENE_PLAY_MODE,
+            .buttons = NULL,
+            .buttonCount = 0,
+            .sceneData = NULL
     };
 
     initButtonFont();
@@ -47,6 +55,8 @@ void sceneManager_cleanup() {
         currentScene->cleanup();
     }
     currentScene = NULL;
+
+    uiManager_cleanup();
 }
 
 void sceneManager_changeScene(SceneType sceneType, void* data) {

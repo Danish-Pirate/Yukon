@@ -1,8 +1,8 @@
-#include "SDL.h"
+#include <SDL.h>
 #include <stdio.h>
 #include "../model/card.h"
 #include "ui_card.h"
-#include "scene_manager.h"
+#include "../utils/service_locator.h"
 #include "texture_manager.h"
 #include "../utils/game_utils.h"
 
@@ -30,12 +30,9 @@ SDL_Rect getCardTexRect(int rankNumber, int suitNumber, bool isFaceUp) {
     }
 }
 
-// Returns the coordinates (SDT_RECT) in the card texture where the rank number is used to find the x-coords and suit number for y-coords.
-// rankNumber: 0 is A and 12 is King
-// suitNumber: 0 (clubs), 1 (diamonds), 2 (hearts), 3 (spades)
 void drawCard(SDL_Rect screenRect, Card *card) {
     SDL_Rect texRect = getCardTexRect(card->rank, card->suit, card->isFaceUp);
-    SDL_RenderCopy(getRenderer(), getCardTexAtlas(), &texRect, &screenRect);
+    SDL_RenderCopy(serviceLocator_getRenderer(), getCardTexAtlas(), &texRect, &screenRect);
 }
 
 bool isCardHovered(int mouse_PosX, int mouse_PosY, SDL_Rect displayRect) {

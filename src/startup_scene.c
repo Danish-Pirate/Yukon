@@ -405,20 +405,13 @@ void startupScene_init(void* data) {
 }
 
 void startupScene_handleEvent(SDL_Event* event) {
-    // Process dialog input if dialog is active
     if (showSplitDialog) {
         processSplitDialogEvent(event);
         return;
     }
 
-    if (event->button.type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
-        int mouse_PosX = event->button.x;
-        int mouse_PosY = event->button.y;
-        for (int i = 0; i < buttonCount; ++i) {
-            if (isButtonHovered(mouse_PosX, mouse_PosY, UI_Buttons[i].displayRect)) {
-                UI_Buttons[i].callback();
-            }
-        }
+    if (uiManager_handleButtonEvents(UI_Buttons, buttonCount, event)) {
+        return;
     }
 }
 
@@ -427,29 +420,25 @@ void startupScene_update() {
 }
 
 void startupScene_render() {
-    SDL_Renderer *renderer = getRenderer();
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
     if (renderer == NULL) {
         return;
     }
 
-    // Set background color
-    SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255); // Dark green background
+    SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255);
     SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(renderer, &bgRect);
 
     drawDeck();
 
-    // Draw buttons
     for (int i = 0; i < buttonCount; ++i) {
-        drawButton(UI_Buttons[i]);
+        uiManager_drawButton(&UI_Buttons[i]);
     }
 
-    // Draw a border around the rendering area
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect border = {10, 10, SCREEN_WIDTH - 20, SCREEN_HEIGHT - 90};
     SDL_RenderDrawRect(renderer, &border);
 
-    // Render dialog if active
     if (showSplitDialog) {
         renderSplitDialog();
     }

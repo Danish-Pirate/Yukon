@@ -349,7 +349,6 @@ void playScene_handleEvent(SDL_Event* event) {
 
     if (gameView->isGameWon && event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
-
         int buttonWidth = 100;
         int buttonHeight = 40;
         int dialogWidth = 400;
@@ -370,12 +369,11 @@ void playScene_handleEvent(SDL_Event* event) {
         return;
     }
 
-    if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
-        if (isButtonHovered(event->button.x, event->button.y, backButton.displayRect)) {
-            backButton.callback();
-            return;
-        }
+    if (uiManager_handleButtonEvents(&backButton, 1, event)) {
+        return;
+    }
 
+    if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
         tryStartDragging(event->button.x, event->button.y);
     }
     else if (event->type == SDL_MOUSEMOTION && dragState.isDragging) {
@@ -399,7 +397,8 @@ void playScene_render() {
 
     drawFoundationPiles();
     drawColumns();
-    drawButton(backButton);
+
+    uiManager_drawButton(&backButton);
 
     if(gameView->isGameWon) {
         drawVictoryDialog();

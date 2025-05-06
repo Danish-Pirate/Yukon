@@ -1,7 +1,7 @@
 #include "SDL_ttf.h"
-#include "scene_manager.h"
 #include "ui_button.h"
 #include "../utils/game_utils.h"
+#include "../utils/service_locator.h"
 #include <stdio.h>
 
 static TTF_Font* buttonFont = NULL;
@@ -16,17 +16,14 @@ void initButtonFont() {
 }
 
 void drawButton(UI_Button button) {
-    SDL_Renderer* renderer = getRenderer();
+    SDL_Renderer* renderer = serviceLocator_getRenderer();
 
-    // Draw button background
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderFillRect(renderer, &button.displayRect);
 
-    // Draw button border
     SDL_SetRenderDrawColor(renderer, 0, 150, 0, 255);
     SDL_RenderDrawRect(renderer, &button.displayRect);
 
-    // Render text
     if (button.label != NULL && buttonFont != NULL) {
         SDL_Color textColor = {255, 255, 255, 255};
         SDL_Surface* textSurface = TTF_RenderText_Solid(buttonFont, button.label, textColor);
