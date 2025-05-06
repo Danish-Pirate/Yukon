@@ -1,7 +1,9 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "deck.h"
-#include "core/utils/error_handler.h"
+#include "../utils/error_handler.h"
+#include "utils/linked_list.h"
 
 DeckLoadResult loadDeckFromFile(LinkedList **deck, const char *filePath) {
     FILE* file = fopen(filePath, "r");

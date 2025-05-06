@@ -1,31 +1,42 @@
-#include "gui_service_locator.h"
+#include "service_locator.h"
 #include <stdlib.h>
 
+static GameState* gameStateInstance = NULL;
 static SDL_Renderer* rendererInstance = NULL;
 static SDL_Window* windowInstance = NULL;
 
-void guiServiceLocator_init() {
+void serviceLocator_init() {
+    gameStateInstance = NULL;
     rendererInstance = NULL;
     windowInstance = NULL;
 }
 
-void guiServiceLocator_cleanup() {
+void serviceLocator_cleanup() {
+    gameStateInstance = NULL;
     rendererInstance = NULL;
     windowInstance = NULL;
 }
 
-void guiServiceLocator_registerRenderer(SDL_Renderer* renderer) {
+void serviceLocator_registerGameState(GameState* state) {
+    gameStateInstance = state;
+}
+
+GameState* serviceLocator_getGameState() {
+    return gameStateInstance;
+}
+
+void serviceLocator_registerRenderer(SDL_Renderer* renderer) {
     rendererInstance = renderer;
 }
 
-SDL_Renderer* guiServiceLocator_getRenderer() {
+SDL_Renderer* serviceLocator_getRenderer() {
     return rendererInstance;
 }
 
-void guiServiceLocator_registerWindow(SDL_Window* window) {
+void serviceLocator_registerWindow(SDL_Window* window) {
     windowInstance = window;
 }
 
-SDL_Window* guiServiceLocator_getWindow() {
+SDL_Window* serviceLocator_getWindow() {
     return windowInstance;
 }

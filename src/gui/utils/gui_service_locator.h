@@ -3,9 +3,15 @@
 #include "SDL2/SDL.h"
 #include "core/include/yukon_core.h"
 
-void guiServiceLocator_init();
-void guiServiceLocator_cleanup();
-void guiServiceLocator_registerRenderer(SDL_Renderer* renderer);
-SDL_Renderer* guiServiceLocator_getRenderer();
-void guiServiceLocator_registerWindow(SDL_Window* window);
-SDL_Window* guiServiceLocator_getWindow();
+void serviceLocator_init();
+void serviceLocator_cleanup();
+
+// Game state
+void serviceLocator_registerGameState(GameState* state);
+GameState* serviceLocator_getGameState();
+
+// GUI components
+void serviceLocator_registerRenderer(SDL_Renderer* renderer);
+SDL_Renderer* serviceLocator_getRenderer();
+void serviceLocator_registerWindow(SDL_Window* window);
+SDL_Window* serviceLocator_getWindow();

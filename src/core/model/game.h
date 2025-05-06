@@ -3,17 +3,13 @@
 #include <stdbool.h>
 #include "utils/linked_list.h"
 #include "card.h"
+#include "yukon_core.h"
 
 #define DECK_SIZE 52 // Size of card deck
 #define COLUMNS_SIZE 7  // Number of card columns
 #define PILES_SIZE 4    // Number of card foundation piles
 
-typedef enum {
-    StartupPhase,
-    PlayPhase,
-} GamePhase;
-
-typedef struct {
+typedef struct GameState {
     LinkedList *cardColumns[COLUMNS_SIZE];
     LinkedList *cardFoundationPiles[PILES_SIZE];
     LinkedList *deck;

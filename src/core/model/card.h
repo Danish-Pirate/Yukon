@@ -2,14 +2,14 @@
 
 #include <stdbool.h>
 
-typedef enum {
+typedef enum Suit {
     INVALID_SUIT = -1,
     CLUBS,
     DIAMONDS,
     HEARTS,
     SPADES
 } Suit;
-typedef enum {
+typedef enum Rank {
     INVALID_RANK = -1,
     ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN,
     JACK, QUEEN, KING

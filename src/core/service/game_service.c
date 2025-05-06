@@ -2,6 +2,7 @@
 #include "../utils/error_handler.h"
 #include "../model/deck.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static GameState* gameState = NULL;
 static GameView currentView = {0};

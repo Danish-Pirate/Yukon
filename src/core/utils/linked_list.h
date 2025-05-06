@@ -1,15 +1,9 @@
 #pragma once
 
-#include <malloc.h>
-#include "yukon_core.h"
+#include <stdlib.h>
+#include "../include/data_structures.h"
 
-// ### Linked List ###
-typedef struct Node {
-    void *data;
-    struct Node *prevNode;
-    struct Node *nextNode;
-} Node;
-
+void spliceList(LinkedList* srcList, LinkedList* dstList, Node* start);
 LinkedList* createList(size_t elementSize);
 void addNodeToFront(LinkedList* list, void* data);
 void addNodeToBack(LinkedList* list, void* data);

@@ -59,7 +59,6 @@ void yukon_eventSystem_publish(EventType type, void* data) {
     eventSystem_publish(type, data);
 }
 
-// Implement the rest of the API functions by calling internal functions
 void yukon_enterPlayMode(GameState* gameState) {
     enterPlayMode(gameState);
 }
@@ -97,4 +96,43 @@ void yukon_splitDeck(GameState* gameState, int splitIndex) {
     splitDeck(gameState->deck, splitIndex);
 }
 
-// ... additional implementation of remaining API functions
+// New API functions implementation
+const GameView* yukon_getGameView(GameState* gameState) {
+    static GameView view;
+    view.isGameWon = gameState->gameWon;
+    view.currentPhase = gameState->gamePhase;
+    return &view;
+}
+
+bool yukon_getIsGameWon(const GameView* view) {
+    return view->isGameWon;
+}
+
+GamePhase yukon_getGamePhase(const GameView* view) {
+    return view->currentPhase;
+}
+
+Card* yukon_getCard(GameState* gameState, int columnIndex, int cardIndex) {
+    if (columnIndex >= 0 && columnIndex < COLUMNS_SIZE) {
+        LinkedList* column = gameState->cardColumns[columnIndex];
+        Node* node = getNode(column, cardIndex);
+        return node ? node->data : NULL;
+    }
+    return NULL;
+}
+
+const char* yukon_cardToString(Card* card) {
+    return cardToString(card);
+}
+
+bool yukon_isCardFaceUp(Card* card) {
+    return card ? card->isFaceUp : false;
+}
+
+Rank yukon_getCardRank(Card* card) {
+    return card ? card->rank : INVALID_RANK;
+}
+
+Suit yukon_getCardSuit(Card* card) {
+    return card ? card->suit : INVALID_SUIT;
+}

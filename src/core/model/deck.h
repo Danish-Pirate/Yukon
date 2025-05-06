@@ -1,8 +1,7 @@
 #pragma once
 
 #include "card.h"
-#include "../utils/game_utils.h"
-#include "../utils/linked_list.h"
+#include "yukon_core.h"
 
 #define DECK_FILEPATH "assets/decks/default.txt"
 

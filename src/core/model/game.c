@@ -4,6 +4,7 @@
 #include "deck.h"
 #include <stdio.h>
 #include <string.h>
+#include <utils/linked_list.h>
 
 GameState *initGame() {
     GameState *gameState = malloc(sizeof(GameState));

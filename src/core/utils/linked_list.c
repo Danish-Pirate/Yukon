@@ -1,5 +1,5 @@
-#include "linked_list.h"
 #include <malloc.h>
+#include "yukon_core.h"
 
 // ### Linked List ###
 LinkedList* createList(size_t elementSize) {
