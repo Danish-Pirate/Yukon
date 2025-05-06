@@ -1,10 +1,11 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include <stdio.h>
 #include "../model/card.h"
 #include "ui_card.h"
 #include "../utils/service_locator.h"
 #include "texture_manager.h"
 #include "../utils/game_utils.h"
+#include "gui_utils.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)
 #define FACEDOWN_CARD_TEXCOORDS_Y (CARD_HEIGHT * 4)

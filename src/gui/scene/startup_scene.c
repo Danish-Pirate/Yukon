@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,13 +8,14 @@
 #include "../view/ui_card.h"
 #include "../model/game.h"
 #include "../view/ui_button.h"
-#include <nfd.h>
+#include "nativefiledialog-extended/src/include/nfd.h"
 #include "../utils/game_utils.h"
-#include <SDL_ttf.h>
-#include "../service/game_service.h"
+#include "SDL_ttf/SDL_ttf.h"
+#include "service/game_service.h"
 #include "../view/ui_manager.h"
 #include "../utils/service_locator.h"
 #include "../model/deck.h"
+#include "view/gui_utils.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;

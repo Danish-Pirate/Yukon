@@ -1,12 +1,12 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include "game_controller.h"
-#include "../scene/scene_manager.h"
-#include "../view/texture_manager.h"
-#include <nfd.h>
-#include "../service/game_service.h"
+#include "scene/scene_manager.h"
+#include "view/texture_manager.h"
+#include "nativefiledialog-extended/src/include/nfd.h"
+#include "service/game_service.h"
 #include "../utils/service_locator.h"
 #include "../utils/error_handler.h"
-#include "../view/window.h"
+#include "view/window.h"
 
 static void handleDeckOperation(Event* event) {
     if (event) {

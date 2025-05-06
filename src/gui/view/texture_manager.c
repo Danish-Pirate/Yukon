@@ -2,7 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "SDL_render.h"
-#include "../scene/scene_manager.h"
+#include "scene/scene_manager.h"
 #include "../utils/service_locator.h"
 
 #define cardTexAtlas_FILEPATH "assets/textures/card_atlas.bmp"

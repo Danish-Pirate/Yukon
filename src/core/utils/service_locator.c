@@ -29,10 +29,6 @@ void serviceLocator_registerWindow(SDL_Window* window) {
     windowInstance = window;
 }
 
-SDL_Window* serviceLocator_getWindow() {
-    return windowInstance;
-}
-
 void serviceLocator_registerGameState(GameState* state) {
     gameStateInstance = state;
 }

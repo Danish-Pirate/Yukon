@@ -1,8 +1,7 @@
 #pragma once
 
 #include "card.h"
-#include "../utils/game_utils.h"
-#include "../utils/linked_list.h"
+#include "core/utils/linked_list.h"
 
 #define DECK_SIZE 52 // Size of card deck
 #define COLUMNS_SIZE 7  // Number of card columns

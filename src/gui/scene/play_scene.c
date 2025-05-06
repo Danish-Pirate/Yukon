@@ -1,11 +1,12 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include "scene_manager.h"
-#include "../service/game_service.h"
+#include "service/game_service.h"
 #include "../utils/service_locator.h"
 #include "../view/ui_card.h"
 #include "play_scene.h"
-#include <SDL_ttf.h>
+#include "SDL_ttf/SDL_ttf.h"
 #include "../view/ui_manager.h"
+#include "view/gui_utils.h"
 
 typedef struct {
     bool isDragging;

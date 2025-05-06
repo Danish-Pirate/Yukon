@@ -1,7 +1,7 @@
 #include "controller/game_controller.h"
 #include "view/window.h"
-#include <nfd.h>
-#include <SDL_ttf.h>
+#include "nativefiledialog-extended/src/include/nfd.h"
+#include "SDL_ttf/SDL_ttf.h"
 #include <stdio.h>
 #include <time.h>
 
