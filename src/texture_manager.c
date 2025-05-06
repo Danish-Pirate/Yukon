@@ -28,5 +28,8 @@ void textureManager_init() {
 }
 
 void textureManager_cleanup() {
-
+    if (cardTexAtlas != NULL) {
+        SDL_DestroyTexture(cardTexAtlas);
+        cardTexAtlas = NULL;
+    }
 }

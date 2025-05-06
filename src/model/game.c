@@ -30,39 +30,58 @@ void quitGame(GameState* gameState) {
     gameState->gameWon = true;
 }
 void enterPlayMode(GameState* gameState) {
-
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
     unsigned int stackLengths[] = {0,0,0,0,0,0,0};
     Node* deckHead = gameState->deck->head;
-    // Iterate though all cards in deck
+
+    // Iterate through all cards in deck
     while(deckHead != NULL) {
         for (int i = 0; i < COLUMNS_SIZE; i++) {
-            // Check is column is not full
-            if (stackLengths[i] < stackMaxLengths[i]) {
-                // Add card to column
-                addNodeToBack(gameState->cardColumns[i],deckHead->data);
+            // Check if column is not full
+            if (stackLengths[i] < stackMaxLengths[i] && deckHead != NULL) {
+                // Add reference to the card in the column
+                Card* card = (Card*)deckHead->data;
 
-                // Set isFaceUp
-                Card* card = gameState->cardColumns[i]->tail->data;
-                card->isFaceUp = stackLengths[i] < i ? false : true;;
+                // Add card reference to column
+                addNodeToBack(gameState->cardColumns[i], card);
+
+                // Set isFaceUp property on the card
+                card->isFaceUp = stackLengths[i] < i ? false : true;
 
                 stackLengths[i]++;
                 deckHead = deckHead->nextNode;
             }
         }
     }
+
+    // Debug: Print column sizes
+    printf("Enter Play Mode - Column counts: ");
+    for (int i = 0; i < COLUMNS_SIZE; i++) {
+        size_t colSize = size(gameState->cardColumns[i]);
+        printf("%zu ", colSize);
+    }
+    printf("\n");
+
     gameState->gamePhase = PlayPhase;
 }
 void exitPlayMode(GameState* gameState) {
-
-    // Store deck pointer
     LinkedList *deck = gameState->deck;
-    // Store last command
-    char lastCommand[100];
-    // Set all cards to face down
+
+    for (int i = 0; i < COLUMNS_SIZE; i++) {
+        if (gameState->cardColumns[i]) {
+            freeListExcludeData(gameState->cardColumns[i]);
+        }
+    }
+
+    for (int i = 0; i < PILES_SIZE; i++) {
+        if (gameState->cardFoundationPiles[i]) {
+            freeListExcludeData(gameState->cardFoundationPiles[i]);
+        }
+    }
+
     resetGame(gameState);
-    // Set deck pointer to stored deck
+
     gameState->deck = deck;
 }
 void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {

@@ -49,20 +49,12 @@ void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     sceneManager_init();
     textureManager_init();
 
-    eventSystem_subscribe(EVENT_SCENE_CHANGE, handleSceneChangeEvent);
+    sceneManager_subscribeToEvents();
     eventSystem_subscribe(EVENT_DECK_SHUFFLED, handleDeckOperation);
     eventSystem_subscribe(EVENT_DECK_TOGGLED, handleDeckOperation);
     eventSystem_subscribe(EVENT_DECK_SPLIT, handleDeckOperation);
 
-    SceneChangeData* data = malloc(sizeof(SceneChangeData));
-    if (!data) {
-        errorHandler_reportError(ERROR_MEMORY_ALLOCATION, "Failed to allocate memory for scene change data");
-        return;
-    }
-
-    data->type = SCENE_STARTUP_MODE;
-    data->data = NULL;
-    eventSystem_publish(EVENT_SCENE_CHANGE, data);
+    sceneManager_changeScene(SCENE_STARTUP_MODE, NULL);
 }
 
 void loopGameController() {

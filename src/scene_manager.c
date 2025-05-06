@@ -7,12 +7,35 @@
 
 static Scene sceneRegistry[2];
 static Scene* currentScene = NULL;
+static SceneChangeData* lastSceneChangeData = NULL;
 
 void sceneManager_handleSceneChangeEvent(Event* event) {
     if (event->type != EVENT_SCENE_CHANGE) return;
 
     SceneChangeData* data = (SceneChangeData*)event->data;
-    sceneManager_changeScene(data->type, data->data);
+
+    if (!data) {
+        fprintf(stderr, "ERROR: Null scene change data\n");
+        return;
+    }
+
+    // Validate scene type
+    if (data->type != SCENE_STARTUP_MODE && data->type != SCENE_PLAY_MODE) {
+        fprintf(stderr, "ERROR: Invalid scene type: %d\n", data->type);
+        free(data);
+        return;
+    }
+
+    SceneType type = data->type;
+    void* sceneData = data->data;
+
+    if (lastSceneChangeData == data) {
+        fprintf(stderr, "WARNING: Attempt to process same scene change data twice\n");
+        return;
+    }
+    lastSceneChangeData = data;
+
+    sceneManager_changeScene(type, sceneData);
     free(data);
 }
 
@@ -21,6 +44,8 @@ void sceneManager_subscribeToEvents() {
 }
 
 void sceneManager_init() {
+    currentScene = NULL;
+
     uiManager_init(serviceLocator_getRenderer());
 
     sceneRegistry[SCENE_STARTUP_MODE] = (Scene){
@@ -60,7 +85,14 @@ void sceneManager_cleanup() {
     uiManager_cleanup();
 }
 
+// In scene_manager.c
 void sceneManager_changeScene(SceneType sceneType, void* data) {
+    // Validate scene type to prevent crashes
+    if (sceneType != SCENE_STARTUP_MODE && sceneType != SCENE_PLAY_MODE) {
+        fprintf(stderr, "ERROR: Invalid scene type: %d\n", sceneType);
+        return; // Don't crash with invalid scene
+    }
+
     if (currentScene && currentScene->cleanup) {
         currentScene->cleanup();
     }
@@ -83,11 +115,30 @@ void sceneManager_update() {
 
 void sceneManager_render() {
     SDL_Renderer* renderer = serviceLocator_getRenderer();
+
+    // Debug: Check if renderer is valid
+    if (!renderer) {
+        printf("Renderer is NULL in sceneManager_render!\n");
+        return;
+    }
+
+    // Set a distinct color to see if rendering is happening at all
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    if (currentScene && currentScene->render) {
-        currentScene->render();
+    // Debug: draw a test rectangle to see if anything renders
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_Rect testRect = {100, 100, 200, 200};
+    SDL_RenderFillRect(renderer, &testRect);
+
+    if (currentScene) {
+        if (currentScene->render) {
+            currentScene->render();
+        } else {
+            printf("Current scene has no render function!\n");
+        }
+    } else {
+        printf("No current scene in sceneManager_render!\n");
     }
 
     SDL_RenderPresent(renderer);
