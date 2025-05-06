@@ -375,7 +375,7 @@ void startupScene_init(void* data) {
                     .w = buttonWidth,
                     .h = buttonHeight
             },
-            .label = "Reveal Deck"
+            .label = "Show/Hide"
     };
     UI_Buttons[3] = revealDeckButton;
 
