@@ -1,48 +1,51 @@
 #include <SDL.h>
-#include <stdio.h>
 #include "scene_manager.h"
-#include "model/game.h"
+#include "service/game_service.h"
+#include "utils/service_locator.h"
 #include "model/ui_card.h"
-#include "controller/game_controller.h"
-#include "play_scene.h"
-#include "utils/game_utils.h"
 #include "model/ui_button.h"
-#include "SDL_ttf.h"
+#include "play_scene.h"
 
 typedef struct {
     bool isDragging;
     int sourceColumnIndex;
-    Node* selectedNode;        // First node in the chain being dragged
+    Node* selectedNode;
     int dragOffsetX;
     int dragOffsetY;
-    SDL_Rect dragBaseRect;     // Base rectangle for the first card
-    int cardCount;             // Number of cards being dragged
+    SDL_Rect dragBaseRect;
+    int cardCount;
 } DragState;
 
 static DragState dragState = {0};
 static UI_Button backButton;
 
-static bool tryStartDragging(int mouseX, int mouseY) {
-    GameState* gameState = gameManager_getGameState();
+static void handleGameWonEvent(Event* event) {
+    if (event->type != EVENT_GAME_WON) return;
 
-    // Check card columns
+    const GameView* gameView = gameService_getView();
+
+    if (gameView->isGameWon) {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Game won!");
+    }
+}
+
+static bool tryStartDragging(int mouseX, int mouseY) {
+    GameState* gameState = serviceLocator_getGameState();
+
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
         LinkedList* column = gameState->cardColumns[colIdx];
         if (column->head == NULL) continue;
 
-        // Store the card that is clickable (topmost at each position)
         Node* clickableNode = NULL;
         SDL_Rect clickableRect = {0};
         int cardCount = 0;
 
-        // Calculate positions for all cards to find the one under the cursor
         Node* tempNode = column->head;
         int cardY = COLUMN_Y_START;
 
         while (tempNode != NULL) {
             Card* card = (Card*)tempNode->data;
 
-            // Only face-up cards can be dragged
             if (card->isFaceUp) {
                 SDL_Rect cardRect = {
                         .x = COLUMN_X_START + (colIdx * COLUMN_X_SPACING),
@@ -51,13 +54,10 @@ static bool tryStartDragging(int mouseX, int mouseY) {
                         .h = CARD_DISPLAY_HEIGHT
                 };
 
-                // If mouse is over this card
                 if (isCardHovered(mouseX, mouseY, cardRect)) {
-                    // This is a candidate for selection
                     clickableNode = tempNode;
                     clickableRect = cardRect;
 
-                    // Count how many cards are below this one (including this one)
                     Node* countNode = tempNode;
                     cardCount = 0;
                     while (countNode != NULL) {
@@ -71,7 +71,6 @@ static bool tryStartDragging(int mouseX, int mouseY) {
             tempNode = tempNode->nextNode;
         }
 
-        // If we found a card to drag
         if (clickableNode != NULL) {
             dragState.isDragging = true;
             dragState.sourceColumnIndex = colIdx;
@@ -93,12 +92,9 @@ static void updateDragPosition(int mouseX, int mouseY) {
 }
 
 static void handleDrop(int mouseX, int mouseY) {
-    // Variables to track drop target
     int targetFoundation = -1;
     int targetColumn = -1;
-    GameState* gameState = gameManager_getGameState();
 
-    // Check foundation piles first
     for (int i = 0; i < PILES_SIZE; i++) {
         SDL_Rect foundRect = {
                 .x = FOUNDATION_X_START,
@@ -113,27 +109,19 @@ static void handleDrop(int mouseX, int mouseY) {
         }
     }
 
-    // Process foundation drop
     if (targetFoundation != -1) {
-        // Only allow drops if dragging from a column
         if (dragState.sourceColumnIndex < COLUMNS_SIZE) {
             Card* card = (Card*)dragState.selectedNode->data;
 
-            // Make sure we're dragging exactly one card (foundation only takes single cards)
             if (dragState.cardCount == 1) {
-                // Foundation index is column index + COLUMNS_SIZE
                 int foundationIndex = targetFoundation + COLUMNS_SIZE;
-
-                // Move the card to the foundation
-                gameManager_moveCard(gameState, card->rank, card->suit,
+                gameService_moveCard(card->rank, card->suit,
                                      dragState.sourceColumnIndex, foundationIndex);
             }
-            // Check if the game has been won after a foundation pile move
-            gameManager_isGameWon(gameManager_getGameState());
+            gameService_checkGameWon();
         }
     }
     else {
-        // Check columns (keeping the original column detection code)
         for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
             int colX = COLUMN_X_START + (colIdx * COLUMN_X_SPACING);
 
@@ -147,27 +135,33 @@ static void handleDrop(int mouseX, int mouseY) {
 
         if (targetColumn != -1 && targetColumn != dragState.sourceColumnIndex) {
             Card* firstCard = (Card*)dragState.selectedNode->data;
-
-            gameManager_moveCard(gameState, firstCard->rank, firstCard->suit,
+            gameService_moveCard(firstCard->rank, firstCard->suit,
                                  dragState.sourceColumnIndex, targetColumn);
         }
     }
 
-    // Reset drag state
     dragState.isDragging = false;
     dragState.selectedNode = NULL;
     dragState.cardCount = 0;
 }
 
+static void backToStartupCallback() {
+    eventSystem_publish(EVENT_PLAY_MODE_EXIT, NULL);
+
+    SceneChangeData* data = malloc(sizeof(SceneChangeData));
+    data->type = SCENE_STARTUP_MODE;
+    data->data = NULL;
+    eventSystem_publish(EVENT_SCENE_CHANGE, data);
+}
+
 static void drawVictoryDialog() {
-    SDL_Renderer *renderer = getRenderer();
-    // Create a semi-transparent overlay for the victory dialog
+    SDL_Renderer *renderer = serviceLocator_getRenderer();
+
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180); // Semi-transparent black
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
     SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(renderer, &bgRect);
 
-    // Draw the dialog box
     int dialogWidth = 400;
     int dialogHeight = 200;
     SDL_Rect dialogRect = {
@@ -177,23 +171,19 @@ static void drawVictoryDialog() {
             dialogHeight
     };
 
-    // Dialog background
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); // Light gray
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
     SDL_RenderFillRect(renderer, &dialogRect);
 
-    // Dialog border
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); // Dark gray
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
     SDL_RenderDrawRect(renderer, &dialogRect);
 
-    // Display the victory messages
     TTF_Font* largeFont = TTF_OpenFont("assets/fonts/arial.ttf", 36);
     TTF_Font* smallFont = TTF_OpenFont("assets/fonts/arial.ttf", 24);
 
     if (largeFont && smallFont) {
-        SDL_Color titleColor = {0, 100, 0, 255}; // Dark green
-        SDL_Color textColor = {0, 0, 0, 255};    // Black
+        SDL_Color titleColor = {0, 100, 0, 255};
+        SDL_Color textColor = {0, 0, 0, 255};
 
-        // Render "VICTORY!" text
         SDL_Surface* titleSurface = TTF_RenderText_Solid(largeFont, "VICTORY!", titleColor);
         if (titleSurface) {
             SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
@@ -210,41 +200,6 @@ static void drawVictoryDialog() {
             SDL_FreeSurface(titleSurface);
         }
 
-        // Render "Congratulations!" text
-        SDL_Surface* congratsSurface = TTF_RenderText_Solid(smallFont, "Congratulations!", textColor);
-        if (congratsSurface) {
-            SDL_Texture* congratsTexture = SDL_CreateTextureFromSurface(renderer, congratsSurface);
-            if (congratsTexture) {
-                SDL_Rect congratsRect = {
-                        (SCREEN_WIDTH - congratsSurface->w) / 2,
-                        dialogRect.y + 80,
-                        congratsSurface->w,
-                        congratsSurface->h
-                };
-                SDL_RenderCopy(renderer, congratsTexture, NULL, &congratsRect);
-                SDL_DestroyTexture(congratsTexture);
-            }
-            SDL_FreeSurface(congratsSurface);
-        }
-
-        // Render "You've won the game!" text
-        SDL_Surface* wonSurface = TTF_RenderText_Solid(smallFont, "You've won the game!", textColor);
-        if (wonSurface) {
-            SDL_Texture* wonTexture = SDL_CreateTextureFromSurface(renderer, wonSurface);
-            if (wonTexture) {
-                SDL_Rect wonRect = {
-                        (SCREEN_WIDTH - wonSurface->w) / 2,
-                        dialogRect.y + 120,
-                        wonSurface->w,
-                        wonSurface->h
-                };
-                SDL_RenderCopy(renderer, wonTexture, NULL, &wonRect);
-                SDL_DestroyTexture(wonTexture);
-            }
-            SDL_FreeSurface(wonSurface);
-        }
-
-        // Draw a button (optional)
         int buttonWidth = 100;
         int buttonHeight = 40;
         SDL_Rect buttonRect = {
@@ -254,16 +209,13 @@ static void drawVictoryDialog() {
                 buttonHeight
         };
 
-        // Button background
-        SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255); // Dark green
+        SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
         SDL_RenderFillRect(renderer, &buttonRect);
 
-        // Button border
-        SDL_SetRenderDrawColor(renderer, 0, 50, 0, 255); // Darker green
+        SDL_SetRenderDrawColor(renderer, 0, 50, 0, 255);
         SDL_RenderDrawRect(renderer, &buttonRect);
 
-        // Button text ("OK")
-        SDL_Surface* buttonSurface = TTF_RenderText_Solid(smallFont, "OK", (SDL_Color){255, 255, 255, 255}); // White
+        SDL_Surface* buttonSurface = TTF_RenderText_Solid(smallFont, "OK", (SDL_Color){255, 255, 255, 255});
         if (buttonSurface) {
             SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
             if (buttonTexture) {
@@ -279,22 +231,18 @@ static void drawVictoryDialog() {
             SDL_FreeSurface(buttonSurface);
         }
 
-        // Clean up fonts
         TTF_CloseFont(largeFont);
         TTF_CloseFont(smallFont);
     }
 
-    // Reset blend mode
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
 static void drawFoundationPiles() {
-    SDL_Renderer* renderer = getRenderer();
-    GameState* gameState = gameManager_getGameState();
+    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    GameState* gameState = serviceLocator_getGameState();
 
-    // Draw the 4 foundation slots
     for (int i = 0; i < PILES_SIZE; i++) {
-        // Draw empty foundation slot outline
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
         SDL_Rect foundationRect = {
                 .x = FOUNDATION_X_START,
@@ -304,7 +252,6 @@ static void drawFoundationPiles() {
         };
         SDL_RenderDrawRect(renderer, &foundationRect);
 
-        // If there are cards in the foundation pile, draw the top card
         if (gameState->cardFoundationPiles[i]->head != NULL) {
             Card* topCard = (Card*)gameState->cardFoundationPiles[i]->tail->data;
             SDL_Rect cardRect = {
@@ -319,30 +266,27 @@ static void drawFoundationPiles() {
 }
 
 static void drawColumns() {
-    GameState* gameState = gameManager_getGameState();
+    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    GameState* gameState = serviceLocator_getGameState();
 
-    // Draw the 7 columns
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
         LinkedList* column = gameState->cardColumns[colIdx];
 
-        // Draw outline for column
-        SDL_SetRenderDrawColor(getRenderer(), 100, 100, 100, 255);
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
         SDL_Rect emptyColRect = {
                 .x = COLUMN_X_START + (colIdx * COLUMN_X_SPACING),
                 .y = COLUMN_Y_START,
                 .w = CARD_DISPLAY_WIDTH,
                 .h = CARD_DISPLAY_HEIGHT
         };
-        SDL_RenderDrawRect(getRenderer(), &emptyColRect);
+        SDL_RenderDrawRect(renderer, &emptyColRect);
 
-        // Draw all cards in the column if it has cards
         if (column->head != NULL) {
             Node* currentNode = column->head;
             int cardY = COLUMN_Y_START;
             bool skipDrawing = false;
 
             while (currentNode != NULL) {
-                // If this is the card being dragged, skip it and all subsequent cards
                 if (dragState.isDragging && currentNode == dragState.selectedNode &&
                     colIdx == dragState.sourceColumnIndex) {
                     skipDrawing = true;
@@ -359,19 +303,16 @@ static void drawColumns() {
                     drawCard(cardRect, card);
                 }
 
-                // Move down for the next card in the column, with offset
                 cardY += COLUMN_Y_CARD_OFFSET;
                 currentNode = currentNode->nextNode;
             }
         }
     }
 
-    // Draw the dragged cards on top if dragging
     if (dragState.isDragging && dragState.selectedNode != NULL) {
         Node* dragNode = dragState.selectedNode;
         int offsetY = 0;
 
-        // Draw each card in the stack
         while (dragNode != NULL) {
             Card* card = (Card*)dragNode->data;
             SDL_Rect cardRect = {
@@ -388,39 +329,27 @@ static void drawColumns() {
     }
 }
 
-static void backToStartupCallback() {
-
-    eventSystem_publish(EVENT_PLAY_MODE_EXIT, NULL);
-
-    SceneChangeData* data = malloc(sizeof(SceneChangeData));
-    data->type = SCENE_STARTUP_MODE;
-    data->data = NULL;
-    eventSystem_publish(EVENT_SCENE_CHANGE, data);
-}
-
 void playScene_init(void* data) {
-    gameManager_enterPlayMode(gameManager_getGameState());
+    eventSystem_publish(EVENT_PLAY_MODE_ENTER, NULL);
+    eventSystem_subscribe(EVENT_GAME_WON, handleGameWonEvent);
 
-    // Create the back button
     int buttonHeight = 60;
-    int buttonY = SCREEN_HEIGHT - buttonHeight - 200; // Match startup scene button height
+    int buttonY = SCREEN_HEIGHT - buttonHeight - 200;
 
     backButton.callback = backToStartupCallback;
-    backButton.displayRect.x = (SCREEN_WIDTH - 150) / 2;  // Center horizontally
-    backButton.displayRect.y = buttonY;                   // Same height as startup scene buttons
-    backButton.displayRect.w = 150;                       // Width
-    backButton.displayRect.h = buttonHeight;              // Height
+    backButton.displayRect.x = (SCREEN_WIDTH - 150) / 2;
+    backButton.displayRect.y = buttonY;
+    backButton.displayRect.w = 150;
+    backButton.displayRect.h = buttonHeight;
     backButton.label = "Back";
 }
 
 void playScene_handleEvent(SDL_Event* event) {
-    GameState* gameState = gameManager_getGameState();
+    const GameView* gameView = gameService_getView();
 
-    // First check if the game is won and handle OK button clicks
-    if (gameState->gameWon && event->type == SDL_MOUSEBUTTONDOWN &&
+    if (gameView->isGameWon && event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
 
-        // Define the OK button rectangle (must match the one in drawVictoryDialog)
         int buttonWidth = 100;
         int buttonHeight = 40;
         int dialogWidth = 400;
@@ -433,25 +362,15 @@ void playScene_handleEvent(SDL_Event* event) {
                 buttonHeight
         };
 
-        // Check if click is within the button
         if (isPointWithinRect(event->button.x, event->button.y, buttonRect)) {
-            // Handle the button click - either dismiss the dialog or reset the game
-            gameState->gameWon = false;  // This will hide the victory dialog
-
-            // Optional: Add additional actions like resetting the game or returning to menu
-            // For example: backToStartupCallback();
-
-            return;  // Important! Return to prevent processing other input
+            GameState* gameState = serviceLocator_getGameState();
+            gameState->gameWon = false;
+            return;
         }
-
-        // If click is outside the button but game is won, consume the event
         return;
     }
 
-    // Rest of the existing event handling code
-    // Handle card dragging based on event type
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
-        // Check if the back button was clicked
         if (isButtonHovered(event->button.x, event->button.y, backButton.displayRect)) {
             backButton.callback();
             return;
@@ -468,36 +387,29 @@ void playScene_handleEvent(SDL_Event* event) {
 }
 
 void playScene_update() {
-    // Update game state, check for victories, etc.
 }
 
 void playScene_render() {
-    SDL_Renderer* renderer = getRenderer();
+    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    const GameView* gameView = gameService_getView();
 
-    // Set background color
-    SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255); // Dark green background
+    SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255);
     SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(renderer, &bgRect);
 
-    // Draw foundation piles at the top
     drawFoundationPiles();
-
-    // Draw the 7 columns
     drawColumns();
-
-    // Draw the back button
     drawButton(backButton);
 
-    if(gameManager_getGameState()->gameWon) {
+    if(gameView->isGameWon) {
         drawVictoryDialog();
     }
 
-    // Draw border
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect border = {10, 10, SCREEN_WIDTH - 20, SCREEN_HEIGHT - 90};
     SDL_RenderDrawRect(renderer, &border);
 }
 
 void playScene_cleanup(void) {
-    // Any cleanup needed when leaving the play scene
+    eventSystem_unsubscribe(EVENT_GAME_WON, handleGameWonEvent);
 }

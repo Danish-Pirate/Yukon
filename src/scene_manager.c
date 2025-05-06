@@ -3,21 +3,9 @@
 #include "model/ui_button.h"
 #include "play_scene.h"
 #include "utils/service_locator.h"
-#include <nfd.h>
 
-// Static variables for scene management
-static SDL_Renderer* renderer = NULL;
-static SDL_Window* window = NULL;
-static Scene* currentScene = NULL;
 static Scene sceneRegistry[2];
-
-SDL_Renderer* getRenderer() {
-    return serviceLocator_getRenderer();
-}
-
-SDL_Window* getWindow() {
-    return serviceLocator_getWindow();
-}
+static Scene* currentScene = NULL;
 
 void sceneManager_handleSceneChangeEvent(Event* event) {
     if (event->type != EVENT_SCENE_CHANGE) return;
@@ -31,12 +19,7 @@ void sceneManager_subscribeToEvents() {
     eventSystem_subscribe(EVENT_SCENE_CHANGE, sceneManager_handleSceneChangeEvent);
 }
 
-
-void sceneManager_init(SDL_Window* _window, SDL_Renderer* _renderer) {
-    window = serviceLocator_getWindow();
-    renderer = serviceLocator_getRenderer();
-
-    // Initialize the scene registry
+void sceneManager_init() {
     sceneRegistry[SCENE_STARTUP_MODE] = (Scene){
             .init = startupScene_init,
             .handleEvent = startupScene_handleEvent,
@@ -56,23 +39,18 @@ void sceneManager_init(SDL_Window* _window, SDL_Renderer* _renderer) {
     };
 
     initButtonFont();
-
-    eventSystem_init();
     sceneManager_subscribeToEvents();
 }
 
 void sceneManager_cleanup() {
-    currentScene->cleanup();
+    if (currentScene && currentScene->cleanup) {
+        currentScene->cleanup();
+    }
     currentScene = NULL;
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    NFD_Quit();
 }
 
 void sceneManager_changeScene(SceneType sceneType, void* data) {
-    if (currentScene != NULL && currentScene->cleanup != NULL) {
+    if (currentScene && currentScene->cleanup) {
         currentScene->cleanup();
     }
 
@@ -81,17 +59,25 @@ void sceneManager_changeScene(SceneType sceneType, void* data) {
 }
 
 void sceneManager_handleEvents(SDL_Event* event) {
-    currentScene->handleEvent(event);
+    if (currentScene && currentScene->handleEvent) {
+        currentScene->handleEvent(event);
+    }
 }
 
 void sceneManager_update() {
-    currentScene->update();
+    if (currentScene && currentScene->update) {
+        currentScene->update();
+    }
 }
 
 void sceneManager_render() {
+    SDL_Renderer* renderer = serviceLocator_getRenderer();
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    currentScene->render();
+
+    if (currentScene && currentScene->render) {
+        currentScene->render();
+    }
 
     SDL_RenderPresent(renderer);
 }

@@ -1,5 +1,4 @@
 #include <SDL.h>
-#include <stdio.h>
 #include "game_controller.h"
 #include "scene_manager.h"
 #include "texture_manager.h"
@@ -14,18 +13,23 @@ static void handleSceneChangeEvent(Event* event) {
     sceneManager_changeScene(data->type, data->data);
     free(data);
 }
+
 void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     serviceLocator_init();
     eventSystem_init();
+
     serviceLocator_registerWindow(window);
     serviceLocator_registerRenderer(renderer);
-    sceneManager_init(window, renderer);  // Will be updated to use service locator
-    textureManager_init();  // Will be updated to use service locator
 
-    gameState = initGame();
+    sceneManager_init();
+    textureManager_init();
+
+    GameState* gameState = initGame();
     serviceLocator_registerGameState(gameState);
+    gameService_init(gameState);
 
-    subscribeToEvents();
+    eventSystem_subscribe(EVENT_SCENE_CHANGE, handleSceneChangeEvent);
+    eventSystem_subscribe(EVENT_DECK_SHUFFLED, gameService_handleDeckOperation);
 
     SceneChangeData* data = malloc(sizeof(SceneChangeData));
     data->type = SCENE_STARTUP_MODE;
@@ -38,11 +42,9 @@ void loopGameController() {
     SDL_Event event;
     const int frameDelay = 1000 / FPS;
 
-    // Main game loop
     while (!quit) {
         Uint32 frameStart = SDL_GetTicks();
 
-        // Handle events
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 quit = true;
@@ -53,7 +55,6 @@ void loopGameController() {
         sceneManager_update();
         sceneManager_render();
 
-        // Frame rate cap
         Uint32 frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < frameDelay) {
             SDL_Delay(frameDelay - frameTime);
@@ -66,8 +67,5 @@ void cleanUpGameController() {
     eventSystem_cleanup();
     textureManager_cleanup();
     sceneManager_cleanup();
-    if (gameState != NULL) {
-        free(gameState);
-        gameState = NULL;
-    }
+    serviceLocator_cleanup();
 }
