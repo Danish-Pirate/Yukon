@@ -116,28 +116,19 @@ void sceneManager_update() {
 void sceneManager_render() {
     SDL_Renderer* renderer = serviceLocator_getRenderer();
 
-    // Debug: Check if renderer is valid
     if (!renderer) {
         printf("Renderer is NULL in sceneManager_render!\n");
         return;
     }
 
-    // Set a distinct color to see if rendering is happening at all
+    // Clear screen with black
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Debug: draw a test rectangle to see if anything renders
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Rect testRect = {100, 100, 200, 200};
-    SDL_RenderFillRect(renderer, &testRect);
-
-    if (currentScene) {
-        if (currentScene->render) {
-            currentScene->render();
-        } else {
-            printf("Current scene has no render function!\n");
-        }
-    } else {
+    // Render current scene
+    if (currentScene && currentScene->render) {
+        currentScene->render();
+    } else if (!currentScene) {
         printf("No current scene in sceneManager_render!\n");
     }
 

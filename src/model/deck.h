@@ -16,5 +16,6 @@ typedef enum DeckLoadResult {
 void saveDeckToFile(LinkedList *deck, char filePath[]);
 DeckLoadResult loadDeckFromFile(LinkedList **deck, char filePath[]);
 void toggleShowDeck(LinkedList *deck);
+void showDeck(LinkedList *deck);
 void randomShuffleDeck(LinkedList *deck);
 void splitDeck(LinkedList *deck, int splitIndex);

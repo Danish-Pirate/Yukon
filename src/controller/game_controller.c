@@ -8,19 +8,10 @@
 #include "../utils/error_handler.h"
 #include "../view/window.h"
 
-// Create an adapter function for gameService_handleDeckOperation
 static void handleDeckOperation(Event* event) {
     if (event) {
         gameService_handleDeckOperation(event->type, event->data);
     }
-}
-
-static void handleSceneChangeEvent(Event* event) {
-    if (event->type != EVENT_SCENE_CHANGE) return;
-
-    SceneChangeData* data = (SceneChangeData*)event->data;
-    sceneManager_changeScene(data->type, data->data);
-    free(data);
 }
 
 static void handleErrorEvent(ErrorCode code, const char* message) {

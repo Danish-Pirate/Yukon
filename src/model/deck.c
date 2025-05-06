@@ -90,7 +90,16 @@ void saveDeckToFile(LinkedList *deck, char filePath[]) {
     }
     fclose(file);
 }
+void showDeck(LinkedList *deck) {
+    if (deck == NULL) return;
 
+    Node* current = deck->head;
+    while (current != NULL) {
+        Card* card = (Card*)current->data;
+        card->isFaceUp = true;
+        current = current->nextNode;
+    }
+}
 void toggleShowDeck(LinkedList *deck) {
     if (deck == NULL) return;
 

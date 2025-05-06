@@ -6,7 +6,6 @@
 #include "view/ui_button.h"
 #include "play_scene.h"
 #include "SDL_ttf.h"
-#include "controller/game_controller.h"
 #include "view/ui_manager.h"
 
 typedef struct {
@@ -401,7 +400,13 @@ void playScene_update() {
 }
 
 void playScene_render() {
+
     SDL_Renderer *renderer = serviceLocator_getRenderer();
+    if (!renderer) {
+        printf("ERROR: Renderer is NULL in playScene_render()\n");
+        return;
+    }
+
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 

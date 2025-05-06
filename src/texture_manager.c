@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "SDL_render.h"
 #include "scene_manager.h"
 #include "utils/service_locator.h"
@@ -13,6 +14,22 @@ SDL_Texture* getCardTexAtlas() {
 }
 
 void textureManager_init() {
+    printf("Attempting to load card atlas from: %s\n", cardTexAtlas_FILEPATH);
+
+    // Check if file exists
+    FILE* test = fopen(cardTexAtlas_FILEPATH, "rb");
+    if (test == NULL) {
+        fprintf(stderr, "ERROR: Card atlas file not found at %s\n", cardTexAtlas_FILEPATH);
+
+        char cwd[1024];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            fprintf(stderr, "Current working directory: %s\n", cwd);
+        }
+        return;
+    }
+    fclose(test);
+
+    // Load the texture
     SDL_Surface* surface = SDL_LoadBMP(cardTexAtlas_FILEPATH);
     if (surface == NULL) {
         fprintf(stderr, "Failed to load texture: %s\n", SDL_GetError());
@@ -24,6 +41,8 @@ void textureManager_init() {
 
     if (cardTexAtlas == NULL) {
         fprintf(stderr, "Failed to create texture: %s\n", SDL_GetError());
+    } else {
+        printf("Card texture atlas loaded successfully!\n");
     }
 }
 

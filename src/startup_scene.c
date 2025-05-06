@@ -312,8 +312,7 @@ void startupScene_init(void* data) {
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
-    // Define some button properties
-    int buttonWidth = 150;  // Increased width from 125 to 150
+    int buttonWidth = 150;
     int buttonHeight = 60;
     int buttonSpacing = 20;
     int totalWidth = (buttonWidth * 6) + (buttonSpacing * 5);
@@ -423,9 +422,7 @@ void startupScene_handleEvent(SDL_Event* event) {
     }
 }
 
-void startupScene_update() {
-    // Update animation or state if needed
-}
+void startupScene_update() {}
 
 void startupScene_render() {
     SDL_Renderer *renderer = serviceLocator_getRenderer();
@@ -451,7 +448,4 @@ void startupScene_render() {
     }
 }
 
-void startupScene_cleanup(void) {
-    // Free all textures
-    textureManager_cleanup();
-}
+void startupScene_cleanup(void) {}

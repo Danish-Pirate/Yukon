@@ -31,8 +31,18 @@ SDL_Rect getCardTexRect(int rankNumber, int suitNumber, bool isFaceUp) {
 }
 
 void drawCard(SDL_Rect screenRect, Card *card) {
+    SDL_Texture* atlas = getCardTexAtlas();
+    if (!atlas) {
+        printf("ERROR: Card texture atlas is NULL in drawCard()\n");
+        return;
+    }
+
     SDL_Rect texRect = getCardTexRect(card->rank, card->suit, card->isFaceUp);
-    SDL_RenderCopy(serviceLocator_getRenderer(), getCardTexAtlas(), &texRect, &screenRect);
+
+    int result = SDL_RenderCopy(serviceLocator_getRenderer(), atlas, &texRect, &screenRect);
+    if (result != 0) {
+        printf("SDL_RenderCopy failed: %s\n", SDL_GetError());
+    }
 }
 
 bool isCardHovered(int mouse_PosX, int mouse_PosY, SDL_Rect displayRect) {
