@@ -2,7 +2,7 @@
 
 #include "SDL2/SDL.h"
 #include "ui_button.h"
-#include "../model/card.h"
+#include "core/include/yukon_core.h"
 
 #define FONT_FILEPATH "assets/fonts/arial.ttf"
 

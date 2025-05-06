@@ -6,7 +6,7 @@
 #include "../view/texture_manager.h"
 #include "../controller/game_controller.h"
 #include "../view/ui_card.h"
-#include "../model/game.h"
+#include "core/include/yukon_core.h"
 #include "../view/ui_button.h"
 #include "nativefiledialog-extended/src/include/nfd.h"
 #include "../utils/game_utils.h"

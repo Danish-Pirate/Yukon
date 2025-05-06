@@ -1,7 +1,8 @@
 #pragma once
 
+#include <stdbool.h>
+#include "utils/linked_list.h"
 #include "card.h"
-#include "core/utils/linked_list.h"
 
 #define DECK_SIZE 52 // Size of card deck
 #define COLUMNS_SIZE 7  // Number of card columns

@@ -17,9 +17,10 @@ add_subdirectory(vendored/nativefiledialog-extended EXCLUDE_FROM_ALL)
 
 # Create game logic library sources
 file(GLOB GAME_LOGIC_SOURCES
+        src/core/yukon_core.c
         src/core/model/*.c
         src/core/utils/*.c
-        src/core/service/game_service.c
+        src/core/service/*.c
 )
 
 # Create GUI sources
@@ -28,13 +29,14 @@ file(GLOB GUI_SOURCES
         src/gui/controller/*.c
         src/gui/scene/*.c
         src/gui/view/*.c
+        src/gui/utils/*.c
 )
 
 # Build the game logic library
 add_library(yukon_core SHARED ${GAME_LOGIC_SOURCES})
 target_include_directories(yukon_core PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${SHARED_INCLUDES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/include
 )
 
 # Build the GUI application
@@ -57,21 +59,29 @@ else()
     target_link_libraries(yukon_gui PRIVATE yukon_core SDL2 SDL2_ttf nfd)
 endif()
 
+# Set include directories for GUI - notice we point to the core include directory
+# but not the core internals
 target_include_directories(yukon_gui PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src  # Base directory for simpler includes
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/gui
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/include  # Only public core API
         ${SHARED_INCLUDES}
 )
 
+# Add backward compatibility symlink/alias
 if(WIN32)
     add_custom_command(TARGET yukon_gui POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:yukon_gui> ${CMAKE_BINARY_DIR}/yukon.exe
+            COMMENT "Creating yukon.exe alias for backward compatibility"
     )
 else()
     add_custom_command(TARGET yukon_gui POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:yukon_gui> ${CMAKE_BINARY_DIR}/yukon
+            COMMENT "Creating yukon symlink for backward compatibility"
     )
 endif()
 
+# Distribution packaging commands
 add_custom_command(TARGET yukon_gui POST_BUILD
         # Create necessary directories
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release"

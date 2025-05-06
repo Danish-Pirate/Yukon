@@ -1,7 +1,7 @@
 #pragma once
 
 // Layout settings for card display
-#include "../model/card.h"
+#include "core/include/yukon_core.h"
 
 #define CARDS_PER_ROW 13
 #define CARD_SPACING_X 5     // Reduced spacing between cards horizontally

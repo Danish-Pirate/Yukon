@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../model/game.h"
-#include "../utils/event_system.h"
+#include "model/game.h"
+#include "utils/event_system.h"
 
 typedef struct {
     bool isGameWon;

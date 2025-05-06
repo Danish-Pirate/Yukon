@@ -1,6 +1,6 @@
 #include "SDL2/SDL.h"
 #include <stdio.h>
-#include "../model/card.h"
+#include "core/include/yukon_core.h"
 #include "ui_card.h"
 #include "../utils/service_locator.h"
 #include "texture_manager.h"

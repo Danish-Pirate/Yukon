@@ -1,6 +1,7 @@
 #pragma once
 
 #include <malloc.h>
+#include "yukon_core.h"
 
 // ### Linked List ###
 typedef struct Node {
@@ -8,12 +9,6 @@ typedef struct Node {
     struct Node *prevNode;
     struct Node *nextNode;
 } Node;
-
-typedef struct {
-    Node *tail;
-    Node *head;
-    size_t elementSize;
-} LinkedList;
 
 LinkedList* createList(size_t elementSize);
 void addNodeToFront(LinkedList* list, void* data);
