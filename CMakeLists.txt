@@ -37,6 +37,7 @@ add_library(yukon_core SHARED ${GAME_LOGIC_SOURCES})
 target_include_directories(yukon_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/include
+        ${SHARED_INCLUDES}  # Add this line to get access to NFD and other dependencies
 )
 
 # Build the GUI application
