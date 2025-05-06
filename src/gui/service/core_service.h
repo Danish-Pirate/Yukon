@@ -12,6 +12,7 @@ void coreService_exitPlayMode();
 const GameView* coreService_getGameView();
 bool coreService_isGameWon();
 GamePhase coreService_getGamePhase();
+GameState* coreService_getGameState();
 
 // Card operations
 void coreService_moveCard(Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex);

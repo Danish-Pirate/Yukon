@@ -31,7 +31,7 @@ void textureManager_init() {
         return;
     }
 
-    cardTexAtlas = SDL_CreateTextureFromSurface(serviceLocator_getRenderer(), surface);
+    cardTexAtlas = SDL_CreateTextureFromSurface(windowManager_getRenderer(), surface);
     SDL_FreeSurface(surface);
 
     if (cardTexAtlas == NULL) {

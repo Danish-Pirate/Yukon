@@ -43,7 +43,7 @@ void drawCard(SDL_Rect screenRect, Card *card) {
 
     SDL_Rect texRect = getCardTexRect(rank, suit, isFaceUp);
 
-    int result = SDL_RenderCopy(serviceLocator_getRenderer(), atlas, &texRect, &screenRect);
+    int result = SDL_RenderCopy(windowManager_getRenderer(), atlas, &texRect, &screenRect);
     if (result != 0) {
         printf("SDL_RenderCopy failed: %s\n", SDL_GetError());
     }

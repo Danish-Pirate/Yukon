@@ -5,6 +5,10 @@
 
 static GameState* gameState = NULL;
 
+GameState* coreService_getGameState() {
+    return gameState;
+}
+
 void coreService_init() {
     gameState = yukon_initGame();
     if (!gameState) {

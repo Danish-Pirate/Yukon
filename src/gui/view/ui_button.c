@@ -15,7 +15,7 @@ void initButtonFont() {
 }
 
 void drawButton(UI_Button button) {
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer* renderer = windowManager_getRenderer();
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderFillRect(renderer, &button.displayRect);

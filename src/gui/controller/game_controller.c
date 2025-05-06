@@ -7,7 +7,7 @@
 #include "../utils/service_locator.h"
 #include "../utils/error_handler.h"
 #include "../service/core_service.h"
-#include "view/window.h"
+#include "view/window_manager.h"
 #include "utils/gui_service_locator.h"
 #include "SDL_ttf.h"
 #include "view/ui_manager.h"
@@ -47,7 +47,7 @@ static void renderErrorDialog() {
         return;
     }
 
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer* renderer = windowManager_getRenderer();
     if (!renderer) return;
 
     int width, height;
@@ -134,6 +134,7 @@ static bool handleErrorDialogEvents(SDL_Event* event) {
 }
 
 void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
+    // Make sure we're using only the GUI service locator
     serviceLocator_init();
     yukon_eventSystem_init();
 
@@ -142,8 +143,16 @@ void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
 
     errorHandler_subscribe(handleErrorEvent);
 
-    // Initialize core service
     coreService_init();
+
+    GameState* gameState = coreService_getGameState();
+    if (gameState) {
+        fprintf(stderr, "DEBUG: Registering gameState with GUI service locator\n");
+        serviceLocator_registerGameState(gameState);
+    } else {
+        fprintf(stderr, "ERROR: coreService_getGameState() returned NULL\n");
+    }
+
     coreService_subscribeToEvents();
 
     sceneManager_init();
@@ -179,7 +188,7 @@ void loopGameController() {
         sceneManager_update();
 
         // Render the scene
-        SDL_Renderer* renderer = serviceLocator_getRenderer();
+        SDL_Renderer* renderer = windowManager_getRenderer();
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 

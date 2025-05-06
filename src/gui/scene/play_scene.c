@@ -163,7 +163,7 @@ static void backToStartupCallback() {
 }
 
 static void drawVictoryDialog() {
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
@@ -249,7 +249,7 @@ static void drawVictoryDialog() {
 }
 
 static void drawFoundationPiles() {
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer* renderer = windowManager_getRenderer();
     GameState* gameState = serviceLocator_getGameState();
 
     for (int i = 0; i < PILES_SIZE; i++) {
@@ -276,7 +276,7 @@ static void drawFoundationPiles() {
 }
 
 static void drawColumns() {
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer* renderer = windowManager_getRenderer();
     GameState* gameState = serviceLocator_getGameState();
 
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
@@ -340,7 +340,7 @@ static void drawColumns() {
 }
 
 void playScene_init(void* data) {
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
@@ -359,7 +359,7 @@ void playScene_init(void* data) {
 }
 
 void playScene_handleEvent(SDL_Event* event) {
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
@@ -407,7 +407,7 @@ void playScene_update() {
 
 void playScene_render() {
 
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     if (!renderer) {
         printf("ERROR: Renderer is NULL in playScene_render()\n");
         return;

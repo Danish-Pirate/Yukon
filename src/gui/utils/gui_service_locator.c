@@ -29,7 +29,7 @@ void serviceLocator_registerRenderer(SDL_Renderer* renderer) {
     rendererInstance = renderer;
 }
 
-SDL_Renderer* serviceLocator_getRenderer() {
+SDL_Renderer* windowManager_getRenderer() {
     return rendererInstance;
 }
 

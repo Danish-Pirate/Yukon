@@ -6,11 +6,12 @@
 #include "view/ui_card.h"
 #include "scene_manager.h"
 #include "view/gui_utils.h"
-#include "nfd.h"
+#include <nfd.h>
 #include "utils/gui_service_locator.h"
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 #include "view/ui_manager.h"
 #include "model/deck.h"
+#include "service/core_service.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -29,24 +30,54 @@ static void drawDeck() {
     int card_PosY = 20;
     int card_PosX = 200;
     int cardRowCount = 0;
-    LinkedList* deck = gameService_getGameState()->deck;
 
-    for (int i = 0; i < DECK_SIZE; ++i) {
+    GameState* gameState = coreService_getGameState();
+    if (!gameState) {
+        fprintf(stderr, "ERROR: gameState is NULL in drawDeck()\n");
+        return;
+    }
+
+    if (!gameState->deck) {
+        fprintf(stderr, "ERROR: gameState->deck is NULL in drawDeck()\n");
+        return;
+    }
+
+    LinkedList* deck = gameState->deck;
+    Node* current = deck->head;
+    int cardCount = 0;
+
+    // Count cards
+    Node* countNode = deck->head;
+    while (countNode != NULL) {
+        cardCount++;
+        countNode = countNode->nextNode;
+    }
+
+    // Iterate through the actual linked list nodes instead of assuming 52 cards
+    while (current != NULL) {
         if (cardRowCount == 13) {
             card_PosY += CARD_DISPLAY_HEIGHT + CARD_SPACING_Y;
             card_PosX = 200;
             cardRowCount = 0;
         }
-        Card *card = (Card*)getNode(deck, i)->data;
-        SDL_Rect screenRect = {
-                .x = card_PosX,
-                .y = card_PosY,
-                .w = CARD_DISPLAY_WIDTH,
-                .h = CARD_DISPLAY_HEIGHT
-        };
-        drawCard(screenRect, card);
+
+        Card* card = (Card*)current->data;
+        if (card) {
+            SDL_Rect screenRect = {
+                    .x = card_PosX,
+                    .y = card_PosY,
+                    .w = CARD_DISPLAY_WIDTH,
+                    .h = CARD_DISPLAY_HEIGHT
+            };
+            drawCard(screenRect, card);
+        } else {
+            fprintf(stderr, "ERROR: Card data is NULL\n");
+        }
+
         card_PosX += CARD_DISPLAY_WIDTH + CARD_SPACING_X;
         cardRowCount++;
+
+        current = current->nextNode;
     }
 }
 
@@ -159,7 +190,7 @@ void processSplitDialogEvent(SDL_Event* event) {
 void renderSplitDialog() {
     if (!showSplitDialog) return;
 
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
@@ -305,7 +336,7 @@ void renderSplitDialog() {
 }
 
 void startupScene_init(void* data) {
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
@@ -429,7 +460,7 @@ void startupScene_handleEvent(SDL_Event* event) {
 void startupScene_update() {}
 
 void startupScene_render() {
-    SDL_Renderer *renderer = serviceLocator_getRenderer();
+    SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 

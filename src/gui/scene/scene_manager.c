@@ -46,7 +46,7 @@ void sceneManager_subscribeToEvents() {
 void sceneManager_init() {
     currentScene = NULL;
 
-    uiManager_init(serviceLocator_getRenderer());
+    uiManager_init(windowManager_getRenderer());
 
     sceneRegistry[SCENE_STARTUP_MODE] = (Scene){
             .init = startupScene_init,
@@ -114,7 +114,7 @@ void sceneManager_update() {
 }
 
 void sceneManager_render() {
-    SDL_Renderer* renderer = serviceLocator_getRenderer();
+    SDL_Renderer* renderer = windowManager_getRenderer();
 
     if (!renderer) {
         printf("Renderer is NULL in sceneManager_render!\n");

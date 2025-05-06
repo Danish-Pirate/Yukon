@@ -12,6 +12,6 @@ GameState* serviceLocator_getGameState();
 
 // GUI components
 void serviceLocator_registerRenderer(SDL_Renderer* renderer);
-SDL_Renderer* serviceLocator_getRenderer();
+SDL_Renderer* windowManager_getRenderer();
 void serviceLocator_registerWindow(SDL_Window* window);
 SDL_Window* serviceLocator_getWindow();
