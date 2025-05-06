@@ -30,6 +30,7 @@ file(GLOB GUI_SOURCES
         src/gui/scene/*.c
         src/gui/view/*.c
         src/gui/utils/*.c
+        src/gui/service/*.c
 )
 
 # Build the game logic library

@@ -1,6 +1,7 @@
 #include "core_service.h"
-#include "../utils/service_locator.h"
-#include <stdlib.h>
+#include "utils/gui_service_locator.h"
+#include "model/card.h"
+#include <stdio.h>
 
 static GameState* gameState = NULL;
 

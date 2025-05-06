@@ -3,6 +3,7 @@
 #include "texture_manager.h"
 #include "utils/gui_service_locator.h"
 #include "gui_utils.h"
+#include "model/card.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)
 #define FACEDOWN_CARD_TEXCOORDS_Y (CARD_HEIGHT * 4)
@@ -35,7 +36,12 @@ void drawCard(SDL_Rect screenRect, Card *card) {
         return;
     }
 
-    SDL_Rect texRect = getCardTexRect(card->rank, card->suit, card->isFaceUp);
+    // Use accessor functions instead of direct struct access
+    Rank rank = yukon_getCardRank(card);
+    Suit suit = yukon_getCardSuit(card);
+    bool isFaceUp = yukon_isCardFaceUp(card);
+
+    SDL_Rect texRect = getCardTexRect(rank, suit, isFaceUp);
 
     int result = SDL_RenderCopy(serviceLocator_getRenderer(), atlas, &texRect, &screenRect);
     if (result != 0) {
