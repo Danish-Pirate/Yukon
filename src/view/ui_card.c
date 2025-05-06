@@ -1,6 +1,6 @@
 #include "SDL.h"
 #include <stdio.h>
-#include "card.h"
+#include "../model/card.h"
 #include "ui_card.h"
 #include "scene_manager.h"
 #include "texture_manager.h"

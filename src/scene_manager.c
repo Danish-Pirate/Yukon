@@ -1,6 +1,6 @@
 #include "scene_manager.h"
 #include "startup_scene.h"
-#include "model/ui_button.h"
+#include "view/ui_button.h"
 #include "play_scene.h"
 #include "utils/service_locator.h"
 

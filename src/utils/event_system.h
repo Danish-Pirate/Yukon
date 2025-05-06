@@ -4,21 +4,30 @@
 #include "../model/card.h"
 
 typedef enum {
+    // Scene management
     EVENT_SCENE_CHANGE,
+
+    // Game state changes
+    EVENT_GAME_INITIALIZED,
+    EVENT_GAME_WON,
+    EVENT_PLAY_MODE_ENTER,
+    EVENT_PLAY_MODE_EXIT,
+
+    // Card operations
     EVENT_CARD_MOVED,
+    EVENT_CARD_SELECTED,
+    EVENT_CARD_DROPPED,
+
+    // Deck operations
     EVENT_DECK_SHUFFLED,
     EVENT_DECK_LOADED_SUCCESS,
     EVENT_DECK_LOADED_FAILURE,
     EVENT_DECK_SAVED,
     EVENT_DECK_TOGGLED,
     EVENT_DECK_SPLIT,
-    EVENT_GAME_WON,
-    EVENT_PLAY_MODE_ENTER,
-    EVENT_PLAY_MODE_EXIT,
-    EVENT_CARD_SELECTED,
-    EVENT_CARD_DROPPED,
-    EVENT_UI_BUTTON_CLICKED,
-    EVENT_GAME_INITIALIZED,
+
+    // UI events
+    EVENT_UI_BUTTON_CLICKED
 } EventType;
 
 typedef struct {

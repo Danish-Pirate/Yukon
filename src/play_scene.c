@@ -2,8 +2,8 @@
 #include "scene_manager.h"
 #include "service/game_service.h"
 #include "utils/service_locator.h"
-#include "model/ui_card.h"
-#include "model/ui_button.h"
+#include "view/ui_card.h"
+#include "view/ui_button.h"
 #include "play_scene.h"
 
 typedef struct {
