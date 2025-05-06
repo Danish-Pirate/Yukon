@@ -27,26 +27,9 @@ void resetGame(GameState* gameState){
     gameState->gameWon = false;
 }
 void quitGame(GameState* gameState) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
     gameState->gameWon = true;
-
 }
 void enterPlayMode(GameState* gameState) {
-    // Check that player is in the startup phase
-    if (gameState->gamePhase != StartupPhase){
-        strcpy(gameState->lastResponse, "Command not available in the PLAY phase.");
-        return;
-    }
-
-    // Validate - Deck not empty
-    if (gameState->deck == NULL){
-        strcpy(gameState->lastResponse, "Deck is empty, please load a deck first");
-        return;
-    }
 
     // initialize arrays, to keep track of each stack until max/full is reached
     const unsigned int stackMaxLengths[] = {1,6,7,8,9,10,11};
@@ -70,32 +53,19 @@ void enterPlayMode(GameState* gameState) {
         }
     }
     gameState->gamePhase = PlayPhase;
-    strcpy(gameState->lastResponse, "OK");
 }
 void exitPlayMode(GameState* gameState) {
-    if (gameState->gamePhase != PlayPhase){
-        strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
-        return;
-    }
 
     // Store deck pointer
     LinkedList *deck = gameState->deck;
     // Store last command
     char lastCommand[100];
-    strcpy(lastCommand, gameState->lastCommand);
     // Set all cards to face down
     resetGame(gameState);
     // Set deck pointer to stored deck
     gameState->deck = deck;
-    strcpy(gameState->lastCommand, lastCommand);
-    strcpy(gameState->lastResponse, "OK");
-
 }
 void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
-    if (gameState->gamePhase != PlayPhase){
-        strcpy(gameState->lastResponse, "Command not available in the STARTUP phase.");
-        return;
-    }
 
     LinkedList* srcList;
     LinkedList* dstList;
@@ -103,13 +73,11 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
 
     // Validate - Valid indexes
     if (fromColumnIndex < 0 || fromColumnIndex > COLUMNS_SIZE+PILES_SIZE || toColumnIndex < 0 || toColumnIndex > COLUMNS_SIZE+PILES_SIZE){
-        strcpy(gameState->lastResponse, "Move is not valid!");
         return;
     }
 
     // Validate - the src and dst columns are distinct
     if (fromColumnIndex == toColumnIndex){
-        strcpy(gameState->lastResponse, "Move is not valid!");
         return;
     }
 
@@ -128,7 +96,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
             }
             // Validate - The card moved exists at the specified location
             if (current == NULL){
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
             srcNode = current;
@@ -136,7 +103,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         // Fetch tail card if card not specified
         else{
             if (gameState->cardColumns[fromColumnIndex]->tail == NULL){
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
             srcNode = gameState->cardColumns[fromColumnIndex]->tail;
@@ -148,7 +114,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         srcList = gameState->cardFoundationPiles[fromColumnIndex-COLUMNS_SIZE];
         // Validate - Foundation pile contains a card when used as source
         if (srcList->tail == NULL){
-            strcpy(gameState->lastResponse, "Move is not valid!");
             return;
         }
         srcNode = srcList->tail;
@@ -162,7 +127,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         if (dstList->tail == NULL) {
             // Validate - If destination is empty, card must be king
             if (srcCard->rank != KING) {
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
@@ -170,7 +134,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
             Card *dstColTailCard = dstList->tail->data;
             // Validate - If destination is not empty, card must be single lower rank and different suit
             if (srcCard->rank + 1 != dstColTailCard->rank || srcCard->suit == dstColTailCard->suit) {
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
@@ -180,12 +143,10 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         dstList = gameState->cardFoundationPiles[toColumnIndex-COLUMNS_SIZE];
         // Validate - Not valid to move from foundation to other foundation
         if (fromColumnIndex>=COLUMNS_SIZE){
-            strcpy(gameState->lastResponse, "Move is not valid!");
             return;
         }
         // Validate - Card must be at the bottom of the column when plated onto a foundation
         if (srcNode != srcList->tail){
-            strcpy(gameState->lastResponse, "Move is not valid!");
             return;
         }
 
@@ -195,7 +156,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         if (dstList->tail == NULL){
             // Validate - Card must be ace when put onto empty foundation
             if (srcCard->rank != ACE) {
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
@@ -203,7 +163,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
             // Validate - Card must single rank higher and same suit when put onto non-empty foundation
             Card* dstColTailCard = dstList->tail->data;
             if (srcCard->rank-1 != dstColTailCard->rank || srcCard->suit != dstColTailCard->suit) {
-                strcpy(gameState->lastResponse, "Move is not valid!");
                 return;
             }
         }
@@ -216,7 +175,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
 
     // Move srcNode and subsequent nodes from srcList to tail of dstList
     spliceList(srcList,dstList,srcNode);
-    strcpy(gameState->lastResponse, "OK");
 
 
 }
