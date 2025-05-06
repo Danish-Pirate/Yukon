@@ -1,4 +1,4 @@
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 #include "ui_button.h"
 #include "../utils/game_utils.h"
 #include "../utils/service_locator.h"

@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include <SDL.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,7 +10,7 @@
 #include "../view/ui_button.h"
 #include "nfd.h"
 #include "../utils/game_utils.h"
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 #include "../service/game_service.h"
 #include "../view/ui_manager.h"
 #include "../utils/service_locator.h"

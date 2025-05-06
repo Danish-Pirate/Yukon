@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL.h"
+#include <SDL.h>
 #include "../utils/event_system.h"
 #include "../view/ui_button.h"
 
