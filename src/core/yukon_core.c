@@ -150,6 +150,9 @@ int yukon_getDeckSize(GameState* gameState) {
 
     return count;
 }
+void yukon_showDeck(GameState* gameState) {
+    return showDeck(gameState->deck);
+}
 Card* yukon_getDeckCard(GameState* gameState, int index) {
     if (!gameState || !gameState->deck) {
         return NULL;

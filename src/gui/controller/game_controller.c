@@ -15,67 +15,93 @@ static void handleGameEvents(Event* event) {
         return;
     }
 
-    // Handle all possible event types
     switch (event->type) {
-        // Scene management
         case EVENT_SCENE_CHANGE:
             if (event->data) {
                 SceneChangeData* data = (SceneChangeData*)event->data;
                 sceneManager_changeScene(data->type, data->data);
             }
             break;
-            // Game state events
+
         case EVENT_GAME_INITIALIZED:
-            // Handle game initialization if needed
             break;
+
         case EVENT_GAME_WON:
-            // The UI will handle showing the victory dialog
             break;
+
         case EVENT_PLAY_MODE_ENTER:
             coreService_enterPlayMode();
             break;
+
         case EVENT_PLAY_MODE_EXIT:
             coreService_exitPlayMode();
             break;
-            // Card operations
+
         case EVENT_CARD_MOVED:
             if (event->data) {
                 CardMoveData* moveData = (CardMoveData*)event->data;
                 coreService_moveCard(moveData->rank, moveData->suit,
                                      moveData->fromColumnIndex, moveData->toColumnIndex);
-                // Check if game is won after a card move
+
                 if (coreService_isGameWon()) {
                     eventSystem_publish(EVENT_GAME_WON, NULL);
                 }
+
+                free(moveData);
+            } else {
+                fprintf(stderr, "ERROR: EVENT_CARD_MOVED received null data\n");
             }
             break;
-            // Deck operations
+
         case EVENT_DECK_SHUFFLED:
             coreService_shuffleDeck();
             break;
+
         case EVENT_DECK_LOADED_SUCCESS:
-            // Handle successful deck loading (update UI, etc.)
+            if (event->data) {
+                const char* filePath = (const char*)event->data;
+                if (coreService_loadDeck(filePath)) {
+                    coreService_toggleShowDeck();
+                } else {
+                    errorHandler_reportError(ERROR_FILE_IO, "Failed to load deck");
+                    eventSystem_publish(EVENT_DECK_LOADED_FAILURE, NULL);
+                }
+            } else {
+                fprintf(stderr, "ERROR: EVENT_DECK_LOADED_SUCCESS received null path\n");
+            }
             break;
+
         case EVENT_DECK_LOADED_FAILURE:
-            // Error will be shown through error dialog system
             errorHandler_reportError(ERROR_FILE_IO, "Failed to load deck");
             break;
+
         case EVENT_DECK_SAVED:
-            // Handle successful save (update UI, etc.)
+            if (event->data) {
+                const char* filePath = (const char*)event->data;
+                coreService_saveDeck(filePath);
+            } else {
+                fprintf(stderr, "ERROR: EVENT_DECK_SAVED received null path\n");
+            }
             break;
+
         case EVENT_DECK_TOGGLED:
             coreService_toggleShowDeck();
             break;
-        case EVENT_DECK_SPLIT: {
-            int* splitIndex = (int*)event->data;
-            if (splitIndex != NULL) {
+
+        case EVENT_DECK_SHOWN:
+            coreService_showDeck();
+            break;
+
+        case EVENT_DECK_SPLIT:
+            if (event->data) {
+                int* splitIndex = (int*)event->data;
                 coreService_splitDeck(*splitIndex);
                 free(splitIndex);
             } else {
-                fprintf(stderr, "Error: EVENT_DECK_SPLIT received null data.\n");
+                coreService_splitDeck(-1);
             }
             break;
-        }
+
         default:
             fprintf(stderr, "ERROR: Unhandled event type in handleGameEvents: %d\n", event->type);
             break;

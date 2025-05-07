@@ -128,6 +128,10 @@ int coreService_getDeckSize() {
     return 0;
 }
 
+void coreService_showDeck() {
+    yukon_showDeck(gameState);
+}
+
 Card* coreService_getDeckCard(int index) {
     if (gameState) {
         return yukon_getDeckCard(gameState, index);

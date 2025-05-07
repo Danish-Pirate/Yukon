@@ -23,6 +23,7 @@ Suit coreService_getCardSuit(Card* card);
 const char* coreService_cardToString(Card* card);
 
 // Deck operations
+void coreService_showDeck();
 void coreService_saveDeck(const char* filePath);
 bool coreService_loadDeck(const char* filePath);
 void coreService_toggleShowDeck();

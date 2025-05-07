@@ -166,6 +166,13 @@ void yukon_saveDeck(GameState* gameState, const char* filePath);
 bool yukon_loadDeck(GameState* gameState, const char* filePath);
 
 /**
+ * Make all cards face up
+ *
+ * @param gameState The game state
+ */
+void yukon_showDeck(GameState* gameState);
+
+/**
  * Toggle between showing/hiding the deck cards.
  *
  * @param gameState The game state
