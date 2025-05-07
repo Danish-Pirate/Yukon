@@ -61,20 +61,35 @@ void enterPlayMode(GameState* gameState) {
 void exitPlayMode(GameState* gameState) {
     LinkedList *deck = gameState->deck;
 
+    // Free card columns and foundation piles
     for (int i = 0; i < COLUMNS_SIZE; i++) {
         if (gameState->cardColumns[i]) {
             freeListExcludeData(gameState->cardColumns[i]);
+            gameState->cardColumns[i] = NULL;
         }
     }
 
     for (int i = 0; i < PILES_SIZE; i++) {
         if (gameState->cardFoundationPiles[i]) {
             freeListExcludeData(gameState->cardFoundationPiles[i]);
+            gameState->cardFoundationPiles[i] = NULL;
         }
     }
 
-    resetGame(gameState);
+    // Clear the gameState but DO NOT use memset as it would erase our NULL pointers
+    gameState->gamePhase = StartupPhase;
+    gameState->gameWon = false;
 
+    // Recreate the lists manually instead of calling resetGame()
+    for (int i = 0; i < COLUMNS_SIZE; i++) {
+        gameState->cardColumns[i] = createList(sizeof(Node));
+    }
+
+    for (int i = 0; i < PILES_SIZE; i++) {
+        gameState->cardFoundationPiles[i] = createList(sizeof(Node));
+    }
+
+    // Restore the deck and make all cards face up
     gameState->deck = deck;
     showDeck(deck);
 }
