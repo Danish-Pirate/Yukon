@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include "data_structures.h"
 #include "yukon_core.h"
-#include "utils/gui_service_locator.h"
 #include "model/game.h"
 #include "play_scene.h"
 #include "service/game_service.h"
 #include "view/ui_button.h"
-#include "view/gui_utils.h"
+#include "gui/utils/gui_utils.h"
 #include "scene_manager.h"
 #include "view/ui_manager.h"
+#include "service/core_service.h"
 
 
 typedef struct {
@@ -38,7 +38,7 @@ static void handleGameWonEvent(Event* event) {
 }
 
 static bool tryStartDragging(int mouseX, int mouseY) {
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
 
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
         LinkedList* column = gameState->cardColumns[colIdx];
@@ -250,7 +250,7 @@ static void drawVictoryDialog() {
 
 static void drawFoundationPiles() {
     SDL_Renderer* renderer = windowManager_getRenderer();
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
 
     for (int i = 0; i < PILES_SIZE; i++) {
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -277,7 +277,7 @@ static void drawFoundationPiles() {
 
 static void drawColumns() {
     SDL_Renderer* renderer = windowManager_getRenderer();
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
 
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
         LinkedList* column = gameState->cardColumns[colIdx];
@@ -380,7 +380,7 @@ void playScene_handleEvent(SDL_Event* event) {
         };
 
         if (isPointWithinRect(event->button.x, event->button.y, buttonRect)) {
-            GameState* gameState = serviceLocator_getGameState();
+            GameState* gameState = coreService_getGameState();
             gameState->gameWon = false;
             return;
         }

@@ -28,15 +28,12 @@ typedef enum {
     EVENT_PLAY_MODE_ENTER,  /**< Entered play mode */
     EVENT_PLAY_MODE_EXIT,   /**< Exited play mode */
     EVENT_CARD_MOVED,       /**< Card has been moved */
-    EVENT_CARD_SELECTED,    /**< Card has been selected */
-    EVENT_CARD_DROPPED,     /**< Card has been dropped */
     EVENT_DECK_SHUFFLED,    /**< Deck has been shuffled */
     EVENT_DECK_LOADED_SUCCESS, /**< Deck loaded successfully */
     EVENT_DECK_LOADED_FAILURE, /**< Deck failed to load */
     EVENT_DECK_SAVED,       /**< Deck saved successfully */
     EVENT_DECK_TOGGLED,     /**< Deck face-up/face-down state toggled */
     EVENT_DECK_SPLIT,       /**< Deck split at a specific index */
-    EVENT_UI_BUTTON_CLICKED /**< UI button clicked */
 } EventType;
 
 /**

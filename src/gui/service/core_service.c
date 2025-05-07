@@ -1,5 +1,4 @@
 #include "core_service.h"
-#include "utils/gui_service_locator.h"
 #include "model/card.h"
 #include <stdio.h>
 
@@ -14,7 +13,6 @@ void coreService_init() {
     if (!gameState) {
         fprintf(stderr, "Failed to initialize game state in core service\n");
     }
-    serviceLocator_registerGameState(gameState);
 }
 
 void coreService_cleanup() {

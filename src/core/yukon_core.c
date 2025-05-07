@@ -3,7 +3,6 @@
 #include "model/card.h"
 #include "model/deck.h"
 #include "utils/event_system.h"
-#include "service/game_service.h"
 #include <stdlib.h>
 #include <string.h>
 

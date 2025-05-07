@@ -3,7 +3,7 @@
 static SDL_Renderer* renderer = NULL;
 static SDL_Window* window = NULL;
 
-void windowManager_init(SDL_Renderer* r, SDL_Window* w) {
+void windowManager_init(SDL_Window* w, SDL_Renderer* r) {
     renderer = r;
     window = w;
 }

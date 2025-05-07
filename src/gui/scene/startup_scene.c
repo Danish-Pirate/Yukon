@@ -5,13 +5,13 @@
 #include "service/game_service.h"
 #include "view/ui_card.h"
 #include "scene_manager.h"
-#include "view/gui_utils.h"
+#include "gui/utils/gui_utils.h"
 #include <nfd.h>
-#include "utils/gui_service_locator.h"
 #include <SDL_ttf.h>
 #include "view/ui_manager.h"
 #include "model/deck.h"
 #include "service/core_service.h"
+#include "view/window_manager.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -120,7 +120,7 @@ void processSplitDialogEvent(SDL_Event* event) {
 
     // Get the current deck size for validation
     int deckSize = 52; // Default to standard deck size
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
     if (gameState && gameState->deck) {
         // Count the actual cards in the deck
         Node* current = gameState->deck->head;
@@ -196,7 +196,7 @@ void renderSplitDialog() {
 
     // Get the current deck size for prompt
     int deckSize = 52; // Default to standard deck size
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
     if (gameState && gameState->deck) {
         // Count the actual cards in the deck
         Node* current = gameState->deck->head;
@@ -341,7 +341,7 @@ void startupScene_init(void* data) {
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
     // Make all cards face up in the startup scene
-    GameState* gameState = serviceLocator_getGameState();
+    GameState* gameState = coreService_getGameState();
     if (gameState && gameState->deck) {
         showDeck(gameState->deck);
     }

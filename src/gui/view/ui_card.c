@@ -1,9 +1,9 @@
 #include <SDL.h>
 #include "ui_card.h"
 #include "texture_manager.h"
-#include "utils/gui_service_locator.h"
-#include "gui_utils.h"
+#include "gui/utils/gui_utils.h"
 #include "model/card.h"
+#include "window_manager.h"
 
 #define FACEDOWN_CARD_TEXCOORDS_X (CARD_WIDTH * 2)
 #define FACEDOWN_CARD_TEXCOORDS_Y (CARD_HEIGHT * 4)

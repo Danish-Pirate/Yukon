@@ -1,7 +1,6 @@
 
 #include "scene_manager.h"
 #include "view/ui_manager.h"
-#include "utils/gui_service_locator.h"
 #include "startup_scene.h"
 #include "play_scene.h"
 

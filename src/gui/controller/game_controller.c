@@ -3,12 +3,10 @@
 #include "scene/scene_manager.h"
 #include "view/texture_manager.h"
 #include "nativefiledialog-extended/src/include/nfd.h"
-#include "service/game_service.h"
 #include "../utils/service_locator.h"
 #include "../utils/error_handler.h"
 #include "../service/core_service.h"
 #include "view/window_manager.h"
-#include "utils/gui_service_locator.h"
 #include "SDL_ttf.h"
 #include "view/ui_manager.h"
 
@@ -138,8 +136,7 @@ void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     serviceLocator_init();
     yukon_eventSystem_init();
 
-    serviceLocator_registerWindow(window);
-    serviceLocator_registerRenderer(renderer);
+    windowManager_init(window, renderer);
 
     errorHandler_subscribe(handleErrorEvent);
 
@@ -149,6 +146,7 @@ void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     if (gameState) {
         fprintf(stderr, "DEBUG: Registering gameState with GUI service locator\n");
         serviceLocator_registerGameState(gameState);
+
     } else {
         fprintf(stderr, "ERROR: coreService_getGameState() returned NULL\n");
     }

@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include <unistd.h>
-#include "utils/gui_service_locator.h"
+#include "window_manager.h"
 
 #define cardTexAtlas_FILEPATH "assets/textures/card_atlas.bmp"
 
