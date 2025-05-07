@@ -39,6 +39,30 @@ static void handleGameWonEvent(Event* event) {
 static bool tryStartDragging(int mouseX, int mouseY) {
     GameState* gameState = coreService_getGameState();
 
+    // First check foundation piles
+    for (int i = 0; i < PILES_SIZE; i++) {
+        if (gameState->cardFoundationPiles[i]->tail == NULL) continue;
+
+        SDL_Rect foundRect = {
+                .x = FOUNDATION_X_START,
+                .y = FOUNDATION_Y + (i * (FOUNDATION_Y_SPACING + CARD_DISPLAY_HEIGHT)),
+                .w = CARD_DISPLAY_WIDTH,
+                .h = CARD_DISPLAY_HEIGHT
+        };
+
+        if (isCardHovered(mouseX, mouseY, foundRect)) {
+            dragState.isDragging = true;
+            dragState.sourceColumnIndex = i + COLUMNS_SIZE; // Foundation pile index
+            dragState.selectedNode = gameState->cardFoundationPiles[i]->tail; // Only take top card
+            dragState.dragOffsetX = mouseX - foundRect.x;
+            dragState.dragOffsetY = mouseY - foundRect.y;
+            dragState.dragBaseRect = foundRect;
+            dragState.cardCount = 1; // Only one card can be moved from foundation
+            return true;
+        }
+    }
+
+    // Then check columns
     for (int colIdx = 0; colIdx < COLUMNS_SIZE; colIdx++) {
         LinkedList* column = gameState->cardColumns[colIdx];
         if (column->head == NULL) continue;
@@ -277,26 +301,26 @@ static void drawFoundationPiles() {
 
         // Try to get top card from foundation pile
         int pileIndex = i + COLUMNS_SIZE; // Convert to proper index
-        Card* topCard = NULL;
+
+        // Skip drawing if this foundation pile's card is being dragged
+        if (dragState.isDragging && dragState.sourceColumnIndex == pileIndex) {
+            continue;
+        }
 
         // Finding the top card
         GameState* gameState = coreService_getGameState();
         if (gameState) {
-            // we need to use a workaround:
             // Check if the pile is not empty and has a top card
             if (gameState->cardFoundationPiles[i]->tail) {
-                topCard = (Card*)gameState->cardFoundationPiles[i]->tail->data;
+                Card* topCard = (Card*)gameState->cardFoundationPiles[i]->tail->data;
+                SDL_Rect cardRect = {
+                        .x = FOUNDATION_X_START,
+                        .y = FOUNDATION_Y + (i * (FOUNDATION_Y_SPACING + CARD_DISPLAY_HEIGHT)),
+                        .w = CARD_DISPLAY_WIDTH,
+                        .h = CARD_DISPLAY_HEIGHT
+                };
+                drawCard(cardRect, topCard);
             }
-        }
-
-        if (topCard) {
-            SDL_Rect cardRect = {
-                    .x = FOUNDATION_X_START,
-                    .y = FOUNDATION_Y + (i * (FOUNDATION_Y_SPACING + CARD_DISPLAY_HEIGHT)),
-                    .w = CARD_DISPLAY_WIDTH,
-                    .h = CARD_DISPLAY_HEIGHT
-            };
-            drawCard(cardRect, topCard);
         }
     }
 }

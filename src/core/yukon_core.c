@@ -15,27 +15,7 @@ void yukon_resetGame(GameState* gameState) {
 }
 
 void yukon_cleanup(GameState* gameState) {
-    // Free game state resources
-    if (gameState) {
-        // Clean up lists
-        for (int i = 0; i < COLUMNS_SIZE; i++) {
-            if (gameState->cardColumns[i]) {
-                freeList(gameState->cardColumns[i]);
-            }
-        }
 
-        for (int i = 0; i < PILES_SIZE; i++) {
-            if (gameState->cardFoundationPiles[i]) {
-                freeList(gameState->cardFoundationPiles[i]);
-            }
-        }
-
-        if (gameState->deck) {
-            freeList(gameState->deck);
-        }
-
-        free(gameState);
-    }
 }
 
 void yukon_eventSystem_init() {

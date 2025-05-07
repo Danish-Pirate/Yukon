@@ -114,22 +114,15 @@ void sceneManager_update() {
 
 void sceneManager_render() {
     SDL_Renderer* renderer = windowManager_getRenderer();
-
     if (!renderer) {
         printf("Renderer is NULL in sceneManager_render!\n");
         return;
     }
 
-    // Clear screen with black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    // Render current scene
+    // Render current scene without clearing or presenting
     if (currentScene && currentScene->render) {
         currentScene->render();
     } else if (!currentScene) {
         printf("No current scene in sceneManager_render!\n");
     }
-
-    SDL_RenderPresent(renderer);
 }

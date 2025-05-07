@@ -109,6 +109,11 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         return;
     }
 
+    // Validate - Not valid to move from foundation to other foundation
+    if (fromColumnIndex >= COLUMNS_SIZE && toColumnIndex >= COLUMNS_SIZE) {
+        return;
+    }
+
     // Source is a column
     if (fromColumnIndex < COLUMNS_SIZE){
         // Card is specified
@@ -128,7 +133,7 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
             }
             srcNode = current;
         }
-        // Fetch tail card if card not specified
+            // Fetch tail card if card not specified
         else{
             if (gameState->cardColumns[fromColumnIndex]->tail == NULL){
                 return;
@@ -137,7 +142,7 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
         }
         srcList = gameState->cardColumns[fromColumnIndex];
     }
-    // Source is a foundation pile
+        // Source is a foundation pile
     else {
         srcList = gameState->cardFoundationPiles[fromColumnIndex-COLUMNS_SIZE];
         // Validate - Foundation pile contains a card when used as source
@@ -166,20 +171,16 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
             }
         }
     }
-    // Destination is a foundation pile
+        // Destination is a foundation pile
     else {
         dstList = gameState->cardFoundationPiles[toColumnIndex-COLUMNS_SIZE];
-        // Validate - Not valid to move from foundation to other foundation
-        if (fromColumnIndex>=COLUMNS_SIZE){
-            return;
-        }
-        // Validate - Card must be at the bottom of the column when plated onto a foundation
+
+        // Validate - Card must be at the bottom of the column when placed onto a foundation
         if (srcNode != srcList->tail){
             return;
         }
 
         Card* srcCard = srcNode->data;
-
 
         if (dstList->tail == NULL){
             // Validate - Card must be ace when put onto empty foundation
@@ -203,8 +204,6 @@ void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, i
 
     // Move srcNode and subsequent nodes from srcList to tail of dstList
     spliceList(srcList,dstList,srcNode);
-
-
 }
 /*
 bool gameManager_isGameOver(GameState* gameState) {
