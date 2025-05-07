@@ -6,7 +6,6 @@
 #include "yukon_core.h"
 #include "model/game.h"
 #include "play_scene.h"
-#include "service/game_service.h"
 #include "view/ui_button.h"
 #include "gui/utils/gui_utils.h"
 #include "scene_manager.h"
@@ -30,7 +29,7 @@ static UI_Button backButton;
 static void handleGameWonEvent(Event* event) {
     if (event->type != EVENT_GAME_WON) return;
 
-    const GameView* gameView = gameService_getView();
+    const GameView* gameView = g();
 
     if (gameView->isGameWon) {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Game won!");

@@ -1,8 +1,6 @@
-
 #include <SDL.h>
 #include "view/ui_button.h"
 #include "data_structures.h"
-#include "service/game_service.h"
 #include "view/ui_card.h"
 #include "scene_manager.h"
 #include "gui/utils/gui_utils.h"
@@ -82,7 +80,7 @@ static void drawDeck() {
 }
 
 void playModeCallback() {
-    sceneManager_changeScene(SCENE_PLAY_MODE, NULL);
+    eventSystem_publish(EVENT_PLAY_MODE_ENTER, NULL);
 }
 
 void saveDeckCallback() {
@@ -91,22 +89,22 @@ void saveDeckCallback() {
         NFD_FreePathU8(filePath);
         return;
     }
-    gameService_saveDeck(filePath);
+    eventSystem_publish(EVENT_DECK_SAVED, filePath);
     NFD_FreePathU8(filePath);
 }
 
 void loadDeckCallback() {
     char* filePath = getLoadFilePathFromDialog();
     if (filePath[0] == '\0') { return; }
-    gameService_loadDeck(filePath);
+    eventSystem_publish(EVENT_DECK_LOADED_SUCCESS, filePath);
 }
 
 void revealDeckCallback() {
-    gameService_toggleShowDeck();
+    eventSystem_publish(EVENT_DECK_SHUFFLED, NULL);
 }
 
 void shuffleDeckCallback() {
-    gameService_shuffleDeck();
+    eventSystem_publish(EVENT_DECK_SHUFFLED, NULL);
 }
 
 void splitDeckCallback() {
@@ -139,7 +137,7 @@ void processSplitDialogEvent(SDL_Event* event) {
             // Validate: 1 <= cardNumber < deckSize (only up to card 51)
             if (cardNumber >= 1 && cardNumber < deckSize) {
                 // Split deck using the card number as the index
-                gameService_splitDeck(cardNumber);
+                eventSystem_publish(EVENT_DECK_SPLIT, &cardNumber);;
                 showSplitDialog = false;
             } else {
                 // Invalid input - just clear the field without feedback
