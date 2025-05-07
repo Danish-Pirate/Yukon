@@ -10,6 +10,7 @@
 #include "model/deck.h"
 #include "service/core_service.h"
 #include "view/window_manager.h"
+#include "utils/linked_list.h"
 
 static UI_Button UI_Buttons[12];
 static int buttonCount = 0;
@@ -23,43 +24,23 @@ typedef struct {
 
 static InputDialog splitIndexDialog = {0};
 static bool showSplitDialog = false;
+static int deckSize = 0;
 
 static void drawDeck() {
     int card_PosY = 20;
     int card_PosX = 200;
     int cardRowCount = 0;
 
-    GameState* gameState = coreService_getGameState();
-    if (!gameState) {
-        fprintf(stderr, "ERROR: gameState is NULL in drawDeck()\n");
-        return;
-    }
+    int cardCount = deckSize;
 
-    if (!gameState->deck) {
-        fprintf(stderr, "ERROR: gameState->deck is NULL in drawDeck()\n");
-        return;
-    }
-
-    LinkedList* deck = gameState->deck;
-    Node* current = deck->head;
-    int cardCount = 0;
-
-    // Count cards
-    Node* countNode = deck->head;
-    while (countNode != NULL) {
-        cardCount++;
-        countNode = countNode->nextNode;
-    }
-
-    // Iterate through the actual linked list nodes instead of assuming 52 cards
-    while (current != NULL) {
+    for (int i = 0; i < cardCount; i++) {
         if (cardRowCount == 13) {
             card_PosY += CARD_DISPLAY_HEIGHT + CARD_SPACING_Y;
             card_PosX = 200;
             cardRowCount = 0;
         }
 
-        Card* card = (Card*)current->data;
+        Card* card = coreService_getDeckCard(i);
         if (card) {
             SDL_Rect screenRect = {
                     .x = card_PosX,
@@ -74,8 +55,6 @@ static void drawDeck() {
 
         card_PosX += CARD_DISPLAY_WIDTH + CARD_SPACING_X;
         cardRowCount++;
-
-        current = current->nextNode;
     }
 }
 
@@ -116,19 +95,6 @@ void splitDeckCallback() {
 void processSplitDialogEvent(SDL_Event* event) {
     if (!showSplitDialog) return;
 
-    // Get the current deck size for validation
-    int deckSize = 52; // Default to standard deck size
-    GameState* gameState = coreService_getGameState();
-    if (gameState && gameState->deck) {
-        // Count the actual cards in the deck
-        Node* current = gameState->deck->head;
-        deckSize = 0;
-        while (current != NULL) {
-            deckSize++;
-            current = current->nextNode;
-        }
-    }
-
     if (event->type == SDL_KEYDOWN) {
         // Handle key presses for the input field
         if (event->key.keysym.sym == SDLK_RETURN) {
@@ -137,7 +103,11 @@ void processSplitDialogEvent(SDL_Event* event) {
             // Validate: 1 <= cardNumber < deckSize (only up to card 51)
             if (cardNumber >= 1 && cardNumber < deckSize) {
                 // Split deck using the card number as the index
-                eventSystem_publish(EVENT_DECK_SPLIT, &cardNumber);;
+                int* indexPtr = malloc(sizeof(int));
+                if (indexPtr) {
+                    *indexPtr = cardNumber;
+                    eventSystem_publish(EVENT_DECK_SPLIT, indexPtr);
+                }
                 showSplitDialog = false;
             } else {
                 // Invalid input - just clear the field without feedback
@@ -191,19 +161,6 @@ void renderSplitDialog() {
     SDL_Renderer *renderer = windowManager_getRenderer();
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
-
-    // Get the current deck size for prompt
-    int deckSize = 52; // Default to standard deck size
-    GameState* gameState = coreService_getGameState();
-    if (gameState && gameState->deck) {
-        // Count the actual cards in the deck
-        Node* current = gameState->deck->head;
-        deckSize = 0;
-        while (current != NULL) {
-            deckSize++;
-            current = current->nextNode;
-        }
-    }
 
     // Darken the background
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -338,12 +295,9 @@ void startupScene_init(void* data) {
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
-    // Make all cards face up in the startup scene
-    GameState* gameState = coreService_getGameState();
-    if (gameState && gameState->deck) {
-        showDeck(gameState->deck);
-    }
+    eventSystem_publish(EVENT_DECK_SHOWN, NULL);
 
+    deckSize = coreService_getDeckSize();
 
     int buttonWidth = 150;
     int buttonHeight = 60;

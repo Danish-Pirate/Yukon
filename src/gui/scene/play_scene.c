@@ -29,7 +29,7 @@ static UI_Button backButton;
 static void handleGameWonEvent(Event* event) {
     if (event->type != EVENT_GAME_WON) return;
 
-    const GameView* gameView = g();
+    const GameView* gameView = coreService_getGameView();
 
     if (gameView->isGameWon) {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Game won!");
@@ -122,10 +122,22 @@ static void handleDrop(int mouseX, int mouseY) {
 
             if (dragState.cardCount == 1) {
                 int foundationIndex = targetFoundation + COLUMNS_SIZE;
-                gameService_moveCard(card->rank, card->suit,
-                                     dragState.sourceColumnIndex, foundationIndex);
+
+                // Create and publish card move event
+                CardMoveData* moveData = malloc(sizeof(CardMoveData));
+                if (moveData) {
+                    moveData->rank = card->rank;
+                    moveData->suit = card->suit;
+                    moveData->fromColumnIndex = dragState.sourceColumnIndex;
+                    moveData->toColumnIndex = foundationIndex;
+                    eventSystem_publish(EVENT_CARD_MOVED, moveData);
+                }
             }
-            gameService_checkGameWon();
+
+            // Check for game won
+            if (coreService_isGameWon()) {
+                eventSystem_publish(EVENT_GAME_WON, NULL);
+            }
         }
     }
     else {
@@ -142,8 +154,16 @@ static void handleDrop(int mouseX, int mouseY) {
 
         if (targetColumn != -1 && targetColumn != dragState.sourceColumnIndex) {
             Card* firstCard = (Card*)dragState.selectedNode->data;
-            gameService_moveCard(firstCard->rank, firstCard->suit,
-                                 dragState.sourceColumnIndex, targetColumn);
+
+            // Create and publish card move event
+            CardMoveData* moveData = malloc(sizeof(CardMoveData));
+            if (moveData) {
+                moveData->rank = firstCard->rank;
+                moveData->suit = firstCard->suit;
+                moveData->fromColumnIndex = dragState.sourceColumnIndex;
+                moveData->toColumnIndex = targetColumn;
+                eventSystem_publish(EVENT_CARD_MOVED, moveData);
+            }
         }
     }
 
@@ -249,7 +269,6 @@ static void drawVictoryDialog() {
 
 static void drawFoundationPiles() {
     SDL_Renderer* renderer = windowManager_getRenderer();
-    GameState* gameState = coreService_getGameState();
 
     for (int i = 0; i < PILES_SIZE; i++) {
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -261,8 +280,21 @@ static void drawFoundationPiles() {
         };
         SDL_RenderDrawRect(renderer, &foundationRect);
 
-        if (gameState->cardFoundationPiles[i]->head != NULL) {
-            Card* topCard = (Card*)gameState->cardFoundationPiles[i]->tail->data;
+        // Try to get top card from foundation pile
+        int pileIndex = i + COLUMNS_SIZE; // Convert to proper index
+        Card* topCard = NULL;
+
+        // Finding the top card
+        GameState* gameState = coreService_getGameState();
+        if (gameState) {
+            // we need to use a workaround:
+            // Check if the pile is not empty and has a top card
+            if (gameState->cardFoundationPiles[i]->tail) {
+                topCard = (Card*)gameState->cardFoundationPiles[i]->tail->data;
+            }
+        }
+
+        if (topCard) {
             SDL_Rect cardRect = {
                     .x = FOUNDATION_X_START,
                     .y = FOUNDATION_Y + (i * (FOUNDATION_Y_SPACING + CARD_DISPLAY_HEIGHT)),
@@ -362,7 +394,7 @@ void playScene_handleEvent(SDL_Event* event) {
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
-    const GameView* gameView = gameService_getView();
+    const GameView* gameView = coreService_getGameView();
 
     if (gameView->isGameWon && event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
@@ -405,7 +437,6 @@ void playScene_update() {
 }
 
 void playScene_render() {
-
     SDL_Renderer *renderer = windowManager_getRenderer();
     if (!renderer) {
         printf("ERROR: Renderer is NULL in playScene_render()\n");
@@ -415,7 +446,7 @@ void playScene_render() {
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
-    const GameView* gameView = gameService_getView();
+    const GameView* gameView = coreService_getGameView();
 
     SDL_SetRenderDrawColor(renderer, 0, 80, 0, 255);
     SDL_Rect bgRect = {0, 0, width, height};

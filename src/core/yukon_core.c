@@ -135,3 +135,33 @@ Rank yukon_getCardRank(Card* card) {
 Suit yukon_getCardSuit(Card* card) {
     return card ? card->suit : INVALID_SUIT;
 }
+int yukon_getDeckSize(GameState* gameState) {
+    if (!gameState || !gameState->deck) {
+        return 0;
+    }
+
+    int count = 0;
+    Node* current = gameState->deck->head;
+
+    while (current != NULL) {
+        count++;
+        current = current->nextNode;
+    }
+
+    return count;
+}
+Card* yukon_getDeckCard(GameState* gameState, int index) {
+    if (!gameState || !gameState->deck) {
+        return NULL;
+    }
+
+    Node* current = gameState->deck->head;
+    int currentIndex = 0;
+
+    while (current != NULL && currentIndex < index) {
+        current = current->nextNode;
+        currentIndex++;
+    }
+
+    return current ? (Card*)current->data : NULL;
+}

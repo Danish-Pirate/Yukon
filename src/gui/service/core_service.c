@@ -120,3 +120,17 @@ void coreService_splitDeck(int splitIndex) {
         yukon_splitDeck(gameState, splitIndex);
     }
 }
+
+int coreService_getDeckSize() {
+    if (gameState) {
+        return yukon_getDeckSize(gameState);
+    }
+    return 0;
+}
+
+Card* coreService_getDeckCard(int index) {
+    if (gameState) {
+        return yukon_getDeckCard(gameState, index);
+    }
+    return NULL;
+}

@@ -28,3 +28,5 @@ bool coreService_loadDeck(const char* filePath);
 void coreService_toggleShowDeck();
 void coreService_shuffleDeck();
 void coreService_splitDeck(int splitIndex);
+int coreService_getDeckSize();
+Card* coreService_getDeckCard(int index);

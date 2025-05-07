@@ -34,6 +34,7 @@ typedef enum {
     EVENT_DECK_SAVED,       /**< Deck saved successfully */
     EVENT_DECK_TOGGLED,     /**< Deck face-up/face-down state toggled */
     EVENT_DECK_SPLIT,       /**< Deck split at a specific index */
+    EVENT_DECK_SHOWN,
 } EventType;
 
 /**
@@ -255,3 +256,20 @@ Rank yukon_getCardRank(Card* card);
  * @return The card's suit
  */
 Suit yukon_getCardSuit(Card* card);
+
+/**
+ * Get the number of cards in the deck.
+ *
+ * @param gameState The game state
+ * @return Number of cards in the deck
+ */
+int yukon_getDeckSize(GameState* gameState);
+
+/**
+ * Get a card from the deck at a specific index.
+ *
+ * @param gameState The game state
+ * @param index Index of the card in the deck
+ * @return Pointer to the card, or NULL if index is invalid
+ */
+Card* yukon_getDeckCard(GameState* gameState, int index);
