@@ -76,6 +76,7 @@ void exitPlayMode(GameState* gameState) {
     resetGame(gameState);
 
     gameState->deck = deck;
+    showDeck(deck);
 }
 void moveCard(GameState* gameState, Rank rank, Suit suit, int fromColumnIndex, int toColumnIndex) {
 

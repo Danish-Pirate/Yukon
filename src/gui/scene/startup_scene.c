@@ -79,7 +79,7 @@ void loadDeckCallback() {
 }
 
 void revealDeckCallback() {
-    eventSystem_publish(EVENT_DECK_SHUFFLED, NULL);
+    eventSystem_publish(EVENT_DECK_TOGGLED, NULL);
 }
 
 void shuffleDeckCallback() {

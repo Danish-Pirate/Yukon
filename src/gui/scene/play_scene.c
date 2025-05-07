@@ -174,11 +174,6 @@ static void handleDrop(int mouseX, int mouseY) {
 
 static void backToStartupCallback() {
     eventSystem_publish(EVENT_PLAY_MODE_EXIT, NULL);
-
-    SceneChangeData* data = malloc(sizeof(SceneChangeData));
-    data->type = SCENE_STARTUP_MODE;
-    data->data = NULL;
-    eventSystem_publish(EVENT_SCENE_CHANGE, data);
 }
 
 static void drawVictoryDialog() {
@@ -375,7 +370,6 @@ void playScene_init(void* data) {
     int width, height;
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
-    eventSystem_publish(EVENT_PLAY_MODE_ENTER, NULL);
     eventSystem_subscribe(EVENT_GAME_WON, handleGameWonEvent);
 
     int buttonHeight = 60;

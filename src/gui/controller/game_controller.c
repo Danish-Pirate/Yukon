@@ -31,10 +31,12 @@ static void handleGameEvents(Event* event) {
 
         case EVENT_PLAY_MODE_ENTER:
             coreService_enterPlayMode();
+            sceneManager_changeScene(SCENE_PLAY_MODE, NULL);
             break;
 
         case EVENT_PLAY_MODE_EXIT:
             coreService_exitPlayMode();
+            sceneManager_changeScene(SCENE_STARTUP_MODE, NULL);
             break;
 
         case EVENT_CARD_MOVED:
