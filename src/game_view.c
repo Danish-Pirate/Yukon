@@ -88,6 +88,7 @@ int drawColumns(GameState *gameState){
         // Increase stack height if current stack is higher
         mainSectionHeight = (i > mainSectionHeight) ? i : mainSectionHeight;
     }
+    return mainSectionHeight;
 }
 
 int drawDeckView(GameState *gameState){
