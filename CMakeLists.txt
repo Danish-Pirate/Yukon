@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(yukon C)
 
+set(SDL2TTF_VENDORED ON)
+set(SDL2TTF_VENDORED_FREETYPE ON)
+set(SDL2TTF_FREETYPE ON)
 set(CMAKE_C_STANDARD 11)
 
 # External dependencies paths
