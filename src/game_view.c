@@ -43,6 +43,7 @@ void cursorSet(int column, int row){
 };
 
 void initView(){
+    enable_vt_mode();
     setColors();
     sleep(1);
     clearScreen();
