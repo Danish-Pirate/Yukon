@@ -114,25 +114,24 @@ static void handleGameEvents(Event* event) {
 void initGameController(SDL_Window *window, SDL_Renderer *renderer) {
     windowManager_init(window, renderer);
 
-    yukon_eventSystem_init();
+    eventSystem_init();
     coreService_init();
     sceneManager_init();
     textureManager_init();
 
-    coreService_subscribeToEvents();
     // Subscribe to ALL events for centralized handling
-    yukon_eventSystem_subscribe(EVENT_SCENE_CHANGE, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_GAME_INITIALIZED, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_GAME_WON, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_PLAY_MODE_ENTER, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_PLAY_MODE_EXIT, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_CARD_MOVED, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_SHUFFLED, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_LOADED_SUCCESS, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_LOADED_FAILURE, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_SAVED, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_TOGGLED, handleGameEvents);
-    yukon_eventSystem_subscribe(EVENT_DECK_SPLIT, handleGameEvents);
+    eventSystem_subscribe(EVENT_SCENE_CHANGE, handleGameEvents);
+    eventSystem_subscribe(EVENT_GAME_INITIALIZED, handleGameEvents);
+    eventSystem_subscribe(EVENT_GAME_WON, handleGameEvents);
+    eventSystem_subscribe(EVENT_PLAY_MODE_ENTER, handleGameEvents);
+    eventSystem_subscribe(EVENT_PLAY_MODE_EXIT, handleGameEvents);
+    eventSystem_subscribe(EVENT_CARD_MOVED, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_SHUFFLED, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_LOADED_SUCCESS, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_LOADED_FAILURE, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_SAVED, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_TOGGLED, handleGameEvents);
+    eventSystem_subscribe(EVENT_DECK_SPLIT, handleGameEvents);
 
     sceneManager_changeScene(SCENE_STARTUP_MODE, NULL);
 }
@@ -174,21 +173,20 @@ void loopGameController() {
 }
 
 void cleanUpGameController() {
-    yukon_eventSystem_unsubscribe(EVENT_SCENE_CHANGE, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_GAME_INITIALIZED, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_GAME_WON, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_PLAY_MODE_ENTER, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_PLAY_MODE_EXIT, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_CARD_MOVED, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_SHUFFLED, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_LOADED_SUCCESS, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_LOADED_FAILURE, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_SAVED, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_TOGGLED, handleGameEvents);
-    yukon_eventSystem_unsubscribe(EVENT_DECK_SPLIT, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_SCENE_CHANGE, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_GAME_INITIALIZED, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_GAME_WON, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_PLAY_MODE_ENTER, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_PLAY_MODE_EXIT, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_CARD_MOVED, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_SHUFFLED, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_LOADED_SUCCESS, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_LOADED_FAILURE, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_SAVED, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_TOGGLED, handleGameEvents);
+    eventSystem_unsubscribe(EVENT_DECK_SPLIT, handleGameEvents);
 
     coreService_cleanup();
-    yukon_eventSystem_cleanup();
     textureManager_cleanup();
     sceneManager_cleanup();
 }

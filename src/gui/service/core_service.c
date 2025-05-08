@@ -1,5 +1,6 @@
 #include "core_service.h"
 #include "model/card.h"
+#include "utils/event_system.h"
 #include <stdio.h>
 
 static GameState* gameState = NULL;
@@ -20,11 +21,6 @@ void coreService_cleanup() {
         yukon_cleanup(gameState);
         gameState = NULL;
     }
-}
-
-void coreService_subscribeToEvents() {
-    // Subscribe to events from the core
-    yukon_eventSystem_init();
 }
 
 void coreService_enterPlayMode() {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SDL2/SDL.h"
-#include "../utils/event_system.h"
+#include "gui/utils/event_system.h"
 #include "../view/ui_button.h"
 
 typedef enum {

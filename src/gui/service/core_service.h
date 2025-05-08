@@ -4,7 +4,6 @@
 
 void coreService_init();
 void coreService_cleanup();
-void coreService_subscribeToEvents();
 
 // Game state operations
 void coreService_enterPlayMode();

@@ -18,37 +18,6 @@ typedef enum Suit Suit;
 typedef struct Card Card;
 typedef struct GameState GameState;
 
-/**
- * Event types the GUI can subscribe to for game state changes
- */
-typedef enum {
-    EVENT_SCENE_CHANGE,     /**< Scene has changed */
-    EVENT_GAME_INITIALIZED, /**< Game has been initialized */
-    EVENT_GAME_WON,         /**< Player has won the game */
-    EVENT_PLAY_MODE_ENTER,  /**< Entered play mode */
-    EVENT_PLAY_MODE_EXIT,   /**< Exited play mode */
-    EVENT_CARD_MOVED,       /**< Card has been moved */
-    EVENT_DECK_SHUFFLED,    /**< Deck has been shuffled */
-    EVENT_DECK_LOADED_SUCCESS, /**< Deck loaded successfully */
-    EVENT_DECK_LOADED_FAILURE, /**< Deck failed to load */
-    EVENT_DECK_SAVED,       /**< Deck saved successfully */
-    EVENT_DECK_TOGGLED,     /**< Deck face-up/face-down state toggled */
-    EVENT_DECK_SPLIT,       /**< Deck split at a specific index */
-    EVENT_DECK_SHOWN,
-} EventType;
-
-/**
- * Event structure for the event system
- */
-typedef struct {
-    EventType type; /**< Type of the event */
-    void* data;     /**< Data associated with the event */
-} Event;
-
-/**
- * Callback function type for event handling
- */
-typedef void (*EventCallback)(Event* event);
 
 /* Game initialization and lifecycle */
 
@@ -72,44 +41,6 @@ void yukon_resetGame(GameState* gameState);
  * @param gameState The game state to clean up
  */
 void yukon_cleanup(GameState* gameState);
-
-/* Event system */
-
-/**
- * Initialize the event system.
- */
-void yukon_eventSystem_init();
-
-/**
- * Clean up the event system.
- */
-void yukon_eventSystem_cleanup();
-
-/**
- * Subscribe to events of a specific type.
- *
- * @param type Type of event to subscribe to
- * @param callback Function to call when event occurs
- * @return true if subscription successful, false otherwise
- */
-bool yukon_eventSystem_subscribe(EventType type, EventCallback callback);
-
-/**
- * Unsubscribe from events of a specific type.
- *
- * @param type Type of event to unsubscribe from
- * @param callback Function to remove from subscribers
- * @return true if unsubscription successful, false otherwise
- */
-bool yukon_eventSystem_unsubscribe(EventType type, EventCallback callback);
-
-/**
- * Publish an event to all subscribers.
- *
- * @param type Type of event to publish
- * @param data Data associated with the event
- */
-void yukon_eventSystem_publish(EventType type, void* data);
 
 /* Game operations */
 
