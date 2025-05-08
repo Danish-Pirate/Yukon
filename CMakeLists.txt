@@ -38,7 +38,7 @@ add_library(yukon_core SHARED ${GAME_LOGIC_SOURCES})
 target_include_directories(yukon_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/include
-        ${SHARED_INCLUDES}  # Add this line to get access to NFD and other dependencies
+        ${SHARED_INCLUDES}
 )
 
 # Build the GUI application
@@ -88,7 +88,7 @@ if(WIN32 OR CMAKE_CROSSCOMPILING)
 endif()
 
 add_custom_command(TARGET yukon_gui POST_BUILD
-        # Create zip file from temp directory (using chdir to avoid -C flag issues)
+        # Create zip file from temp directory
         COMMAND ${CMAKE_COMMAND} -E chdir "${CMAKE_BINARY_DIR}/temp_dist"
         ${CMAKE_COMMAND} -E tar "cf" "${CMAKE_BINARY_DIR}/Release/yukon.zip" "--format=zip" "."
 
