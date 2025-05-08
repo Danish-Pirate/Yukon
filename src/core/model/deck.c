@@ -4,6 +4,7 @@
 #include "deck.h"
 #include "../utils/error_handler.h"
 #include "utils/linked_list.h"
+#include "game.h"
 
 DeckLoadResult loadDeckFromFile(LinkedList **deck, const char *filePath) {
     FILE* file = fopen(filePath, "r");
@@ -145,40 +146,60 @@ void randomShuffleDeck(LinkedList *deck) {
     free(nodes);
 }
 
+// Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
+// and puts the remaining cards at the bottom
 void splitDeck(LinkedList *deck, int splitIndex) {
     if (deck == NULL || deck->head == NULL || deck->head->nextNode == NULL) {
         return; // Cannot split an empty or single-card deck
     }
 
-    // Validate split index
-    int deckSize = 0;
-    Node* current = deck->head;
-    while (current != NULL) {
-        deckSize++;
-        current = current->nextNode;
+
+    // If splitIndex is -1, generate a random number between 1-51
+    if (splitIndex == -1){
+        splitIndex = (rand() % (DECK_SIZE-1))+1; // Random number between 1-51
+    }
+        // Validate - Check that splitIndex is in range 1-51
+    else if (splitIndex < 1 || splitIndex >= 52){
+        return;
     }
 
-    // Handle negative index (random split)
-    if (splitIndex < 0 || splitIndex >= deckSize) {
-        splitIndex = rand() % (deckSize - 1) + 1; // Random index between 1 and deckSize-1
+
+    // Create two piles
+    Node* firstPile = deck->head;
+    Node* secondPile = getNode(deck,splitIndex);
+
+    Node* pileDivider=secondPile;
+
+
+    LinkedList* splitDeck = createList(sizeof(Card));
+
+    // Interleave both piles into splitDeck, until of is empty
+    while (firstPile != pileDivider && secondPile != NULL) {
+        addNodeToFront(splitDeck,firstPile->data);
+        firstPile = firstPile->nextNode;
+
+        addNodeToFront(splitDeck,secondPile->data);
+        secondPile = secondPile->nextNode;
     }
 
-    Node* splitNode = deck->head;
-    for (int i = 1; i < splitIndex; i++) {
-        splitNode = splitNode->nextNode;
+    // Add the remaining cards from the FIRST pile to the back of splitdeck
+    while (firstPile != pileDivider) {
+        addNodeToBack(splitDeck,firstPile->data);
+        firstPile = firstPile->nextNode;
     }
 
-    Node* secondPart = splitNode->nextNode;
-    if (secondPart == NULL) return; // Cannot split at the last card
+    // Add the remaining cards from the SECOND pile to the back of splitdeck
+    while (secondPile != NULL) {
+        addNodeToBack(splitDeck,secondPile->data);
+        secondPile = secondPile->nextNode;
+    }
 
-    Node* oldTail = deck->tail;
+    // Free the old deck
+    freeNodes(deck);
 
-    splitNode->nextNode = NULL;
 
-    secondPart->prevNode = NULL;
-    deck->head->prevNode = oldTail;
-    oldTail->nextNode = deck->head;
-
-    deck->head = secondPart;
-    deck->tail = splitNode;
+    // Set the split deck to gamestate
+    deck->head = splitDeck->head;
+    deck->tail = splitDeck->tail;
+    free(splitDeck);
 }
