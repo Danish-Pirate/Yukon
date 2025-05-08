@@ -84,10 +84,14 @@ add_custom_command(TARGET yukon_gui POST_BUILD
 )
 
 if(WIN32 OR CMAKE_CROSSCOMPILING)
-    add_custom_command(TARGET yukon_gui POST_BUILD
-            # Copy DLLs for Windows builds when cross-compiling
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/*.dll" "${CMAKE_BINARY_DIR}/temp_dist"
-    )
+    file(GLOB DLL_FILES "${CMAKE_BINARY_DIR}/*.dll")
+    foreach(dll_file ${DLL_FILES})
+        add_custom_command(TARGET yukon_gui POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${dll_file}"
+                "${CMAKE_BINARY_DIR}/temp_dist/"
+        )
+    endforeach()
 endif()
 
 add_custom_command(TARGET yukon_gui POST_BUILD
