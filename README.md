@@ -32,4 +32,5 @@ cmake --build ./build --target yukon_gui --parallel 14
 ./build/yukon_gui
 ```
 
-
+# Note
+- The GUI will only work properly with a resolution of 1920x1080
