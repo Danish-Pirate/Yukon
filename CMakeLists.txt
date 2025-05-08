@@ -84,15 +84,14 @@ add_custom_command(TARGET yukon_gui POST_BUILD
 )
 
 if(WIN32 OR CMAKE_CROSSCOMPILING)
-    file(GLOB DLL_FILES "${CMAKE_BINARY_DIR}/*.dll")
-    foreach(dll_file ${DLL_FILES})
-        add_custom_command(TARGET yukon_gui POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${dll_file}"
-                "${CMAKE_BINARY_DIR}/temp_dist/"
-        )
-    endforeach()
+    add_custom_command(TARGET yukon_gui POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Copying DLLs to temp_dist..."
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:SDL2::SDL2>" "${CMAKE_BINARY_DIR}/temp_dist/"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:SDL2_ttf::SDL2_ttf>" "${CMAKE_BINARY_DIR}/temp_dist/"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:nfd::nfd>" "${CMAKE_BINARY_DIR}/temp_dist/"
+    )
 endif()
+
 
 add_custom_command(TARGET yukon_gui POST_BUILD
         # Create zip file from temp directory
