@@ -18,26 +18,6 @@ void yukon_cleanup(GameState* gameState) {
 
 }
 
-void yukon_eventSystem_init() {
-    eventSystem_init();
-}
-
-void yukon_eventSystem_cleanup() {
-    eventSystem_cleanup();
-}
-
-bool yukon_eventSystem_subscribe(EventType type, EventCallback callback) {
-    return eventSystem_subscribe(type, callback);
-}
-
-bool yukon_eventSystem_unsubscribe(EventType type, EventCallback callback) {
-    return eventSystem_unsubscribe(type, callback);
-}
-
-void yukon_eventSystem_publish(EventType type, void* data) {
-    eventSystem_publish(type, data);
-}
-
 void yukon_enterPlayMode(GameState* gameState) {
     enterPlayMode(gameState);
 }
