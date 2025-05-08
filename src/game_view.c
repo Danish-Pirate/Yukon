@@ -16,6 +16,23 @@
 #define FOUNDATION_PADDING_LEFT 2
 #define CONTROLS_PADDING_TOP 2
 
+// Include windows.h and enable VT mode if compiled for windows
+#if defined(_WIN32)
+#include <windows.h>
+  static void enable_vt_mode(void) {
+      HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+      if (hOut == INVALID_HANDLE_VALUE) return;
+      DWORD dwMode = 0;
+      if (!GetConsoleMode(hOut, &dwMode)) return;
+      dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+      SetConsoleMode(hOut, dwMode);
+  }
+#else
+static void enable_vt_mode(void) {
+    /* no-op on non-Windows; ANSI escapes just work on Unix terminals */
+}
+#endif
+
 
 void setColors(){printf("\033[1;30;103m");}
 
