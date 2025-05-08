@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(yukon C)
 
+set(SDL2TTF_VENDORED ON)
+set(SDL2TTF_VENDORED_FREETYPE ON)
+set(SDL2TTF_FREETYPE ON)
 set(CMAKE_C_STANDARD 11)
 
 # External dependencies paths
@@ -82,10 +85,13 @@ add_custom_command(TARGET yukon_gui POST_BUILD
 
 if(WIN32 OR CMAKE_CROSSCOMPILING)
     add_custom_command(TARGET yukon_gui POST_BUILD
-            # Copy DLLs for Windows builds when cross-compiling
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/*.dll" "${CMAKE_BINARY_DIR}/temp_dist"
+            COMMAND ${CMAKE_COMMAND} -E echo "Copying DLLs to temp_dist..."
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:SDL2::SDL2>" "${CMAKE_BINARY_DIR}/temp_dist/"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:SDL2_ttf::SDL2_ttf>" "${CMAKE_BINARY_DIR}/temp_dist/"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:nfd::nfd>" "${CMAKE_BINARY_DIR}/temp_dist/"
     )
 endif()
+
 
 add_custom_command(TARGET yukon_gui POST_BUILD
         # Create zip file from temp directory
