@@ -1,5 +1,8 @@
-# Quick Start Guide
+This repository contains a Yukon game written for the 02322 Machine oriented programming course at Danish Technical University
 
+The TUI branch contains a Terminal user interface version of the game, and the master branch contains a GUI version of the same made using SDL.
+
+# Quick Start Guide
 ## 1. Clone the repository
 Pull the main repository and include submodules
 ```
