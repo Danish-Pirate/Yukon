@@ -113,37 +113,43 @@ void toggleShowDeck(LinkedList *deck) {
         current = current->nextNode;
     }
 }
-// Fisher-Yates shuffle algorithm
+
+
 void randomShuffleDeck(LinkedList *deck) {
     if (deck == NULL) return;
 
-    int count = 0;
-    Node* current = deck->head;
-    while (current != NULL) {
-        count++;
-        current = current->nextNode;
+
+
+    LinkedList* shuffledDeck = createList(sizeof(Card));
+    int cardsLeft = DECK_SIZE;;
+    while (cardsLeft > 0) {
+        int rndIndx = rand() % cardsLeft;
+
+        Node* node = getNode(deck, rndIndx);
+        if (node == NULL || node->data == NULL) {
+            printf("Invalid node at index %d\n", rndIndx);
+            break;
+        }
+
+
+        // Store the pointer of card to move
+        Card* card = getNode(deck,rndIndx)->data;
+        // Remove from current deck
+        deleteNode(deck, rndIndx);
+        // Add it to the back of deck
+        addNodeToBack(shuffledDeck, card);
+        cardsLeft--;
     }
 
-    if (count <= 1) return; // No need to shuffle a deck with 0 or 1 card
+    // Transfer nodes from splitDeck to deck
+    // Free the old deck
+    freeNodes(deck);
+    // Set head and tail of deck
+    deck->head = shuffledDeck->head;
+    deck->tail = shuffledDeck->tail;
+    // Free the splitDeck excluding nodes
+    free(shuffledDeck);
 
-    Node** nodes = (Node**)malloc(count * sizeof(Node*));
-    if (nodes == NULL) return;
-
-    current = deck->head;
-    for (int i = 0; i < count; i++) {
-        nodes[i] = current;
-        current = current->nextNode;
-    }
-
-    for (int i = count - 1; i > 0; i--) {
-        int j = rand() % (i + 1);
-
-        void* temp = nodes[i]->data;
-        nodes[i]->data = nodes[j]->data;
-        nodes[j]->data = temp;
-    }
-
-    free(nodes);
 }
 
 // Splits deck into two piles by the splitIndex, and then interleves the second pile into the first,
@@ -194,12 +200,12 @@ void splitDeck(LinkedList *deck, int splitIndex) {
         secondPile = secondPile->nextNode;
     }
 
+    // Transfer nodes from splitDeck to deck
     // Free the old deck
     freeNodes(deck);
-
-
-    // Set the split deck to gamestate
+    // Set head and tail of deck
     deck->head = splitDeck->head;
     deck->tail = splitDeck->tail;
+    // Free the splitDeck excluding nodes
     free(splitDeck);
 }
